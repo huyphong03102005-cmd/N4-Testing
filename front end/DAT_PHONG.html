@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafesion - Đặt phòng</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-body: #faebe2;
+            --bg-top-bar: #dec2a4;
+            --bg-tab: #ede4d3;
+            --bg-tab-active: #c9b489;
+            --bg-search: #ded6cc;
+            --bg-card: #ffffff;
+            --bg-green-badge: #d1e8d9;
+            --color-green-text: #47A25E;
+            --bg-btn-orange: #f2c7a9;
+            --text-dark: #222222;
+            --text-gray: #666666;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Lora', serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* ----- TOP BAR SECTION ----- */
+        .top-bar {
+            height: 60px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -18px;
+            background-image: url('./Picture/Logo_bar.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .top-icons i {
+            font-size: 28px;
+            color: #111;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .top-icons i:hover {
+            color: #555;
+        }
+
+        /* ----- BANNER SECTION ----- */
+        .banner {
+            position: relative;
+            background-color: #4a3e35;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('./Picture/Background.png');
+            background-size: cover;
+            background-position: center;
+            padding: 20px 40px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ----- TABS ----- */
+        .tabs-wrapper {
+            width: 95%;
+            max-width: 1368px;
+        }
+
+        .tabs-container {
+            display: flex;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            height: 45px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .tab {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #222;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        .tab:last-child {
+            border-right: none;
+        }
+
+        .tab:hover {
+            background-color: #d6cc9c;
+        }
+
+        .tab.active {
+            background-color: #c0ab7b;
+            color: #111;
+        }
+
+        /* ----- SEARCH SECTION ----- */
+        .search-container {
+            display: flex;
+            gap: 20px;
+            width: 95%;
+            max-width: 1368px;
+            margin-top: 25px;
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: var(--bg-search);
+            border-radius: 30px;
+            padding: 10px 25px;
+        }
+
+        .search-bar i {
+            color: #555;
+            font-size: 20px;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            flex: 1;
+            margin-left: 15px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .search-bar input::placeholder {
+            color: #777;
+        }
+
+        .btn-cancel {
+            background: var(--bg-search);
+            border: none;
+            border-radius: 30px;
+            padding: 0 45px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            color: #333;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #d4c8b8;
+        }
+
+        /* ----- MAIN CONTENT: ROOM CARDS ----- */
+        .cards-section {
+            padding: 50px 40px;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            width: 480px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #ebebeb;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-family: 'Lora', serif;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #111;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .info-label {
+            width: 140px;
+            color: #333;
+            font-weight: 400;
+        }
+
+        .status-badge {
+            background: var(--bg-green-badge);
+            color: var(--color-green-text);
+            padding: 5px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .dates-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-input {
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            background: #fdfdfd;
+        }
+
+        .date-input i {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .date-separator {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .capacity-badges {
+            display: flex;
+            gap: 20px;
+        }
+
+        .capacity-badge {
+            background: var(--bg-green-badge);
+            color: #333;
+            padding: 5px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .capacity-badge i {
+            font-size: 15px;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 10px 0 25px;
+            border: none;
+        }
+
+        .footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .price-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .price-label {
+            width: 140px;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .price-value-container {
+            border-bottom: 1px solid #aaa;
+            padding-bottom: 2px;
+            min-width: 110px;
+        }
+
+        .price-value {
+            font-size: 16px;
+            color: #777;
+            text-align: left;
+        }
+
+        .btn-book {
+            background: var(--bg-btn-orange);
+            color: #222;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 28px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn-book:hover {
+            background: #e8b693;
+        }
+
+        /* ----- MODAL ----- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ecf1ed;
+            padding: 30px;
+            width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            font-family: 'Lora', serif;
+        }
+
+        .modal-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+
+        .modal-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            width: 170px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+            padding: 8px 15px;
+            gap: 12px;
+        }
+
+        .bg-green {
+            background-color: #d1ead8;
+        }
+
+        .bg-tan {
+            background-color: #e3d2be;
+        }
+
+        .input-group i {
+            color: #222;
+            font-size: 16px;
+        }
+
+        .input-group input {
+            border: none;
+            background: transparent;
+            outline: none;
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            font-family: 'Lora', serif;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .input-group input::placeholder {
+            color: #7b8f81;
+        }
+
+        .bg-tan input::placeholder {
+            color: #8c7e6c;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+
+        .qty-controls i {
+            cursor: pointer;
+            font-size: 20px;
+            color: #111;
+        }
+
+        .qty-controls span {
+            font-size: 15px;
+            font-weight: 600;
+            width: 15px;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+        }
+
+        .btn-modal {
+            border: none;
+            border-radius: 6px;
+            padding: 12px 30px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Lora', serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            min-width: 130px;
+        }
+
+        .btn-cancel-modal {
+            background-color: #dcdcdc;
+            color: #333;
+        }
+
+        .btn-ok-modal {
+            background-color: #d6bd96;
+            color: #333;
+        }
+
+        .payment-content {
+            background-color: #ecf1ed;
+            padding: 40px;
+            width: 550px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            font-family: 'Lora', serif;
+            position: relative;
+        }
+
+        .btn-close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #111;
+            color: #fff;
+            border: none;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            border-radius: 2px;
+            font-size: 14px;
+        }
+
+        .payment-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            margin-top: 10px;
+            color: #111;
+        }
+
+        .payment-info-box {
+            background-color: #dfceb3;
+            border-radius: 8px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            color: #111;
+        }
+
+        .payment-info-value {
+            font-weight: 700;
+        }
+
+        .btn-pay {
+            background-color: #dfceb3;
+            color: #111;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Lora', serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        button {
+            transition: opacity 0.2s ease, background 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.8 !important;
+        }
+
+        /* --- Popup xĂ¡c nháº­n Ä‘Äƒng xuáº¥t --- */
+        .logout-popup {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 35px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            min-width: 230px;
+            animation: popFadeIn 0.2s ease-out;
+        }
+
+        .logout-popup.show {
+            display: block;
+        }
+
+        @keyframes popFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-popup p {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logout-popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-logout-cancel {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #888;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-confirm {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #4a7c59;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-cancel:hover {
+            filter: brightness(0.9);
+        }
+
+        .btn-logout-confirm:hover {
+            filter: brightness(0.9);
+        }
+
+        /* --- Trang ThĂ´ng tin NgÆ°á»i dĂ¹ng (overlay) --- */
+        .user-info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info-overlay.show {
+            display: flex;
+        }
+
+        .user-info-card {
+            background: #fff;
+            border-radius: 14px;
+            width: 860px;
+            max-width: 95vw;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            padding: 36px 40px 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .user-info-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .user-info-body {
+            display: flex;
+            gap: 48px;
+            flex: 1;
+        }
+
+        /* Cá»™t trĂ¡i */
+        .user-left {
+            flex: 1.4;
+        }
+
+        .user-left h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .user-avatar-row img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .user-avatar-email {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .user-field-row {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .user-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-field-label {
+            width: 130px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .user-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        /* Cá»™t pháº£i */
+        .user-right {
+            flex: 1;
+            border-left: 1px solid #e5e5e5;
+            padding-left: 40px;
+        }
+
+        .user-right h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .account-field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .account-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-field-label {
+            width: 110px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .account-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .btn-edit-pw {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        /* Footer buttons */
+        .user-info-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-user-cancel {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-save {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: none;
+            background: #c9b98a;
+            color: #222;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-cancel:hover {
+            filter: brightness(0.93);
+        }
+
+        .btn-user-save:hover {
+            filter: brightness(0.93);
+        }
+
+        /* --- Popup LÆ°u thĂ nh cĂ´ng --- */
+        .save-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-success-overlay.show {
+            display: flex;
+        }
+
+        .save-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+        }
+
+        /* --- Panel Äá»•i máº­t kháº©u --- */
+        .change-password-panel {
+            display: none;
+            background-color: #f9ece2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .change-password-panel.show {
+            display: block;
+        }
+
+        .change-password-panel h4 {
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .pw-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .pw-label {
+            flex: 1;
+            font-size: 12px;
+            color: #d28c5a;
+            font-weight: bold;
+            font-style: italic;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .pw-input {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .pw-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-pw-cancel {
+            background-color: #999;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm {
+            background-color: #619a71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm:hover {
+            filter: brightness(0.95);
+        }
+
+        /* --- Popup Äá»•i máº­t kháº©u thĂ nh cĂ´ng --- */
+        .pw-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pw-success-overlay.show {
+            display: flex;
+        }
+
+        .pw-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 320px;
+        }
+
+        .pw-success-card i {
+            font-size: 55px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .pw-success-card p {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .btn-pw-done {
+            padding: 10px 45px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-success-card i {
+            font-size: 48px;
+            color: #4a7c59;
+            margin-bottom: 18px;
+        }
+
+        .save-success-card p {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .btn-save-done {
+            padding: 10px 36px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-save-done:hover {
+            filter: brightness(0.92);
+        }
+
+        /* --- Popup xác nhận đăng xuất --- */
+        .logout-popup {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 35px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            min-width: 230px;
+            animation: popFadeIn 0.2s ease-out;
+        }
+
+        .logout-popup.show {
+            display: block;
+        }
+
+        @keyframes popFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-popup p {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logout-popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-logout-cancel {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #888;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-confirm {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #4a7c59;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-cancel:hover {
+            filter: brightness(0.9);
+        }
+
+        .btn-logout-confirm:hover {
+            filter: brightness(0.9);
+        }
+
+        /* --- Trang Thông tin Người dùng (overlay) --- */
+        .user-info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info-overlay.show {
+            display: flex;
+        }
+
+        .user-info-card {
+            background: #fff;
+            border-radius: 14px;
+            width: 860px;
+            max-width: 95vw;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            padding: 36px 40px 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .user-info-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .user-info-body {
+            display: flex;
+            gap: 48px;
+            flex: 1;
+        }
+
+        /* Cột trái */
+        .user-left {
+            flex: 1.4;
+        }
+
+        .user-left h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .user-avatar-row img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .user-avatar-email {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .user-field-row {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .user-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-field-label {
+            width: 130px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .user-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        /* Cột phải */
+        .user-right {
+            flex: 1;
+            border-left: 1px solid #e5e5e5;
+            padding-left: 40px;
+        }
+
+        .user-right h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .account-field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .account-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-field-label {
+            width: 110px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .account-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .btn-edit-pw {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        /* Footer buttons */
+        .user-info-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-user-cancel {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-save {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: none;
+            background: #c9b98a;
+            color: #222;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-cancel:hover {
+            filter: brightness(0.93);
+        }
+
+        .btn-user-save:hover {
+            filter: brightness(0.93);
+        }
+
+        /* --- Popup Lưu thành công --- */
+        .save-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-success-overlay.show {
+            display: flex;
+        }
+
+        .save-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+        }
+
+        /* --- Panel Đổi mật khẩu --- */
+        .change-password-panel {
+            display: none;
+            background-color: #f9ece2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .change-password-panel.show {
+            display: block;
+        }
+
+        .change-password-panel h4 {
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .pw-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .pw-label {
+            flex: 1;
+            font-size: 12px;
+            color: #d28c5a;
+            font-weight: bold;
+            font-style: italic;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .pw-input {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .pw-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-pw-cancel {
+            background-color: #999;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm {
+            background-color: #619a71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm:hover {
+            filter: brightness(0.95);
+        }
+
+        /* --- Popup Đổi mật khẩu thành công --- */
+        .pw-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pw-success-overlay.show {
+            display: flex;
+        }
+
+        .pw-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 320px;
+        }
+
+        .pw-success-card i {
+            font-size: 55px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .pw-success-card p {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .btn-pw-done {
+            padding: 10px 45px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-success-card i {
+            font-size: 48px;
+            color: #4a7c59;
+            margin-bottom: 18px;
+        }
+
+        .save-success-card p {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .btn-save-done {
+            padding: 10px 36px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-save-done:hover {
+            filter: brightness(0.92);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-container">
+        <!-- Top Navigation Bar -->
+        <div class="top-bar">
+            <div class="top-icons">
+                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
+            </div>
+        </div>
+
+        <!-- Banner & Controls -->
+        <section class="banner">
+            <div class="tabs-wrapper">
+                <div class="tabs-container">
+                    <a href="tongquan.html" class="tab">Tổng quan</a>
+                    <a href="DAT_PHONG.html" class="tab active">Đặt phòng</a>
+                    <a href="QL_DatPhong.html" class="tab">Quản lý đặt phòng</a>
+                    <a href="nhan_phong.html" class="tab">Nhận phòng</a>
+                    <a href="#" class="tab">Trả phòng</a>
+                    <a href="Service.html" class="tab">Dịch vụ phòng</a>
+                </div>
+
+                <div class="search-container">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Tìm kiếm phòng">
+                    </div>
+                    <button class="btn-cancel">Hủy đặt phòng</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Room Cards Container -->
+        <main class="cards-section">
+
+            <!-- === Room Card: 101 === -->
+            <article class="card">
+                <!-- Uses Pictuer_1 as exact link/source based on requirements -->
+                <img src="./Picture/Pictuer_1.jpg" alt="Hình ảnh phòng 101" class="card-image">
+                <h2 class="card-title">Phòng 101</h2>
+
+                <div class="info-row">
+                    <div class="info-label">Trạng thái:</div>
+                    <div class="status-badge">Phòng trống</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Dự kiến:</div>
+                    <div class="dates-container">
+                        <div class="date-input">
+                            30 Th1, 14:00
+                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="date-separator">Đến</div>
+                        <div class="date-input">
+                            15 Th2, 12:00
+                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Số lượng người:</div>
+                    <div class="capacity-badges">
+                        <div class="capacity-badge">
+                            2 <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="capacity-badge">
+                            1 <i class="fa-solid fa-face-smile"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <div class="footer-row">
+                    <div class="price-section">
+                        <div class="price-label">Tiền phòng:</div>
+                        <div class="price-value-container">
+                            <span class="price-value">800,000</span>
+                        </div>
+                    </div>
+                    <button class="btn-book" data-room="101" data-checkin="30 Th1, 14:00" data-checkout="15 Th2, 12:00"
+                        data-price="800000">ĐẶT PHÒNG</button>
+                </div>
+            </article>
+
+            <!-- === Room Card: 104 === -->
+            <article class="card">
+                <!-- Uses Pictuer_2 as exact link/source based on requirements -->
+                <img src="./Picture/Pictuer_1.jpg" alt="Hình ảnh phòng 104" class="card-image">
+                <h2 class="card-title">Phòng 104</h2>
+
+                <div class="info-row">
+                    <div class="info-label">Trạng thái:</div>
+                    <div class="status-badge">Phòng trống</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Dự kiến:</div>
+                    <div class="dates-container">
+                        <div class="date-input">
+                            15 Th1, 14:00
+                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="date-separator">Đến</div>
+                        <div class="date-input">
+                            28 Th2, 12:00
+                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Số lượng người:</div>
+                    <div class="capacity-badges">
+                        <div class="capacity-badge">
+                            4 <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="capacity-badge">
+                            2 <i class="fa-solid fa-face-smile"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <div class="footer-row">
+                    <div class="price-section">
+                        <div class="price-label">Tiền phòng:</div>
+                        <div class="price-value-container">
+                            <span class="price-value">2,300,000</span>
+                        </div>
+                    </div>
+                    <button class="btn-book" data-room="104" data-checkin="15 Th1, 14:00" data-checkout="28 Th2, 12:00"
+                        data-price="2300000">ĐẶT PHÒNG</button>
+                </div>
+            </article>
+
+        </main>
+
+        <!-- Booking Modal -->
+        <div class="modal-overlay" id="bookingModal">
+            <div class="modal-content">
+                <h3 class="modal-title">THÔNG TIN ĐẶT PHÒNG</h3>
+                <div class="modal-card">
+                    <div class="form-row">
+                        <div class="form-label">Phòng đã chọn:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-bed"></i>
+                            <input type="text" id="mRoom" value="101" readonly style="pointer-events: none;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Họ và tên:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-circle-user"></i>
+                            <input type="text" placeholder="Nhập họ và tên">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Số điện thoại:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-phone"></i>
+                            <input type="text" placeholder="Nhập số điện thoại">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Số CCCD/Hộ chiếu:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-address-card"></i>
+                            <input type="text" placeholder="Nhập số CCCD/Hộ chiếu">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 20px;">
+                        <div class="form-label">Ngày nhận phòng:</div>
+                        <div class="input-group bg-tan">
+                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fa-regular fa-clock" style="margin-left: -5px;"></i>
+                            <input type="text" id="mCheckin" value="30 Th1, 14:00" readonly
+                                style="pointer-events: none;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Ngày trả phòng:</div>
+                        <div class="input-group bg-tan">
+                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fa-regular fa-clock" style="margin-left: -5px;"></i>
+                            <input type="text" id="mCheckout" value="31 Th1, 14:00" readonly
+                                style="pointer-events: none;">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 20px;">
+                        <div class="form-label">Số người lớn:</div>
+                        <div class="input-group bg-green" style="padding-right: 5px;">
+                            <i class="fa-solid fa-user"></i>
+                            <div class="qty-controls">
+                                <i class="fa-solid fa-circle-minus"></i>
+                                <span>0</span>
+                                <i class="fa-solid fa-circle-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Số trẻ em:</div>
+                        <div class="input-group bg-green" style="padding-right: 5px;">
+                            <i class="fa-solid fa-face-smile"></i>
+                            <div class="qty-controls">
+                                <i class="fa-solid fa-circle-minus"></i>
+                                <span>0</span>
+                                <i class="fa-solid fa-circle-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-modal btn-cancel-modal" id="btnCancelModal">Hủy</button>
+                    <button class="btn-modal btn-ok-modal" id="btnConfirmModal">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div class="modal-overlay" id="paymentModal">
+            <div class="payment-content">
+                <button class="btn-close-modal" id="btnClosePayment">x</button>
+                <h3 class="payment-title">BẠN CẦN THANH TOÁN 50% ĐỂ GIỮ PHÒNG</h3>
+
+                <div class="payment-info-box">
+                    <span>Số tiền cần thanh toán:</span>
+                    <span class="payment-info-value" id="mPaymentValue">400,000</span>
+                </div>
+
+                <button class="btn-pay">THANH TOÁN</button>
+            </div>
+        </div>
+
+        <!-- Payment Method Modal -->
+        <div class="modal-overlay" id="paymentMethodModal">
+            <div class="payment-content" style="width: 500px; padding: 40px 30px;">
+                <button class="btn-close-modal" id="btnCloseMethodModal">x</button>
+                <h3 class="payment-title" style="margin-bottom: 40px;">HÃY CHỌN HÌNH THỨC THANH TOÁN</h3>
+
+                <div class="modal-actions" style="gap: 20px;">
+                    <button class="btn-pay" id="btnPayDomestic"
+                        style="flex: 1; min-width: 0; padding: 12px; font-size: 13px;">THANH TOÁN NỘI ĐỊA</button>
+                    <button class="btn-pay" id="btnPayVisa"
+                        style="flex: 1; min-width: 0; padding: 12px; font-size: 13px;">THANH TOÁN VISA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Modal -->
+        <div class="modal-overlay" id="qrModal">
+            <div class="payment-content" style="width: 400px; text-align: center; padding: 40px;">
+                <button class="btn-close-modal" id="btnCloseQr">x</button>
+                <h3 class="payment-title" style="margin-bottom: 30px;">QUÉT MÃ ĐỂ THANH TOÁN</h3>
+                <img src="./Picture/QR_CODE.png" alt="QR Code"
+                    style="width: 250px; height: 250px; object-fit: cover; display: block; margin: 0 auto; background: #fff; padding: 10px; border-radius: 10px;">
+            </div>
+        </div>
+
+        <!-- Visa Modal -->
+        <div class="modal-overlay" id="visaModal">
+            <div class="modal-content" style="width: 550px;">
+                <h3 class="modal-title">HÓA ĐƠN THANH TOÁN</h3>
+                <div class="modal-card">
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Số tiền thanh toán:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <input type="text" id="mVisaAmount" value="400,000" readonly style="pointer-events: none;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Số thẻ:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-brands fa-cc-visa"></i>
+                            <input type="text" placeholder="Nhập số thẻ">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Ngày hết hạn:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-regular fa-calendar"></i>
+                            <input type="text" placeholder="mm/dd/yyyy">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">CVC/CVV:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="text" placeholder="Nhập CVC/CVV">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Tên chủ thẻ:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-circle-user"></i>
+                            <input type="text" placeholder="Nhập họ tên">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Email:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="text" placeholder="Nhập email">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Quốc gia:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-circle-chevron-down"></i>
+                            <input type="text" value="Vietnam" placeholder="Quốc gia">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Tỉnh/Thành phố:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-circle-chevron-down"></i>
+                            <input type="text" value="Da Nang" placeholder="Tỉnh/Thành phố">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label" style="width: 170px;">Địa chỉ:</div>
+                        <div class="input-group bg-green">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="text" placeholder="Nhập địa chỉ cụ thể">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-modal btn-cancel-modal" id="btnCancelVisa">HỦY</button>
+                    <button class="btn-modal btn-ok-modal" id="btnConfirmVisa">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal-overlay" id="successModal">
+            <div class="modal-content"
+                style="width: 450px; background-color: #fff; padding: 40px; text-align: center; border-radius: 8px; position: relative;">
+                <button class="btn-close-modal" id="btnCloseSuccess"
+                    style="top: 15px; right: 15px; color: #fff; background: #111;">x</button>
+                <div style="font-size: 55px; color: #28a745; margin-bottom: 20px;">
+                    <i class="fa-regular fa-circle-check"></i>
+                </div>
+                <h3 class="payment-title" style="margin-bottom: 30px; font-size: 22px;">ĐÃ ĐẶT PHÒNG</h3>
+
+                <div class="payment-info-box"
+                    style="margin-bottom: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); justify-content: space-between;">
+                    <span>Mã đặt phòng:</span>
+                    <span class="payment-info-value" id="mBookingCode">DPW101150106</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Cancel Modal -->
+        <div class="modal-overlay" id="confirmCancelModal">
+            <div class="payment-content" style="width: 500px; text-align: center; padding: 50px 30px;">
+                <h3 class="payment-title" style="margin-bottom: 40px; font-weight: bold;">BẠN CÓ CHẮC HỦY ĐẶT
+                    PHÒNG NÀY</h3>
+                <div class="modal-actions" style="gap: 30px;">
+                    <button class="btn-modal btn-cancel-modal" id="btnNoCancel">HỦY</button>
+                    <button class="btn-modal btn-ok-modal" id="btnYesCancel">XÁC NHẬN</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancel Booking Modal -->
+        <div class="modal-overlay" id="cancelBookingModal">
+            <div class="payment-content" style="width: 450px; text-align: center; padding: 40px;">
+                <button class="btn-close-modal" id="btnCloseCancelBooking">x</button>
+                <h3 class="payment-title" style="margin-bottom: 30px; font-weight: bold;">Nhập mã đặt phòng tại
+                    đây</h3>
+
+                <input type="text" class="cancel-booking-input" placeholder="DPW101150106"
+                    style="width: 80%; padding: 12px 20px; border-radius: 8px; border: none; background-color: #dfceb3; color: #555; text-align: center; font-size: 16px; font-family: 'Lora', serif; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <button class="btn-modal btn-ok-modal" id="btnSubmitCancelCode" style="margin-top: 30px;">XÁC
+                    NHẬN</button>
+            </div>
+        </div>
+
+        <!-- Cancel Success Modal -->
+        <div class="modal-overlay" id="cancelSuccessModal">
+            <div class="modal-content"
+                style="width: 450px; background-color: #fff; padding: 50px 30px; text-align: center; border-radius: 8px; position: relative;">
+                <button class="btn-close-modal" id="btnCloseCancelSuccess"
+                    style="top: 15px; right: 15px; color: #fff; background: #111;">x</button>
+                <div style="font-size: 55px; color: #28a745; margin-bottom: 20px;">
+                    <i class="fa-regular fa-circle-check" style="stroke-width: 2px;"></i>
+                </div>
+                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px; line-height: 1.4;">Hủy
+                    đặt
+                    phòng và hoàn tiền<br>thành công</h3>
+            </div>
+        </div>
+
+        <!-- Invalid Code Modal -->
+        <div class="modal-overlay" id="invalidCodeModal">
+            <div class="modal-content"
+                style="width: 450px; background-color: #fff; padding: 50px 30px; text-align: center; border-radius: 8px; position: relative;">
+                <button class="btn-close-modal" id="btnCloseInvalidCode"
+                    style="top: 15px; right: 15px; color: #fff; background: #111;">x</button>
+                <div style="font-size: 55px; color: #d9534f; margin-bottom: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px;">Mã đặt phòng không
+                    hợp lệ
+                </h3>
+            </div>
+        </div>
+
+        <!-- Overdue Modal -->
+        <div class="modal-overlay" id="overdueModal">
+            <div class="modal-content"
+                style="width: 450px; background-color: #fff; padding: 50px 30px; text-align: center; border-radius: 8px; position: relative;">
+                <div style="font-size: 55px; color: #d9534f; margin-bottom: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px; margin-bottom: 30px;">
+                    Bạn đã
+                    quá hạn để hủy đặt phòng</h3>
+                <button class="btn-modal" id="btnOverdueDone"
+                    style="background-color: #d9534f; color: white; border: none; border-radius: 6px; padding: 12px 40px; font-size: 16px; font-weight: bold; cursor: pointer;">Xong</button>
+            </div>
+        </div>
+
+        <!-- Refund Fail Modal -->
+        <div class="modal-overlay" id="refundFailModal">
+            <div class="modal-content"
+                style="width: 480px; background-color: #fff; padding: 50px 30px; text-align: center; border-radius: 8px; position: relative;">
+                <button class="btn-close-modal" id="btnCloseRefundFail"
+                    style="top: 15px; right: 15px; color: #fff; background: #111;">x</button>
+                <div style="font-size: 55px; color: #d9534f; margin-bottom: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 style="font-size: 20px; color: #111; font-weight: bold; margin-bottom: 30px; line-height: 1.4;">
+                    Hoàn
+                    tiền không thành công,<br>vui lòng liên hệ hỗ trợ</h3>
+                <button class="btn-modal"
+                    style="background-color: #d6bd96; color: #111; border: none; border-radius: 6px; padding: 12px 30px; font-size: 15px; font-weight: bold; cursor: default; display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fa-solid fa-phone" style="font-size: 18px;"></i> (+84) 822422400
+                </button>
+            </div>
+        </div>
+
+        <!-- Payment Fail Modal -->
+        <div class="modal-overlay" id="paymentFailModal">
+            <div class="modal-content"
+                style="width: 480px; background-color: #fff; padding: 50px 30px; text-align: center; border-radius: 8px; position: relative;">
+                <button class="btn-close-modal" id="btnClosePaymentFail"
+                    style="top: 15px; right: 15px; color: #fff; background: #111;">x</button>
+                <div style="font-size: 55px; color: #d9534f; margin-bottom: 20px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 style="font-size: 20px; color: #111; font-weight: bold; margin-bottom: 30px; line-height: 1.4;">
+                    Thanh
+                    toán không thành công,<br>vui lòng liên hệ hỗ trợ</h3>
+                <button class="btn-modal"
+                    style="background-color: #d6bd96; color: #111; border: none; border-radius: 6px; padding: 12px 30px; font-size: 15px; font-weight: bold; cursor: default; display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+                    <i class="fa-solid fa-phone" style="font-size: 18px;"></i> (+84) 822422400
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Popup xĂ¡c nháº­n Ä‘Äƒng xuáº¥t -->
+        <div class="logout-popup" id="logoutPopup">
+            <p>Bạn muốn đăng xuất?</p>
+            <div class="logout-popup-actions">
+                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+                <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+            </div>
+        </div>
+
+        <!-- Overlay ThĂ´ng tin ngÆ°á» i dĂ¹ng -->
+        <div class="user-info-overlay" id="userInfoOverlay">
+            <div class="user-info-card">
+                <h2>Thông tin người dùng</h2>
+                <div class="user-info-body">
+                    <!-- Cá»™t trĂ¡i -->
+                    <div class="user-left">
+                        <h3>Thông tin cá nhân</h3>
+                        <div class="user-avatar-row">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                            <div>
+                                <div class="user-avatar-name">Vương Văn Quyền</div>
+                                <div class="user-avatar-email">vvquyen@gmail.com</div>
+                            </div>
+                        </div>
+                        <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                                class="user-field-value">Vương Văn Quyền</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                                class="user-field-value">25/07/2005</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                                class="user-field-value">Nam</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                                class="user-field-value">09123467898</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                                class="user-field-value">Lễ tân</span></div>
+                    </div>
+                    <!-- Cá»™t pháº£i -->
+                    <div class="user-right">
+                        <h3>Cài đặt tài khoản</h3>
+                        <div class="account-field-row">
+                            <span class="account-field-label">Tên người dùng</span>
+                            <span class="account-field-value">vvquyen_2507</span>
+                        </div>
+                        <div class="account-field-row">
+                            <span class="account-field-label">Mật khẩu</span>
+                            <span class="account-field-value">***********</span>
+                            <button class="btn-edit-pw" title="Sá»­a máº­t kháº©u" onclick="toggleChangePassword()"><i
+                                    class="fa-solid fa-pen"></i></button>
+                        </div>
+
+                        <div class="change-password-panel" id="changePasswordPanel">
+                            <h4>Đổi mật khẩu</h4>
+                            <div class="pw-row">
+                                <span class="pw-label">Mật khẩu hiện tại:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-row">
+                                <span class="pw-label">Mật khẩu mới:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-row">
+                                <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-actions">
+                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                                <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-info-footer" id="userInfoFooter">
+                    <button class="btn-user-cancel" onclick="closeUserInfo()">Hủy</button>
+                    <button class="btn-user-save" onclick="showSaveSuccess()">Lưu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popup Lưu thành công -->
+        <div class="save-success-overlay" id="saveSuccessOverlay">
+            <div class="save-success-card">
+                <i class="fa-solid fa-circle-check"></i>
+                <p>Thông tin đã được lưu</p>
+                <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+            </div>
+        </div>
+
+        <!-- Popup Đổi mật khẩu thành công -->
+        <div class="pw-success-overlay" id="pwSuccessOverlay">
+            <div class="pw-success-card">
+                <i class="fa-regular fa-circle-check"></i>
+                <p>Đổi mật khẩu thành công</p>
+                <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+            </div>
+        </div>
+
+        <!-- Popup xác nhận đăng xuất -->
+        <div class="logout-popup" id="logoutPopup">
+            <p>Bạn muốn đăng xuất?</p>
+            <div class="logout-popup-actions">
+                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+                <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+            </div>
+        </div>
+
+        <!-- Overlay Thông tin người dùng -->
+        <div class="user-info-overlay" id="userInfoOverlay">
+            <div class="user-info-card">
+                <h2>Thông tin người dùng</h2>
+                <div class="user-info-body">
+                    <!-- Cột trái -->
+                    <div class="user-left">
+                        <h3>Thông tin cá nhân</h3>
+                        <div class="user-avatar-row">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                            <div>
+                                <div class="user-avatar-name">Vương Văn Quyền</div>
+                                <div class="user-avatar-email">vvquyen@gmail.com</div>
+                            </div>
+                        </div>
+                        <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                                class="user-field-value">Vương Văn Quyền</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                                class="user-field-value">25/07/2005</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                                class="user-field-value">Nam</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                                class="user-field-value">09123467898</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                                class="user-field-value">Lễ tân</span></div>
+                    </div>
+                    <!-- Cột phải -->
+                    <div class="user-right">
+                        <h3>Cài đặt tài khoản</h3>
+                        <div class="account-field-row">
+                            <span class="account-field-label">Tên người dùng</span>
+                            <span class="account-field-value">vvquyen_2507</span>
+                        </div>
+                        <div class="account-field-row">
+                            <span class="account-field-label">Mật khẩu</span>
+                            <span class="account-field-value">••••••••••••</span>
+                            <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
+                                    class="fa-solid fa-pen"></i></button>
+                        </div>
+
+                        <div class="change-password-panel" id="changePasswordPanel">
+                            <h4>Đổi mật khẩu</h4>
+                            <div class="pw-row">
+                                <span class="pw-label">Mật khẩu hiện tại:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-row">
+                                <span class="pw-label">Mật khẩu mới:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-row">
+                                <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-actions">
+                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                                <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-info-footer" id="userInfoFooter">
+                    <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
+                    <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popup Lưu thành công -->
+        <div class="save-success-overlay" id="saveSuccessOverlay">
+            <div class="save-success-card">
+                <i class="fa-solid fa-circle-check"></i>
+                <p>Thông tin đã được lưu</p>
+                <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+            </div>
+        </div>
+
+        <!-- Popup Đổi mật khẩu thành công -->
+        <div class="pw-success-overlay" id="pwSuccessOverlay">
+            <div class="pw-success-card">
+                <i class="fa-regular fa-circle-check"></i>
+                <p>Đổi mật khẩu thành công</p>
+                <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+            </div>
+        </div>
+
+
+        <script src="shared.js"></script>
+        <script>
+            const modal = document.getElementById('bookingModal');
+            const btnBooks = document.querySelectorAll('.btn-book');
+            const btnCancel = document.getElementById('btnCancelModal');
+            const btnConfirm = document.getElementById('btnConfirmModal');
+
+            const paymentModal = document.getElementById('paymentModal');
+            const btnClosePayment = document.getElementById('btnClosePayment');
+
+            // Quantity controls logic (+/-)
+            const minusBtns = document.querySelectorAll('.fa-circle-minus');
+            const plusBtns = document.querySelectorAll('.fa-circle-plus');
+
+            minusBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const span = e.target.nextElementSibling;
+                    let val = parseInt(span.innerText);
+                    if (val > 0) {
+                        span.innerText = val - 1;
+                    }
+                });
+            });
+
+            plusBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const span = e.target.previousElementSibling;
+                    let val = parseInt(span.innerText);
+                    span.innerText = val + 1;
+                });
+            });
+
+            const mRoom = document.getElementById('mRoom');
+            const mCheckin = document.getElementById('mCheckin');
+            const mCheckout = document.getElementById('mCheckout');
+            const mPaymentValue = document.getElementById('mPaymentValue');
+            let currentRoomPrice = 0;
+
+            // Open modal when any Book button is clicked
+            btnBooks.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const room = btn.getAttribute('data-room');
+                    const checkin = btn.getAttribute('data-checkin');
+                    const checkout = btn.getAttribute('data-checkout');
+                    currentRoomPrice = parseInt(btn.getAttribute('data-price'));
+
+                    if (mRoom) mRoom.value = room;
+                    if (mCheckin) mCheckin.value = checkin;
+                    if (mCheckout) mCheckout.value = checkout;
+
+                    // Format 50% deposit
+                    const deposit = currentRoomPrice / 2;
+                    if (mPaymentValue) mPaymentValue.innerText = deposit.toLocaleString('vi-VN');
+
+                    modal.style.display = 'flex';
+                });
+            });
+
+            // Close initial modal on Cancel
+            btnCancel.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            // Close initial modal and open Payment modal on Confirm
+            btnConfirm.addEventListener('click', () => {
+                modal.style.display = 'none';
+                paymentModal.style.display = 'flex';
+            });
+
+            // Close payment modal on 'x'
+            btnClosePayment.addEventListener('click', () => {
+                paymentModal.style.display = 'none';
+            });
+
+            const paymentMethodModal = document.getElementById('paymentMethodModal');
+            const btnCloseMethodModal = document.getElementById('btnCloseMethodModal');
+            const btnOpenMethodModal = document.querySelector('#paymentModal .btn-pay');
+
+            if (btnOpenMethodModal) {
+                btnOpenMethodModal.addEventListener('click', () => {
+                    paymentModal.style.display = 'none';
+                    paymentMethodModal.style.display = 'flex';
+                });
+            }
+
+            if (btnCloseMethodModal) {
+                btnCloseMethodModal.addEventListener('click', () => {
+                    paymentMethodModal.style.display = 'none';
+                });
+            }
+
+            const qrModal = document.getElementById('qrModal');
+            const btnCloseQr = document.getElementById('btnCloseQr');
+            const visaModal = document.getElementById('visaModal');
+            const btnCancelVisa = document.getElementById('btnCancelVisa');
+            const btnConfirmVisa = document.getElementById('btnConfirmVisa');
+            const btnPayDomestic = document.getElementById('btnPayDomestic');
+            const btnPayVisa = document.getElementById('btnPayVisa');
+            const mVisaAmount = document.getElementById('mVisaAmount');
+
+            let qrTimeout;
+            let visaTimeout;
+
+            if (btnPayDomestic) {
+                btnPayDomestic.addEventListener('click', () => {
+                    paymentMethodModal.style.display = 'none';
+                    qrModal.style.display = 'flex';
+
+                    qrTimeout = setTimeout(() => {
+                        qrModal.style.display = 'none';
+                        if (mRoom && mBookingCode) {
+                            const randomId = Math.floor(100000 + Math.random() * 900000);
+                            mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
+                            if (window.sharedData) {
+                                const rooms = window.sharedData.getSharedRooms();
+                                const r = rooms.find(x => x.id === mRoom.value);
+                                if (r) {
+                                    r.status = 'ÄĂ£ Ä‘áº·t';
+                                    r.date = mCheckin ? mCheckin.value : '';
+                                    r.date2 = mCheckout ? mCheckout.value : '';
+                                    window.sharedData.saveSharedRooms(rooms);
+                                }
+                            }
+                        }
+                        if (successModal) successModal.style.display = 'flex';
+                    }, 5000);
+                });
+            }
+
+            if (btnPayVisa) {
+                btnPayVisa.addEventListener('click', () => {
+                    paymentMethodModal.style.display = 'none';
+                    if (mPaymentValue && mVisaAmount) {
+                        mVisaAmount.value = mPaymentValue.innerText;
+                    }
+                    visaModal.style.display = 'flex';
+
+                    visaTimeout = setTimeout(() => {
+                        if (visaModal.style.display === 'flex') {
+                            visaModal.style.display = 'none';
+                            document.getElementById('paymentFailModal').style.display = 'flex';
+                        }
+                    }, 60000);
+                });
+            }
+
+            if (btnCloseQr) {
+                btnCloseQr.addEventListener('click', () => {
+                    clearTimeout(qrTimeout);
+                    qrModal.style.display = 'none';
+                    if (paymentMethodModal) paymentMethodModal.style.display = 'flex';
+                });
+            }
+
+            if (btnCancelVisa) {
+                btnCancelVisa.addEventListener('click', () => {
+                    clearTimeout(visaTimeout);
+                    visaModal.style.display = 'none';
+                    if (paymentMethodModal) paymentMethodModal.style.display = 'flex';
+                });
+            }
+
+            const successModal = document.getElementById('successModal');
+            const btnCloseSuccess = document.getElementById('btnCloseSuccess');
+            const mBookingCode = document.getElementById('mBookingCode');
+
+            if (btnConfirmVisa) {
+                btnConfirmVisa.addEventListener('click', () => {
+                    clearTimeout(visaTimeout);
+                    visaModal.style.display = 'none';
+                    if (mRoom && mBookingCode) {
+                        const randomId = Math.floor(100000 + Math.random() * 900000);
+                        mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
+                        if (window.sharedData) {
+                            const rooms = window.sharedData.getSharedRooms();
+                            const r = rooms.find(x => x.id === mRoom.value);
+                            if (r) {
+                                r.status = 'ÄĂ£ Ä‘áº·t';
+                                r.date = mCheckin ? mCheckin.value : '';
+                                r.date2 = mCheckout ? mCheckout.value : '';
+                                window.sharedData.saveSharedRooms(rooms);
+                            }
+                        }
+                    }
+                    if (successModal) successModal.style.display = 'flex';
+                });
+            }
+
+            if (btnCloseSuccess) {
+                btnCloseSuccess.addEventListener('click', () => {
+                    successModal.style.display = 'none';
+                });
+            }
+            const cancelBookingModal = document.getElementById('cancelBookingModal');
+            const btnCloseCancelBooking = document.getElementById('btnCloseCancelBooking');
+            const btnCancelAction = document.querySelector('.btn-cancel');
+
+            if (btnCancelAction) {
+                btnCancelAction.addEventListener('click', () => {
+                    cancelBookingModal.style.display = 'flex';
+                });
+            }
+
+            const confirmCancelModal = document.getElementById('confirmCancelModal');
+            const btnNoCancel = document.getElementById('btnNoCancel');
+            const btnYesCancel = document.getElementById('btnYesCancel');
+            const btnSubmitCancelCode = document.getElementById('btnSubmitCancelCode');
+            let confirmCancelTimeout;
+
+            if (btnSubmitCancelCode) {
+                btnSubmitCancelCode.addEventListener('click', () => {
+                    const code = document.querySelector('.cancel-booking-input').value.trim();
+                    cancelBookingModal.style.display = 'none';
+
+                    if (code === 'DPW101150106') {
+                        confirmCancelModal.style.display = 'flex';
+                        confirmCancelTimeout = setTimeout(() => {
+                            if (confirmCancelModal.style.display === 'flex') {
+                                confirmCancelModal.style.display = 'none';
+                                document.getElementById('refundFailModal').style.display = 'flex';
+                            }
+                        }, 5000);
+                    } else if (code === 'DPW101150105') {
+                        document.getElementById('overdueModal').style.display = 'flex';
+                    } else {
+                        document.getElementById('invalidCodeModal').style.display = 'flex';
+                    }
+                });
+            }
+
+            if (btnNoCancel) {
+                btnNoCancel.addEventListener('click', () => {
+                    clearTimeout(confirmCancelTimeout);
+                    confirmCancelModal.style.display = 'none';
+                });
+            }
+
+            if (btnYesCancel) {
+                btnYesCancel.addEventListener('click', () => {
+                    clearTimeout(confirmCancelTimeout);
+                    confirmCancelModal.style.display = 'none';
+                    document.getElementById('cancelSuccessModal').style.display = 'flex';
+                });
+            }
+
+            const btnCloseCancelSuccess = document.getElementById('btnCloseCancelSuccess');
+            const btnCloseInvalidCode = document.getElementById('btnCloseInvalidCode');
+            const btnOverdueDone = document.getElementById('btnOverdueDone');
+            const btnCloseRefundFail = document.getElementById('btnCloseRefundFail');
+            const btnClosePaymentFail = document.getElementById('btnClosePaymentFail');
+
+            if (btnCloseCancelSuccess) btnCloseCancelSuccess.addEventListener('click', () => { document.getElementById('cancelSuccessModal').style.display = 'none'; });
+            if (btnCloseInvalidCode) btnCloseInvalidCode.addEventListener('click', () => {
+                document.getElementById('invalidCodeModal').style.display = 'none';
+                if (cancelBookingModal) cancelBookingModal.style.display = 'flex';
+            });
+            if (btnOverdueDone) btnOverdueDone.addEventListener('click', () => { document.getElementById('overdueModal').style.display = 'none'; });
+            if (btnCloseRefundFail) btnCloseRefundFail.addEventListener('click', () => { document.getElementById('refundFailModal').style.display = 'none'; });
+            if (btnClosePaymentFail) btnClosePaymentFail.addEventListener('click', () => { document.getElementById('paymentFailModal').style.display = 'none'; });
+
+            if (btnCloseCancelBooking) {
+                btnCloseCancelBooking.addEventListener('click', () => {
+                    cancelBookingModal.style.display = 'none';
+                });
+            }
+
+            // Close when clicking outside of modal content
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+                if (e.target === paymentModal) {
+                    paymentModal.style.display = 'none';
+                }
+                if (e.target === paymentMethodModal) {
+                    paymentMethodModal.style.display = 'none';
+                }
+                if (e.target === qrModal) {
+                    qrModal.style.display = 'none';
+                }
+                if (e.target === visaModal) {
+                    clearTimeout(visaTimeout);
+                    visaModal.style.display = 'none';
+                }
+                if (successModal && e.target === successModal) {
+                    successModal.style.display = 'none';
+                }
+                if (cancelBookingModal && e.target === cancelBookingModal) {
+                    cancelBookingModal.style.display = 'none';
+                }
+                if (confirmCancelModal && e.target === confirmCancelModal) {
+                    clearTimeout(confirmCancelTimeout);
+                    confirmCancelModal.style.display = 'none';
+                }
+                const cancelSuccessModal = document.getElementById('cancelSuccessModal');
+                if (cancelSuccessModal && e.target === cancelSuccessModal) cancelSuccessModal.style.display = 'none';
+
+                const invalidCodeModal = document.getElementById('invalidCodeModal');
+                if (invalidCodeModal && e.target === invalidCodeModal) invalidCodeModal.style.display = 'none';
+
+                const overdueModal = document.getElementById('overdueModal');
+                if (overdueModal && e.target === overdueModal) overdueModal.style.display = 'none';
+
+                const refundFailModal = document.getElementById('refundFailModal');
+                if (refundFailModal && e.target === refundFailModal) refundFailModal.style.display = 'none';
+
+                const paymentFailModal = document.getElementById('paymentFailModal');
+                if (paymentFailModal && e.target === paymentFailModal) paymentFailModal.style.display = 'none';
+            });
+        </script>
+
+        <script>
+
+            function toggleLogoutPopup() {
+                var popups = document.querySelectorAll('.logout-popup');
+                popups.forEach(function (p) { p.classList.toggle('show'); });
+            }
+            document.addEventListener('click', function (e) {
+                const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
+                if (!isIcon) {
+                    document.querySelectorAll('.logout-popup').forEach(function (p) {
+                        if (!p.contains(e.target)) {
+                            p.classList.remove('show');
+                        }
+                    });
+                }
+            });
+            function openUserInfo() {
+                document.getElementById('userInfoOverlay').classList.add('show');
+            }
+            function closeUserInfo() {
+                document.getElementById('userInfoOverlay').classList.remove('show');
+            }
+            function showSaveSuccess() {
+                document.getElementById('saveSuccessOverlay').classList.add('show');
+            }
+            function closeSaveSuccess() {
+                document.getElementById('saveSuccessOverlay').classList.remove('show');
+                document.getElementById('userInfoOverlay').classList.remove('show');
+            }
+
+            function toggleChangePassword() {
+                const panel = document.getElementById('changePasswordPanel');
+                const footer = document.getElementById('userInfoFooter');
+                panel.classList.toggle('show');
+                if (panel.classList.contains('show')) {
+                    footer.style.display = 'none';
+                } else {
+                    footer.style.display = 'flex';
+                }
+            }
+
+            function showPwSuccess() {
+                document.getElementById('pwSuccessOverlay').classList.add('show');
+            }
+
+            function closePwSuccess() {
+                document.getElementById('pwSuccessOverlay').classList.remove('show');
+                toggleChangePassword(); // Quay láº¡i view chĂ­nh
+            }
+
+        </script>
+    </div>
+</body>
+
+</html>
