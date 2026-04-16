@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Khách sạn</title>
+    <!-- Thêm Font Awesome để lấy icon User và Logout -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="QL_DatPhong.css">
+</head>
+
+<body>
+
+    <div id="app-container">
+        <!-- 1. Thanh Top Bar -->
+        <div class="top-bar">
+            <div class="top-icons">
+                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
+            </div>
+        </div>
+
+        <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
+        <div class="hero-banner">
+            <nav class="nav-bar">
+                <a href="#" class="nav-item">Tổng quan</a>
+                <a href="#" class="nav-item">Đặt phòng</a>
+                <a href="#" class="nav-item active">Quản lý đặt phòng</a>
+                <a href="#" class="nav-item">Nhận phòng</a>
+                <a href="#" class="nav-item">Trả phòng</a>
+                <a href="#" class="nav-item">Dịch vụ phòng</a>
+            </nav>
+        </div>
+
+        <!-- 3. Vùng Nội Dung Chính -->
+        <main class="main-content">
+            <!-- 3 Boxes -->
+            <div class="summary-container">
+                <div class="summary-box box-cho-checkin">
+                    <div class="title">Chờ check-in</div>
+                    <div class="count count-peach" id="summary-cho-checkin-count">2</div>
+                </div>
+                <div class="summary-box box-da-checkin">
+                    <div class="title">Đã checkin</div>
+                    <div class="count count-green" id="summary-da-checkin-count">1</div>
+                </div>
+                <div class="summary-box box-da-huy">
+                    <div class="title">Đã hủy</div>
+                    <div class="count count-red" id="summary-da-huy-count">0</div>
+                </div>
+            </div>
+
+            <!-- Thanh Tìm Kiếm -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm phòng">
+                </div>
+            </div>
+
+            <!-- List Wrapper -->
+            <div class="list-wrapper">
+                <h2 class="section-title">Chờ check-in <span class="badge" id="badge-cho-checkin">2</span></h2>
+                <div class="card-grid" id="grid-cho-checkin">
+                    <!-- JS sẽ render HTML vào đây -->
+                </div>
+
+                <h2 class="section-title mt-4">Đã checkin <span class="badge badge-green" id="badge-da-checkin">1</span>
+                </h2>
+                <div class="card-grid mb-4" id="grid-da-checkin">
+                    <!-- JS sẽ render HTML vào đây -->
+                </div>
+
+                <h2 class="section-title mt-4" id="title-da-huy-section" style="display: none;">Đã hủy <span
+                        class="badge badge-red" id="badge-da-huy">0</span></h2>
+                <div class="card-grid mb-4" id="grid-da-huy">
+                    <!-- JS sẽ render HTML vào đây -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Hủy Phòng -->
+    <div class="modal-overlay" id="cancel-modal" style="display: none;">
+        <div class="modal">
+            <h3 class="modal-header-red">Xác nhận Hủy phòng</h3>
+            <div class="modal-actions">
+                <button class="btn btn-red" id="btn-confirm-cancel">Xác nhận</button>
+                <button class="btn btn-grey" id="btn-close-cancel">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Success -->
+    <div class="modal-overlay" id="success-modal" style="display: none;">
+        <div class="modal modal-success">
+            <div class="icon-success">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3>Đã Hủy đặt phòng!</h3>
+            <button class="btn btn-red" id="btn-done-success">Xong</button>
+        </div>
+    </div>
+
+    <!-- Modal Chi tiết đặt phòng -->
+    <div class="modal-overlay" id="details-modal" style="display: none;">
+        <div class="modal details-modal">
+            <div class="details-modal-header">
+                <h3>Chi tiết đặt phòng</h3>
+                <i class="fa-solid fa-xmark" id="btn-close-details"></i>
+            </div>
+            
+            <div class="details-grid" style="margin-bottom: 10px;">
+                <div class="detail-inline">
+                    <span class="label">Mã đặt phòng:</span>
+                    <span class="value" id="detail-code">DP001</span>
+                </div>
+                <div class="detail-inline" style="justify-content: flex-end;">
+                    <span class="label">Ngày đặt:</span>
+                    <span class="value" id="detail-booking-date">20/01/2026</span>
+                </div>
+            </div>
+
+            <div class="details-grid">
+                <div class="details-col">
+                    <div class="detail-item">
+                        <div class="label">Họ và tên</div>
+                        <div class="value" id="detail-name">Nguyễn Văn An</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Số điện thoại</div>
+                        <div class="value" id="detail-phone">0788624523</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Email</div>
+                        <div class="value" id="detail-email">nynguyen05@gmail.com</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Số lượng người</div>
+                        <div class="value" id="detail-guests">2 người lớn - 0 trẻ em</div>
+                    </div>
+                </div>
+                
+                <div class="details-col">
+                    <div class="detail-item">
+                        <div class="label">Ngày nhận phòng</div>
+                        <div class="value" id="detail-checkin">14h - 20/01/2026</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Ngày trả phòng</div>
+                        <div class="value" id="detail-checkout">12h - 23/01/2026</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="label">Ghi chú</div>
+                <div class="note-box" id="detail-note">
+                    Tôi muốn 2 bộ dụng cụ ăn uống vì tôi không muốn ra ngoài...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Popup xác nhận đăng xuất -->
+    <div class="logout-popup" id="logoutPopup">
+        <p>Bạn muốn đăng xuất?</p>
+        <div class="logout-popup-actions">
+            <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+        </div>
+    </div>
+
+    <!-- Overlay Thông tin người dùng -->
+    <div class="user-info-overlay" id="userInfoOverlay">
+        <div class="user-info-card">
+            <h2>Thông tin người dùng</h2>
+            <div class="user-info-body">
+                <!-- Cột trái -->
+                <div class="user-left">
+                    <h3>Thông tin cá nhân</h3>
+                    <div class="user-avatar-row">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                        <div>
+                            <div class="user-avatar-name">Vương Văn Quyền</div>
+                            <div class="user-avatar-email">vvquyen@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                            class="user-field-value">Vương Văn Quyền</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                            class="user-field-value">25/07/2005</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                            class="user-field-value">Nam</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                            class="user-field-value">09123467898</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                            class="user-field-value">Lễ tân</span></div>
+                </div>
+                <!-- Cột phải -->
+                <div class="user-right">
+                    <h3>Cài đặt tài khoản</h3>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Tên người dùng</span>
+                        <span class="account-field-value">vvquyen_2507</span>
+                    </div>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Mật khẩu</span>
+                        <span class="account-field-value">••••••••••••</span>
+                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
+                                class="fa-solid fa-pen"></i></button>
+                    </div>
+
+                    <div class="change-password-panel" id="changePasswordPanel">
+                        <h4>Đổi mật khẩu</h4>
+                        <div class="pw-row">
+                            <span class="pw-label">Mật khẩu hiện tại:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-row">
+                            <span class="pw-label">Mật khẩu mới:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-row">
+                            <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-actions">
+                            <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                            <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="user-info-footer" id="userInfoFooter">
+                <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
+                <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Lưu thành công -->
+    <div class="save-success-overlay" id="saveSuccessOverlay">
+        <div class="save-success-card">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>Thông tin đã được lưu</p>
+            <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+        </div>
+    </div>
+
+    <!-- Popup Đổi mật khẩu thành công -->
+    <div class="pw-success-overlay" id="pwSuccessOverlay">
+        <div class="pw-success-card">
+            <i class="fa-regular fa-circle-check"></i>
+            <p>Đổi mật khẩu thành công</p>
+            <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        // Data logic
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const formatDate = (date) => {
+            return date.toISOString().split('T')[0];
+        };
+
+        let bookingsChoCheckin = [];
+        let bookingsDaCheckin = [];
+        let cancelTargetId = null;
+        let bookingsDaHuy = [];
+
+        function loadFromShared() {
+            if(!window.sharedData) return;
+            const rooms = window.sharedData.getSharedRooms();
+            bookingsChoCheckin = [];
+            bookingsDaCheckin = [];
+            
+            rooms.forEach((r) => {
+                if(r.status === 'Đã đặt' || r.status === 'Đang sử dụng') {
+                    const b = {
+                        id: r.id, 
+                        guestName: r.customer || "Khách hàng",
+                        roomName: "Phòng " + r.name,
+                        phone: "0123456789",
+                        email: "khachhang@gmail.com",
+                        checkIn: r.date || formatDate(yesterday),
+                        checkOut: r.date2 || formatDate(tomorrow),
+                        guests: "2 người - 1 đêm",
+                        bookingDate: formatDate(yesterday),
+                        price: (r.basePrice || 1500000).toLocaleString('vi-VN') + ' ₫',
+                        code: "DP" + r.id,
+                        checkInTime: "14h - " + (r.date || formatDate(yesterday)),
+                        checkOutTime: "12h - " + (r.date2 || formatDate(tomorrow)),
+                        guestsDetail: "2 người lớn",
+                        note: "Dữ liệu được đồng bộ từ Quản lý phòng."
+                    };
+                    if(r.status === 'Đã đặt') bookingsChoCheckin.push(b);
+                    else bookingsDaCheckin.push(b);
+                }
+            });
+        }
+
+        function checkCancelEnabled(checkInDateStr) {
+            const checkInDate = new Date(`${checkInDateStr}T16:00:00`);
+            const now = new Date();
+            return now >= checkInDate;
+        }
+
+        function renderUI() {
+            // Update Badges & Counts
+            document.getElementById("summary-cho-checkin-count").innerText = bookingsChoCheckin.length;
+            document.getElementById("summary-da-checkin-count").innerText = bookingsDaCheckin.length;
+            document.getElementById("summary-da-huy-count").innerText = bookingsDaHuy.length;
+
+            document.getElementById("badge-cho-checkin").innerText = bookingsChoCheckin.length;
+            document.getElementById("badge-da-checkin").innerText = bookingsDaCheckin.length;
+
+            // Render Chờ check-in
+            const gridChoCheckin = document.getElementById("grid-cho-checkin");
+            gridChoCheckin.innerHTML = "";
+            bookingsChoCheckin.forEach(booking => {
+                const canCancel = checkCancelEnabled(booking.checkIn);
+
+                gridChoCheckin.innerHTML += `
+                    <div class="booking-card" onclick="openDetailsModal(${booking.id})">
+                        <div class="card-header">
+                            <div class="guest-name">${booking.guestName}</div>
+                            <div class="status-badge">Chờ check-in</div>
+                        </div>
+                        <div class="room-name">${booking.roomName}</div>
+                        
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> ${booking.guests}</div>
+                        
+                        <div class="card-divider"></div>
+                        
+                        <div class="card-footer">
+                            <div class="booking-date">
+                                <div>Ngày đặt: ${booking.bookingDate}</div>
+                            </div>
+                            <div class="price-section">
+                                <div class="price">${booking.price}</div>
+                                <button class="btn-cancel" ${!canCancel ? 'disabled' : ''} onclick="openCancelModal(event, ${booking.id})">
+                                    <i class="fa-regular fa-circle-xmark"></i> Hủy phòng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Đã check-in
+            const gridDaCheckin = document.getElementById("grid-da-checkin");
+            gridDaCheckin.innerHTML = "";
+            bookingsDaCheckin.forEach(booking => {
+                gridDaCheckin.innerHTML += `
+                    <div class="booking-card" onclick="openDetailsModal(${booking.id})">
+                        <div class="card-header">
+                            <div class="guest-name">${booking.guestName}</div>
+                            <div class="status-badge status-badge-green">Đã check in</div>
+                        </div>
+                        <div class="room-name">${booking.roomName}</div>
+                        
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> ${booking.guests}</div>
+                        
+                        <div class="card-divider"></div>
+                        
+                        <div class="card-footer">
+                            <div class="booking-date">
+                                <div>Ngày đặt: ${booking.bookingDate}</div>
+                            </div>
+                            <div class="price-section">
+                                <div class="price">${booking.price}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Render Đã hủy
+            const gridDaHuy = document.getElementById("grid-da-huy");
+            const titleDaHuy = document.getElementById("title-da-huy-section");
+            if (bookingsDaHuy.length > 0) {
+                titleDaHuy.style.display = "flex";
+                document.getElementById("badge-da-huy").innerText = bookingsDaHuy.length;
+
+                gridDaHuy.innerHTML = "";
+                bookingsDaHuy.forEach(booking => {
+                    gridDaHuy.innerHTML += `
+                        <div class="booking-card" onclick="openDetailsModal(${booking.id})">
+                            <div class="card-header">
+                                <div class="guest-name">${booking.guestName}</div>
+                                <div class="status-badge status-badge-red">Đã hủy</div>
+                            </div>
+                            <div class="room-name">${booking.roomName}</div>
+                            
+                            <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
+                            <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
+                            <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
+                            <div class="info-row"><i class="fa-solid fa-user"></i> ${booking.guests}</div>
+                            
+                            <div class="card-divider"></div>
+                            
+                            <div class="card-footer">
+                                <div class="booking-date">
+                                    <div>Ngày đặt: ${booking.bookingDate}</div>
+                                </div>
+                                <div class="price-section">
+                                    <div class="price">${booking.price}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                titleDaHuy.style.display = "none";
+                gridDaHuy.innerHTML = "";
+            }
+        }
+
+        function getBookingById(id) {
+            return bookingsChoCheckin.find(b => b.id === id) || 
+                   bookingsDaCheckin.find(b => b.id === id) ||
+                   bookingsDaHuy.find(b => b.id === id);
+        }
+
+        function openDetailsModal(id) {
+            const booking = getBookingById(id);
+            if (!booking) return;
+
+            document.getElementById("detail-code").innerText = booking.code || ("DP00" + booking.id);
+            document.getElementById("detail-booking-date").innerText = booking.bookingDate;
+            document.getElementById("detail-name").innerText = booking.guestName;
+            document.getElementById("detail-phone").innerText = booking.phone;
+            document.getElementById("detail-email").innerText = booking.email;
+            document.getElementById("detail-guests").innerText = booking.guestsDetail || booking.guests;
+            
+            document.getElementById("detail-checkin").innerText = booking.checkInTime || ("14h - " + booking.checkIn);
+            document.getElementById("detail-checkout").innerText = booking.checkOutTime || ("12h - " + booking.checkOut);
+            
+            document.getElementById("detail-note").innerText = booking.note || "Không có ghi chú.";
+
+            document.getElementById("details-modal").style.display = "flex";
+        }
+
+        document.getElementById("btn-close-details").addEventListener("click", () => {
+            document.getElementById("details-modal").style.display = "none";
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target.classList.contains("modal-overlay")) {
+                e.target.style.display = "none";
+                if (e.target.id === "cancel-modal") cancelTargetId = null;
+            }
+        });
+
+        function openCancelModal(event, id) {
+            event.stopPropagation();
+            cancelTargetId = id;
+            document.getElementById("cancel-modal").style.display = "flex";
+        }
+
+        document.getElementById("btn-close-cancel").addEventListener("click", () => {
+            document.getElementById("cancel-modal").style.display = "none";
+            cancelTargetId = null;
+        });
+
+        document.getElementById("btn-confirm-cancel").addEventListener("click", () => {
+            if (cancelTargetId !== null) {
+                const targetBooking = bookingsChoCheckin.find(b => b.id === cancelTargetId);
+                if (targetBooking) {
+                    bookingsDaHuy.push(targetBooking);
+                    if(window.sharedData) {
+                        const rooms = window.sharedData.getSharedRooms();
+                        const r = rooms.find(x => x.id === cancelTargetId);
+                        if(r) {
+                            r.status = 'Trống';
+                            r.customer = '';
+                            r.date = '';
+                            r.date2 = '';
+                            window.sharedData.saveSharedRooms(rooms);
+                        }
+                    }
+                    bookingsChoCheckin = bookingsChoCheckin.filter(b => b.id !== cancelTargetId);
+                }
+                cancelTargetId = null;
+
+                // Hide modal 1, show modal 2
+                document.getElementById("cancel-modal").style.display = "none";
+                document.getElementById("success-modal").style.display = "flex";
+
+                // Cập nhật giao diện
+                renderUI();
+            }
+        });
+
+        document.getElementById("btn-done-success").addEventListener("click", () => {
+            document.getElementById("success-modal").style.display = "none";
+        });
+
+        // Event for storage sync across tabs
+        window.addEventListener('storageChanged', () => {
+            loadFromShared();
+            renderUI();
+        });
+
+        // Init
+        loadFromShared();
+        renderUI();
+    </script>
+
+    <script>
+
+        function toggleLogoutPopup() {
+            document.getElementById('logoutPopup').classList.toggle('show');
+        }
+        document.addEventListener('click', function (e) {
+            const popup = document.getElementById('logoutPopup');
+            const icon = document.querySelector('.fa-arrow-right-from-bracket');
+            if (!popup.contains(e.target) && e.target !== icon) {
+                popup.classList.remove('show');
+            }
+        });
+        function openUserInfo() {
+            document.getElementById('userInfoOverlay').classList.add('show');
+        }
+        function closeUserInfo() {
+            document.getElementById('userInfoOverlay').classList.remove('show');
+        }
+        function showSaveSuccess() {
+            document.getElementById('saveSuccessOverlay').classList.add('show');
+        }
+        function closeSaveSuccess() {
+            document.getElementById('saveSuccessOverlay').classList.remove('show');
+            document.getElementById('userInfoOverlay').classList.remove('show');
+        }
+
+        function toggleChangePassword() {
+            const panel = document.getElementById('changePasswordPanel');
+            const footer = document.getElementById('userInfoFooter');
+            panel.classList.toggle('show');
+            if (panel.classList.contains('show')) {
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+            }
+        }
+
+        function showPwSuccess() {
+            document.getElementById('pwSuccessOverlay').classList.add('show');
+        }
+
+        function closePwSuccess() {
+            document.getElementById('pwSuccessOverlay').classList.remove('show');
+            toggleChangePassword(); // Quay lại view chính
+        }
+
+    </script>
+</body>
+
+</html>
