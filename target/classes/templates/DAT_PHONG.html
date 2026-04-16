@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+
+<head>
+    <title>Đặt phòng</title>
+</head>
+
+<body>
+    <main layout:fragment="content">
+        <!-- Original content of DAT_PHONG.html inside the main-content area -->
+        <div class="search-container">
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Tìm kiếm phòng...">
+            </div>
+            <button class="btn-cancel">HỦY</button>
+        </div>
+
+        <section class="cards-section">
+            <div class="card">
+                <img src="/Picture/Room1.png" alt="Phòng Deluxe" class="card-image">
+                <h3 class="card-title">Phòng Deluxe - View biển</h3>
+                <div class="info-row">
+                    <span class="info-label">Trạng thái:</span>
+                    <span class="status-badge">Còn trống</span>
+                </div>
+                <!-- ... other card content ... -->
+                <div class="footer-row">
+                    <div class="price-section">
+                        <span class="price-label">Giá niêm yết:</span>
+                        <div class="price-value-container">
+                            <span class="price-value">1.200.000 VNĐ</span>
+                        </div>
+                    </div>
+                    <button class="btn-book">Đặt ngay</button>
+                </div>
+            </div>
+            <!-- More cards... -->
+        </section>
+    </main>
+</body>
+</html>

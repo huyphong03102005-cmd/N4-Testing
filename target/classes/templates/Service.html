@@ -1,0 +1,2475 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Khách sạn</title>
+    <!-- Thêm Font Awesome để lấy icon User và Logout -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
+    <style>
+        /* CSS Reset cơ bản */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Lora', serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Khung màn hình --- */
+        #app-container {
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* --- Thanh Top Bar --- */
+        .top-bar {
+            height: 60px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -18px;
+            background-image: url('./Picture/Logo_bar.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .top-icons i {
+            font-size: 28px;
+            color: #111;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .top-icons i:hover {
+            color: #555;
+        }
+
+        /* --- Phần Banner --- */
+        .hero-banner {
+            background-image: url('./Picture/Background.png');
+            background-size: cover;
+            background-position: center;
+            height: 140px;
+            flex-shrink: 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            padding-top: 15px;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        /* --- Thanh Điều Hướng --- */
+        .nav-bar {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            width: 95%;
+            max-width: 1368px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            height: 45px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #222;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item:last-child {
+            border-right: none;
+        }
+
+        .nav-item:hover {
+            background-color: #d6cc9c;
+        }
+
+        .nav-item.active {
+            background-color: #c0ab7b;
+            color: #111;
+        }
+
+        /* --- Phần Nội Dung Chính --- */
+        .main-content {
+            flex: 1;
+            background-color: #f7ebdf;
+            padding: 20px 40px;
+            overflow: hidden;
+            /* Prevent body scroll, handle inside layout */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* ================= NEW LAYOUT STYLES ================= */
+        .layout-grid {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* 1/3 Cột Trái */
+        .col-1-3 {
+            width: 33.33%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #dcd1c6;
+            padding-right: 20px;
+            height: 100%;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #e2d2c1;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+
+        .tab-btn.active {
+            background: #d3c4a1;
+            color: #333;
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            flex: 1;
+            padding-bottom: 20px;
+            padding-right: 15px;
+            /* Tách thanh scroll ra khỏi mép danh mục */
+        }
+
+        .item-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: 0.2s;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .item-card:hover {
+            border-color: #c0ab7b;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-icon {
+            width: 40px;
+            height: 40px;
+            background: #fdf2d0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #222;
+        }
+
+        .item-price {
+            color: #777;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* 2/3 Cột Phải */
+        .col-2-3 {
+            width: 66.67%;
+            display: flex;
+            flex-direction: column;
+            padding-left: 10px;
+            height: 100%;
+        }
+
+        /* ----- THÀNH PHẦN SEARCH MAP ----- */
+        .search-room-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-room-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .search-room-wrapper input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            outline: none;
+            font-size: 14px;
+            background: #fff;
+            transition: 0.2s;
+        }
+
+        .search-room-wrapper input:focus {
+            border-color: #c0ab7b;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ----- SƠ ĐỒ PHÒNG ----- */
+        .map-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 20px;
+            padding-right: 15px;
+            /* Thêm padding-right tránh dính sát scrollbar */
+        }
+
+        .map-section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+
+        .floor-group {
+            margin-bottom: 40px;
+        }
+
+        .floor-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 20px;
+        }
+
+        .floor-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .map-room-card {
+            border-radius: 12px;
+            padding: 25px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 140px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .map-room-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            opacity: 0.8;
+        }
+
+        #coRightPanel button,
+        #invoicePopup button,
+        #printSuccessPopup button {
+            transition: opacity 0.2s, background 0.2s;
+        }
+
+        #coRightPanel button:hover,
+        #invoicePopup button:hover,
+        #printSuccessPopup button:hover {
+            opacity: 0.8;
+        }
+
+        .map-room-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #111;
+            margin-bottom: 12px;
+        }
+
+        .map-room-status {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .map-room-customer {
+            font-size: 14px;
+            color: #111;
+            margin-bottom: 6px;
+        }
+
+        .map-room-date {
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        /* Status Colors exactly from image */
+        .bg-trong {
+            background-color: #9eccab;
+        }
+
+        .bg-sudung {
+            background-color: #f79e9a;
+        }
+
+        .bg-dadat {
+            background-color: #fbd69a;
+        }
+
+        .bg-baotri {
+            background-color: #9bc5f5;
+        }
+
+
+        /* ----- CHI TIẾT PHÒNG THÀNH TỪNG THẺ RIÊNG ----- */
+        .detail-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+            padding-right: 15px;
+            overflow-y: auto;
+        }
+
+        .btn-back-wrapper {
+            margin-bottom: 15px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #d35400;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 0;
+        }
+
+        .btn-back:hover {
+            text-decoration: underline;
+        }
+
+        /* Thẻ hiển thị thông tin phòng */
+        .room-info-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+        }
+
+        .room-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #222;
+        }
+
+        .room-status {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 4px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #111;
+        }
+
+        .room-time {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .room-time span {
+            color: #555;
+            font-weight: 500;
+        }
+
+        .room-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 600;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #333;
+        }
+
+        .section-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #666;
+            margin: 20px 0 10px 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Các thẻ vật phẩm đã chọn */
+        .selected-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .selected-item-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: bold;
+            font-size: 22px;
+            color: #222;
+            flex: 1;
+            /* Cân bằng layout giúp khối Control và Giá luôn thẳng hàng bên phải */
+        }
+
+        .selected-item-left i {
+            color: #bbb;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .selected-item-left i:hover {
+            color: #e74c3c;
+        }
+
+        /* Phần cho Dịch vụ */
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 120px;
+            justify-content: center;
+            margin-right: 20px;
+            /* Đẩy ra một chút so với khung Giá */
+        }
+
+        .qty-btn {
+            cursor: pointer;
+            font-size: 20px;
+            color: #555;
+            user-select: none;
+            border: none;
+            background: transparent;
+        }
+
+        .qty-value {
+            font-weight: 500;
+            font-size: 16px;
+            width: 25px;
+            text-align: center;
+        }
+
+        .selected-item-price {
+            font-weight: bold;
+            width: 100px;
+            text-align: right;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 4px;
+            font-size: 15px;
+        }
+
+        /* Phần cho Bồi thường */
+        .compensation-fields {
+            padding-top: 20px;
+            margin-top: 10px;
+            border-top: 1px dashed #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .comp-row {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            gap: 15px;
+        }
+
+        .comp-label {
+            width: 150px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .comp-input {
+            border: none;
+            border-bottom: 1px solid #ccc;
+            padding: 5px;
+            outline: none;
+            width: 200px;
+            background: #fafafa;
+            font-size: 15px;
+            color: #333;
+            transition: border-bottom-color 0.2s, background 0.2s;
+        }
+
+        .comp-input:focus {
+            border-bottom-color: #c0ab7b;
+            background: #fffcf5;
+        }
+
+        .comp-input-long {
+            width: 400px;
+        }
+
+        .damage-level {
+            background: #fdf2d0;
+            color: #d4a72c;
+            padding: 4px 20px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Detail Actions Hủy/Lưu ở cuối trang chi tiết */
+        .detail-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #dcd1c6;
+        }
+
+        .f-btn {
+            padding: 12px 35px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: 0.2s;
+        }
+
+        .f-btn-cancel {
+            background: #dcd1c6;
+            color: #222;
+        }
+
+        .f-btn-cancel:hover {
+            background: #cfc2b4;
+        }
+
+        .f-btn-save {
+            background: #d1b88a;
+            color: #222;
+        }
+
+        .f-btn-save:hover {
+            background: #c0ab7b;
+        }
+
+        /* Popups */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup-icon {
+            font-size: 60px;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+
+        .popup-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #222;
+        }
+
+        .popup-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .popup-btn:hover {
+            background: #c0392b;
+        }
+
+        /* --- Popup xác nhận đăng xuất --- */
+        .logout-popup {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 35px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            min-width: 230px;
+            animation: popFadeIn 0.2s ease-out;
+        }
+
+        .logout-popup.show {
+            display: block;
+        }
+
+        @keyframes popFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-popup p {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logout-popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-logout-cancel {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #888;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-confirm {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #4a7c59;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-cancel:hover {
+            filter: brightness(0.9);
+        }
+
+        .btn-logout-confirm:hover {
+            filter: brightness(0.9);
+        }
+
+        /* --- Trang Thông tin Người dùng (overlay) --- */
+        .user-info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info-overlay.show {
+            display: flex;
+        }
+
+        .user-info-card {
+            background: #fff;
+            border-radius: 14px;
+            width: 860px;
+            max-width: 95vw;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            padding: 36px 40px 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .user-info-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .user-info-body {
+            display: flex;
+            gap: 48px;
+            flex: 1;
+        }
+
+        /* Cột trái */
+        .user-left {
+            flex: 1.4;
+        }
+
+        .user-left h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .user-avatar-row img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .user-avatar-email {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .user-field-row {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .user-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-field-label {
+            width: 130px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .user-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        /* Cột phải */
+        .user-right {
+            flex: 1;
+            border-left: 1px solid #e5e5e5;
+            padding-left: 40px;
+        }
+
+        .user-right h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .account-field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .account-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-field-label {
+            width: 110px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .account-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .btn-edit-pw {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        /* Footer buttons */
+        .user-info-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-user-cancel {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-save {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: none;
+            background: #c9b98a;
+            color: #222;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-cancel:hover {
+            filter: brightness(0.93);
+        }
+
+        .btn-user-save:hover {
+            filter: brightness(0.93);
+        }
+
+        /* --- Popup Lưu thành công --- */
+        .save-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-success-overlay.show {
+            display: flex;
+        }
+
+        .save-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+        }
+
+        /* --- Panel Đổi mật khẩu --- */
+        .change-password-panel {
+            display: none;
+            background-color: #f9ece2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .change-password-panel.show {
+            display: block;
+        }
+
+        .change-password-panel h4 {
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .pw-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .pw-label {
+            flex: 1;
+            font-size: 12px;
+            color: #d28c5a;
+            font-weight: bold;
+            font-style: italic;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .pw-input {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .pw-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-pw-cancel {
+            background-color: #999;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm {
+            background-color: #619a71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm:hover {
+            filter: brightness(0.95);
+        }
+
+        /* --- Popup Đổi mật khẩu thành công --- */
+        .pw-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pw-success-overlay.show {
+            display: flex;
+        }
+
+        .pw-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 320px;
+        }
+
+        .pw-success-card i {
+            font-size: 55px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .pw-success-card p {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .btn-pw-done {
+            padding: 10px 45px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-success-card i {
+            font-size: 48px;
+            color: #4a7c59;
+            margin-bottom: 18px;
+        }
+
+        .save-success-card p {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .btn-save-done {
+            padding: 10px 36px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-save-done:hover {
+            filter: brightness(0.92);
+        }
+
+        /* --- Popup xác nhận đăng xuất --- */
+        .logout-popup {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 35px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            min-width: 230px;
+            animation: popFadeIn 0.2s ease-out;
+        }
+
+        .logout-popup.show {
+            display: block;
+        }
+
+        @keyframes popFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-popup p {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logout-popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-logout-cancel {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #888;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-confirm {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #4a7c59;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* --- Trang Thông tin Người dùng (overlay) --- */
+        .user-info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info-overlay.show {
+            display: flex;
+        }
+
+        .user-info-card {
+            background: #fff;
+            border-radius: 14px;
+            width: 860px;
+            max-width: 95vw;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            padding: 36px 40px 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .user-info-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .user-info-body {
+            display: flex;
+            gap: 48px;
+            flex: 1;
+        }
+
+        .user-left {
+            flex: 1.4;
+        }
+
+        .user-left h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .user-avatar-row img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .user-avatar-email {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .user-field-row {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .user-field-label {
+            width: 130px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .user-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .user-right {
+            flex: 1;
+            border-left: 1px solid #e5e5e5;
+            padding-left: 40px;
+        }
+
+        .user-right h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .account-field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .account-field-label {
+            width: 110px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .account-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .btn-edit-pw {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        .user-info-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-user-cancel {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-save {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: none;
+            background: #c9b98a;
+            color: #222;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app-container">
+        <!-- 1. Thanh Top Bar -->
+        <header class="top-bar">
+            <div class="top-icons">
+                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
+            </div>
+        </header>
+
+        <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
+        <div class="hero-banner">
+            <nav class="nav-bar">
+                <a href="tongquan.html" class="nav-item">Tổng quan</a>
+                <a href="DAT_PHONG.html" class="nav-item">Đặt phòng</a>
+                <a href="QL_DatPhong.html" class="nav-item">Quản lý đặt phòng</a>
+                <a href="nhan_phong.html" class="nav-item">Nhận phòng</a>
+                <a href="#" class="nav-item" id="navCheckout" onclick="switchMainTab('checkout')">Trả phòng</a>
+                <a href="Service.html" class="nav-item active" id="navService" onclick="switchMainTab('service')">Dịch vụ phòng</a>
+            </nav>
+        </div>
+
+        <!-- 3. Vùng Nội Dung Chính -->
+        <main class="main-content">
+            <!-- VIEW: DỊCH VỤ -->
+            <div class="layout-grid" id="serviceView">
+                <!-- CỘT 1/3: Dịch vụ & Bồi thường -->
+                <div class="col-1-3">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" id="btnService" onclick="switchTab('service')">Dịch vụ</button>
+                        <button class="tab-btn" id="btnCompensation" onclick="switchTab('compensation')">Bồi
+                            thường</button>
+                    </div>
+                    <div class="item-list" id="itemList">
+                        <!-- Danh sách hiển thị qua JS -->
+                    </div>
+                </div>
+
+                <!-- CỘT 2/3: Sơ Đồ / Chi Tiết -->
+                <div class="col-2-3">
+                    <!-- State 1: Bản Đồ (Map) -->
+                    <div id="roomMapSection" class="map-section">
+                        <!-- Search bar tìm phòng nằm phía trên chữ "Sơ đồ phòng" -->
+                        <div class="search-room-wrapper" style="max-width: 400px; margin-bottom: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="roomSearchInput" placeholder="Tìm kiếm phòng..."
+                                onkeyup="searchMapRoom()">
+                        </div>
+                        <div class="map-section-title">Sơ đồ phòng</div>
+                        <div id="mapContainer">
+                            <!-- Các tầng hiển thị qua JS -->
+                        </div>
+                    </div>
+
+                    <!-- State 2: Chi tiết Phòng & Lựa Chọn (Detail Cards) -->
+                    <div id="roomDetailSection" class="detail-section" style="display: none;">
+                        <div class="btn-back-wrapper">
+                            <button class="btn-back" onclick="selectRoom(null)">
+                                <i class="fa-solid fa-arrow-left"></i> Quay lại Sơ đồ
+                            </button>
+                        </div>
+                        <div id="roomDetailContent">
+                            <!-- Thông tin phòng (room-info-card) và bill (selected-item) hiển thị qua JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TRẢ PHÒNG (SPA CHECKOUT) -->
+            <div class="layout-grid" id="checkoutView" style="display: none;">
+                <!-- Trả Phòng - Bản đồ Đang Sử Dụng -->
+                <div id="coMapSection" class="map-section" style="width: 100%; border-right: none; padding-right: 0;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-shrink: 0; max-width: 100%;">
+                        <div class="map-section-title" style="margin-bottom: 0;">Sơ đồ phòng (Đang sử dụng)</div>
+                        <div class="search-room-wrapper" style="max-width: 400px;">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="coSearchInput" placeholder="Tìm kiếm phòng..."
+                                onkeyup="searchCheckoutMap()">
+                        </div>
+                    </div>
+                    <div id="coMapContainer" style="display: flex; flex-direction: column;"></div>
+                </div>
+
+                <!-- Trả Phòng - Chi tiết thanh toán & In hóa đơn -->
+                <div id="coDetailSection" class="detail-section" style="display: none; width: 100%;">
+                    <div class="btn-back-wrapper">
+                        <button class="btn-back" onclick="selectCheckoutRoom(null)">
+                            <i class="fa-solid fa-arrow-left"></i> Quay lại Sơ đồ
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 30px; flex: 1;">
+                        <div style="flex: 1.2; display: flex; flex-direction: column; overflow-y: auto; padding-right: 25px;"
+                            id="coLeftPanel"></div>
+                        <div style="flex: 0.8; max-width: 500px; display: flex; flex-direction: column;"
+                            id="coRightPanel"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Thông báo Lưu thành công -->
+    <div class="overlay" id="successPopup">
+        <div class="popup">
+            <div class="popup-icon"><i class="fa-regular fa-circle-check"></i></div>
+            <div class="popup-title">Lưu thông tin thành công!</div>
+            <button class="popup-btn" onclick="closePopup()">Xong</button>
+        </div>
+    </div>
+
+    <!-- Popup: Hoá Đơn Thanh Toán (Checkout) -->
+    <div class="overlay" id="invoicePopup">
+        <div
+            style="background: #fffdf5; padding: 40px; border-radius: 12px; width: 620px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+            <div style="text-align: center; margin-bottom: 25px;">
+                <img src="./Picture/bill_logo_logo.png" alt="Logo" style="width: 70px; height: 70px; object-fit: contain;">
+                <h2 style="color: #d35400; font-size: 26px; font-weight: bold; margin-top: 8px;">CamFusion House</h2>
+            </div>
+
+            <h3
+                style="color: #d35400; border-bottom: 2px solid #eaddcf; padding-bottom: 5px; margin-bottom: 15px; font-size: 20px;">
+                Thông tin khách hàng</h3>
+            <table
+                style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 16px; text-align: left; table-layout: fixed;">
+                <colgroup>
+                    <col style="width: 50%;">
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th style="padding-bottom:5px; width: 50%; color: #111;">Tên khách</th>
+                        <th style="padding-bottom:5px; text-align:center; width: 25%; color: #111;">Check-in</th>
+                        <th style="padding-bottom:5px; text-align:right; width: 25%; color: #111;">Check-out</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="invCust"
+                            style="color:#333; font-weight: normal; padding-top: 5px; word-wrap: break-word;"></td>
+                        <td id="invIn" style="text-align:center; color:#333; font-weight: normal; padding-top: 5px;">
+                        </td>
+                        <td id="invOut" style="text-align:right; color:#333; font-weight: normal; padding-top: 5px;">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3
+                style="color: #d35400; border-bottom: 2px solid #eaddcf; padding-bottom: 5px; margin-bottom: 15px; font-size: 20px;">
+                Dịch vụ phòng</h3>
+            <table
+                style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 16px; text-align: left; table-layout: fixed;">
+                <colgroup>
+                    <col style="width: 50%;">
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th style="padding-bottom:10px; width: 50%; color: #111;">Tên dịch vụ</th>
+                        <th style="padding-bottom:10px; text-align:center; width: 25%; color: #111;">Số lượng</th>
+                        <th style="padding-bottom:10px; text-align:right; width: 25%; color: #111;">Giá</th>
+                    </tr>
+                </thead>
+                <tbody id="invItemsBody"></tbody>
+            </table>
+
+            <div style="border-top: 2px solid #eaddcf; margin-bottom: 15px;"></div>
+
+            <div
+                style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 18px; color:#333;">
+                <span>Tiền phòng</span> <span id="invRoom"></span>
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; font-size: 18px; color:#333;">
+                <span>Dịch vụ</span> <span id="invSrv"></span>
+            </div>
+            <div
+                style="display: flex; justify-content: space-between; font-weight: bold; font-size: 22px; color: #d35400; background: #ebdcc8; padding: 15px; border-radius: 6px;">
+                <span>Tổng tiền</span> <span id="invTotal"></span>
+            </div>
+
+            <div style="display: flex; justify-content: center; margin-top: 35px; gap: 20px;">
+                <button
+                    style="padding: 10px 18px; background:#dbd0c5; color:#111; border:none; border-radius:8px; font-weight:bold; font-size:15px; line-height:1.2; cursor:pointer; width: max-content; white-space: nowrap;"
+                    onclick="closeInvoice()">HUỶ</button>
+                <button
+                    style="padding: 10px 18px; background:#dbd0c5; color:#111; border:none; border-radius:8px; font-weight:bold; font-size:15px; line-height:1.2; cursor:pointer; width: max-content; white-space: nowrap;"
+                    onclick="exportInvoice()">XUẤT HOÁ ĐƠN ĐỎ</button>
+                <button
+                    style="padding: 10px 18px; background:#cfa46b; color:#111; border:none; border-radius:8px; font-weight:bold; font-size:15px; line-height:1.2; cursor:pointer; width: max-content; white-space: nowrap;"
+                    onclick="printInvoice()">IN HOÁ ĐƠN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup: In Thành Công -->
+    <div class="overlay" id="printSuccessPopup">
+        <div class="popup" style="width: 350px;">
+            <div class="popup-icon" style="font-size: 60px; color: #2ecc71; margin-bottom: 15px;"><i
+                    class="fa-regular fa-circle-check"></i></div>
+            <div class="popup-title" style="font-size: 20px; margin-bottom: 25px;">In hóa đơn thành công!</div>
+            <button class="popup-btn" style="background: #e74c3c; width: 120px;"
+                onclick="closePrintSuccess()">Xong</button>
+        </div>
+    </div>
+
+
+    <!-- Popup xác nhận đăng xuất -->
+    <div class="logout-popup" id="logoutPopup">
+        <p>Bạn muốn đăng xuất?</p>
+        <div class="logout-popup-actions">
+            <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+        </div>
+    </div>
+
+    <!-- Overlay Thông tin người dùng -->
+    <div class="user-info-overlay" id="userInfoOverlay">
+        <div class="user-info-card">
+            <h2>Thông tin người dùng</h2>
+            <div class="user-info-body">
+                <!-- Cột trái -->
+                <div class="user-left">
+                    <h3>Thông tin cá nhân</h3>
+                    <div class="user-avatar-row">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                        <div>
+                            <div class="user-avatar-name">Vương Văn Quyền</div>
+                            <div class="user-avatar-email">vvquyen@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                            class="user-field-value">Vương Văn Quyền</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                            class="user-field-value">25/07/2005</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                            class="user-field-value">Nam</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                            class="user-field-value">09123467898</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                            class="user-field-value">Lễ tân</span></div>
+                </div>
+                <!-- Cột phải -->
+                <div class="user-right">
+                    <h3>Cài đặt tài khoản</h3>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Tên người dùng</span>
+                        <span class="account-field-value">vvquyen_2507</span>
+                    </div>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Mật khẩu</span>
+                        <span class="account-field-value">••••••••••••</span>
+                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
+                                class="fa-solid fa-pen"></i></button>
+                    </div>
+
+                    <div class="change-password-panel" id="changePasswordPanel">
+                        <h4>Đổi mật khẩu</h4>
+                        <div class="pw-row">
+                            <span class="pw-label">Mật khẩu hiện tại:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-row">
+                            <span class="pw-label">Mật khẩu mới:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-row">
+                            <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-actions">
+                            <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                            <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="user-info-footer" id="userInfoFooter">
+                <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
+                <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Lưu thành công -->
+    <div class="save-success-overlay" id="saveSuccessOverlay">
+        <div class="save-success-card">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>Thông tin đã được lưu</p>
+            <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+        </div>
+    </div>
+
+    <!-- Popup Đổi mật khẩu thành công -->
+    <div class="pw-success-overlay" id="pwSuccessOverlay">
+        <div class="pw-success-card">
+            <i class="fa-regular fa-circle-check"></i>
+            <p>Đổi mật khẩu thành công</p>
+            <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        const formatMoney = (amount) => amount.toLocaleString('vi-VN');
+
+        const catalog = {
+            service: [
+                { id: 's1', name: 'Dịch vụ ăn uống', price: 150000, icon: 'fa-utensils', type: 'service' },
+                { id: 's2', name: 'Giặt ủi', price: 100000, icon: 'fa-shirt', type: 'service' },
+                { id: 's3', name: 'Dịch vụ dọn phòng', price: 100000, icon: 'fa-broom', type: 'service' },
+                { id: 's4', name: 'Dịch vụ hỗ trợ khách', price: 50000, icon: 'fa-bell-concierge', type: 'service' },
+                { id: 's5', name: 'Dịch vụ đặc biệt theo yêu cầu', price: 100000, icon: 'fa-gift', type: 'service' }
+            ],
+            compensation: [
+                { id: 'c1', name: 'Bàn', price: 300000, icon: 'fa-table', type: 'compensation' },
+                { id: 'c2', name: 'Ghế', price: 150000, icon: 'fa-chair', type: 'compensation' },
+                { id: 'c3', name: 'Tủ quần áo', price: 500000, icon: 'fa-door-closed', type: 'compensation' },
+                { id: 'c4', name: 'Tủ đầu giường', price: 200000, icon: 'fa-box-archive', type: 'compensation' },
+                { id: 'c5', name: 'Kệ', price: 100000, icon: 'fa-bars-staggered', type: 'compensation' },
+                { id: 'c6', name: 'Máy sấy', price: 150000, icon: 'fa-wind', type: 'compensation' },
+                { id: 'c7', name: 'Khăn tắm', price: 50000, icon: 'fa-scroll', type: 'compensation' },
+                { id: 'c8', name: 'Khác', price: 100000, icon: 'fa-plus', type: 'compensation' }
+            ]
+        };
+
+        let roomsData = window.sharedData ? window.sharedData.getSharedRooms() : [
+            { id: 'r101', name: '101', floor: 1, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r102', name: '102', floor: 1, status: 'Đang sử dụng', customer: 'Tôn Thất Huy Phong', date: '20 Th8 2025, 14:00', date2: '26 Th8 2025, 12:00', basePrice: 1600000, items: [] },
+            { id: 'r103', name: '103', floor: 1, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
+
+            { id: 'r201', name: '201', floor: 2, status: 'Đã đặt', customer: 'Nguyễn Thị Ny', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r202', name: '202', floor: 2, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r203', name: '203', floor: 2, status: 'Bảo trì', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
+
+            { id: 'r301', name: '301', floor: 3, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r302', name: '302', floor: 3, status: 'Đang sử dụng', customer: 'Trần Thanh Nhã', date: '23 Th5 2024, 14:00', date2: '25 Th5 2024, 12:00', basePrice: 1600000, items: [] },
+            { id: 'r303', name: '303', floor: 3, status: 'Đã đặt', customer: 'Vy Minh Quân', date: '', date2: '', basePrice: 1200000, items: [] },
+
+            { id: 'r401', name: '401', floor: 4, status: 'Đang sử dụng', customer: 'Thái Ngọc Kim Dung', date: '16 Th3 2026, 14:00', date2: '18 Th3 2026, 12:00', basePrice: 1600000, items: [] },
+            { id: 'r402', name: '402', floor: 4, status: 'Đã đặt', customer: 'Lê Nguyễn Nhật Anh', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r403', name: '403', floor: 4, status: 'Bảo trì', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
+
+            { id: 'r501', name: '501', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r502', name: '502', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
+            { id: 'r503', name: '503', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1200000, items: [] }
+        ];
+
+        let currentTab = 'service';
+        let selectedRoomId = null;
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('btnService').classList.toggle('active', tab === 'service');
+            document.getElementById('btnCompensation').classList.toggle('active', tab === 'compensation');
+            renderItemsList();
+        }
+
+        // Render Danh Mục Bên Trái (Cột 1/3)
+        function renderItemsList() {
+            const list = document.getElementById('itemList');
+            list.innerHTML = '';
+
+            catalog[currentTab].forEach(item => {
+                list.innerHTML += `
+                    <div class="item-card" onclick="addItemToSelected('${item.id}')">
+                        <div class="item-icon"><i class="fa-solid ${item.icon}"></i></div>
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-price">${formatMoney(item.price)} VNĐ</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Thêm Card "Thêm Mới Custom"
+            const typeName = currentTab === 'service' ? 'dịch vụ' : 'bồi thường';
+            list.innerHTML += `
+                <div class="item-card" onclick="addNewCustomItem()" style="border: 2px dashed #c0ab7b; background: transparent; box-shadow: none;">
+                    <div class="item-icon" style="background: transparent; border: 2px solid #c0ab7b; color: #888;"><i class="fa-solid fa-plus"></i></div>
+                    <div class="item-info">
+                        <div class="item-name" style="color: #555;">Thêm ${typeName} mới...</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function addNewCustomItem() {
+            const typeName = currentTab === 'service' ? 'dịch vụ' : 'bồi thường';
+            const name = prompt(`Nhập tên ${typeName} mới:`);
+            if (!name || name.trim() === '') return;
+
+            const priceStr = prompt("Nhập giá tiền (VNĐ):", "0");
+            if (priceStr === null) return;
+
+            const price = parseInt(priceStr.replace(/[^0-9]/g, ''), 10) || 0;
+            const newId = currentTab.charAt(0) + Date.now();
+
+            catalog[currentTab].push({
+                id: newId,
+                name: name.trim(),
+                price: price,
+                icon: currentTab === 'service' ? 'fa-bell-concierge' : 'fa-triangle-exclamation',
+                type: currentTab
+            });
+
+            renderItemsList();
+        }
+
+        function searchMapRoom() {
+            const query = document.getElementById('roomSearchInput').value.toLowerCase();
+            const floors = document.querySelectorAll('.floor-group');
+
+            floors.forEach(floor => {
+                const cards = floor.querySelectorAll('.map-room-card');
+                let hasVisibleCard = false;
+
+                cards.forEach(card => {
+                    const name = card.querySelector('.map-room-name').innerText.toLowerCase();
+                    if (name.includes(query)) {
+                        card.style.display = 'flex';
+                        hasVisibleCard = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                floor.style.display = hasVisibleCard ? 'block' : 'none';
+            });
+        }
+
+        // Render Sơ Đồ Phòng (Map)
+        function renderMap() {
+            const container = document.getElementById('mapContainer');
+            let html = '';
+
+            const floors = [1, 2, 3, 4, 5];
+            floors.forEach(floor => {
+                const floorRooms = roomsData.filter(r => r.floor === floor);
+                if (floorRooms.length > 0) {
+                    html += `
+                        <div class="floor-group">
+                            <div class="floor-title">Tầng ${floor}</div>
+                            <div class="floor-grid">
+                    `;
+
+                    floorRooms.forEach(room => {
+                        let bgClass = '';
+                        if (room.status === 'Trống') bgClass = 'bg-trong';
+                        if (room.status === 'Đang sử dụng') bgClass = 'bg-sudung';
+                        if (room.status === 'Đã đặt') bgClass = 'bg-dadat';
+                        if (room.status === 'Bảo trì') bgClass = 'bg-baotri';
+
+                        html += `
+                            <div class="map-room-card ${bgClass}" onclick="selectRoom('${room.id}')">
+                                <div class="map-room-name">${room.name}</div>
+                                <div class="map-room-status">${room.status}</div>
+                                ${room.customer ? `<div class="map-room-customer">${room.customer}</div>` : ''}
+                                ${room.date ? `<div class="map-room-date">→ ${room.date.split(',')[0]}</div>` : ''}
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+            document.getElementById('roomSearchInput').value = ''; // Xóa tìm kiếm rác
+        }
+
+        // Cập nhật giá bồi thường tùy chỉnh (Edit inline)
+        function updateCompPrice(roomId, itemIdx, newPriceStr) {
+            const room = roomsData.find(r => r.id === roomId);
+            if (room && room.items[itemIdx]) {
+                const newPrice = parseInt(newPriceStr.replace(/[^0-9]/g, ''), 10);
+                if (!isNaN(newPrice)) {
+                    room.items[itemIdx].price = Math.round(newPrice / Math.max(1, room.items[itemIdx].qty));
+                }
+                renderRoomDetail();
+            }
+        }
+
+        // Render Chi Tiết Bill cho 1 Phòng (Thẻ Tách Rời)
+        function renderRoomDetail() {
+            const container = document.getElementById('roomDetailContent');
+            const room = roomsData.find(r => r.id === selectedRoomId);
+            if (!room) return;
+
+            // Xử lý Thẻ Thông Tin Phòng Chính
+            let bgClass = '';
+            if (room.status === 'Trống') bgClass = 'bg-trong';
+            if (room.status === 'Đang sử dụng') bgClass = 'bg-sudung';
+            if (room.status === 'Đã đặt') bgClass = 'bg-dadat';
+            if (room.status === 'Bảo trì') bgClass = 'bg-baotri';
+
+            let dateHtml = '';
+            if (room.date && room.date2) {
+                dateHtml = `Dự kiến: 
+                    <span style="font-size:14px; margin-left: 10px;">${room.date} <i class="fa-regular fa-calendar" style="color:#777"></i></span> 
+                    <span style="margin: 0 10px;">đến</span> 
+                    <span style="font-size:14px;">${room.date2} <i class="fa-regular fa-calendar" style="color:#777"></i></span>`;
+            } else {
+                dateHtml = `Dự kiến: <span>Trống</span>`;
+            }
+
+            let html = `
+                <div class="room-info-card">
+                    <div class="room-title">
+                        <i class="fa-regular fa-clipboard" style="color:#999; font-size: 22px;"></i>
+                        <span>Phòng ${room.name}</span>
+                    </div>
+                    <div class="room-status">
+                        Trạng thái: <span class="status-badge ${bgClass}">${room.status}</span>
+                    </div>
+                    <div class="room-time">
+                        ${dateHtml}
+                    </div>
+                    <div class="room-total">
+                        <span>Tiền phòng:</span>
+                        <span style="border-bottom: 2px solid #ccc; padding-bottom: 3px; font-weight: 600; font-size: 16px;">${formatMoney(room.basePrice)}</span>
+                    </div>
+                </div>
+            `;
+
+            // Phân tách Dịch vụ và Bồi thường
+            let serviceHtml = '';
+            let compHtml = '';
+            let serviceTotal = 0;
+            let compTotal = 0;
+
+            room.items.forEach((item, index) => {
+                const totalItemPrice = item.price * item.qty;
+
+                if (item.type === 'service') {
+                    serviceTotal += totalItemPrice;
+                    serviceHtml += `
+                        <div class="selected-item">
+                            <div class="selected-item-left">
+                                <i class="fa-regular fa-trash-can" onclick="removeItem('${room.id}', ${index})"></i>
+                                <span>${item.name}</span>
+                            </div>
+                            <div class="qty-control">
+                                <span class="qty-btn" onclick="changeQty('${room.id}', ${index}, -1)">-</span>
+                                <span class="qty-value">${item.qty}</span>
+                                <span class="qty-btn" onclick="changeQty('${room.id}', ${index}, 1)">+</span>
+                            </div>
+                            <div class="selected-item-price">${formatMoney(totalItemPrice)}</div>
+                        </div>
+                    `;
+                } else { // Compensation
+                    compTotal += totalItemPrice;
+                    compHtml += `
+                        <div class="selected-item" style="flex-direction: column; align-items: stretch; gap: 10px;">
+                            <div style="display:flex; justify-content: space-between; align-items: center;">
+                                <div class="selected-item-left">
+                                    <i class="fa-regular fa-trash-can" onclick="removeItem('${room.id}', ${index})"></i>
+                                    <span>${item.name}</span>
+                                </div>
+                            </div>
+                            <div class="compensation-fields">
+                                <div class="comp-row">
+                                    <div class="comp-label">Mức độ thiệt hại:</div>
+                                    <div class="damage-level">Vừa</div>
+                                </div>
+                                <div class="comp-row">
+                                    <div class="comp-label">Chi phí bồi thường:</div>
+                                    <input type="text" class="comp-input" value="${formatMoney(totalItemPrice)}" onchange="updateCompPrice('${room.id}', ${index}, this.value)">
+                                </div>
+                                <div class="comp-row">
+                                    <div class="comp-label">Ghi chú tranh chấp:</div>
+                                    <input type="text" class="comp-input comp-input-long" placeholder="Nhập ghi chú chi tiết...">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            if (serviceHtml !== '') {
+                html += `<div class="section-label"><i class="fa-solid fa-bell-concierge" style="margin-right: 8px;"></i> Dịch vụ phát sinh (Cộng thêm: ${formatMoney(serviceTotal)} đ)</div>` + serviceHtml;
+            }
+            if (compHtml !== '') {
+                html += `<div class="section-label"><i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px; color:#e74c3c;"></i> Chi phí bồi thường (Cộng thêm: ${formatMoney(compTotal)} đ)</div>` + compHtml;
+            }
+
+            // Gắn nút HỦY và LƯU vào cuối trang chi tiết (cuộn ngang thấy)
+            html += `
+                <div class="detail-actions">
+                    <button class="f-btn f-btn-cancel" onclick="cancelAll()">HUỶ</button>
+                    <button class="f-btn f-btn-save" onclick="saveAll()">LƯU</button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // Selection Handlers
+        function selectRoom(id) {
+            // Ngăn chặn thao tác trên phòng trống
+            if (id) {
+                const room = roomsData.find(r => r.id === id);
+                if (room.status === 'Trống') {
+                    alert('Phòng đang trống! Không thể thêm dịch vụ hoặc bồi thường cho phòng trống.');
+                    return;
+                }
+            }
+
+            selectedRoomId = id;
+
+            if (!id) {
+                document.getElementById('roomMapSection').style.display = 'flex';
+                document.getElementById('roomDetailSection').style.display = 'none';
+                renderMap();
+            } else {
+                document.getElementById('roomMapSection').style.display = 'none';
+                document.getElementById('roomDetailSection').style.display = 'flex';
+                renderRoomDetail();
+            }
+        }
+
+        function addItemToSelected(itemId) {
+            if (!selectedRoomId) {
+                alert('Vui lòng vào chọn một phòng ở Sơ đồ (Bên phải) trước khi thêm Dịch vụ / Bồi thường!');
+                return;
+            }
+
+            const room = roomsData.find(r => r.id === selectedRoomId);
+            const itemDef = catalog[currentTab].find(i => i.id === itemId);
+
+            const existing = room.items.find(i => i.id === itemId);
+            if (existing) {
+                existing.qty++;
+            } else {
+                room.items.push({ ...itemDef, qty: 1 });
+            }
+
+            renderRoomDetail();
+        }
+
+        function changeQty(roomId, itemIdx, delta) {
+            const room = roomsData.find(r => r.id === roomId);
+            if (room.items[itemIdx].qty + delta <= 0) {
+                room.items.splice(itemIdx, 1);
+            } else {
+                room.items[itemIdx].qty += delta;
+            }
+            renderRoomDetail();
+        }
+
+        function removeItem(roomId, itemIdx) {
+            const room = roomsData.find(r => r.id === roomId);
+            room.items.splice(itemIdx, 1);
+            renderRoomDetail();
+        }
+
+        function cancelAll() {
+            if (window.sharedData) {
+                roomsData = window.sharedData.getSharedRooms(); // reset from storage
+            } else {
+                roomsData.forEach(r => r.items = []);
+            }
+            selectRoom(null);
+        }
+
+        function saveAll() {
+            if (selectedRoomId) {
+                if (window.sharedData) {
+                    window.sharedData.saveSharedRooms(roomsData);
+                }
+                document.getElementById('successPopup').style.display = 'flex';
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('successPopup').style.display = 'none';
+            cancelAll();
+        }
+
+        // ======================= TRẢ PHÒNG (CHECKOUT) LOGIC =======================
+        let selectedCheckoutRoomId = null;
+
+        function switchMainTab(tab) {
+            if (tab === 'service') {
+                document.getElementById('navService').classList.add('active');
+                document.getElementById('navCheckout').classList.remove('active');
+                document.getElementById('serviceView').style.display = 'flex';
+                document.getElementById('checkoutView').style.display = 'none';
+                selectRoom(null); // Reset detail panel and show map for Service view
+            } else if (tab === 'checkout') {
+                document.getElementById('navCheckout').classList.add('active');
+                document.getElementById('navService').classList.remove('active');
+                document.getElementById('checkoutView').style.display = 'flex';
+                document.getElementById('serviceView').style.display = 'none';
+                selectCheckoutRoom(null); // Reset detail panel and show map for Checkout view
+            }
+        }
+
+        function searchCheckoutMap() {
+            const query = document.getElementById('coSearchInput').value.toLowerCase();
+            const floors = document.getElementById('coMapContainer').querySelectorAll('.floor-group');
+            floors.forEach(f => {
+                let hasVisible = false;
+                f.querySelectorAll('.map-room-card').forEach(c => {
+                    if (c.querySelector('.map-room-name').innerText.toLowerCase().includes(query)) {
+                        c.style.display = 'flex';
+                        hasVisible = true;
+                    } else c.style.display = 'none';
+                });
+                f.style.display = hasVisible ? 'block' : 'none';
+            });
+        }
+
+        function renderCheckoutMap() {
+            const container = document.getElementById('coMapContainer');
+            let html = '';
+            const floors = [1, 2, 3, 4, 5];
+            floors.forEach(floor => {
+                const floorRooms = roomsData.filter(r => r.floor === floor && r.status === 'Đang sử dụng');
+                if (floorRooms.length > 0) {
+                    html += `<div class="floor-group"><div class="floor-title">Tầng ${floor}</div><div class="floor-grid">`;
+                    floorRooms.forEach(room => {
+                        html += `
+                            <div class="map-room-card bg-sudung" onclick="selectCheckoutRoom('${room.id}')">
+                                <div class="map-room-name">${room.name}</div>
+                                <div class="map-room-status">${room.status}</div>
+                                <div class="map-room-customer">${room.customer}</div>
+                                <div class="map-room-date">→ ${room.date ? room.date.split(',')[0] : ''}</div>
+                            </div>`;
+                    });
+                    html += `</div></div>`;
+                }
+            });
+            container.innerHTML = html;
+            document.getElementById('coSearchInput').value = '';
+        }
+
+        function selectCheckoutRoom(id) {
+            selectedCheckoutRoomId = id;
+            if (!id) {
+                document.getElementById('coMapSection').style.display = 'flex';
+                document.getElementById('coDetailSection').style.display = 'none';
+                renderCheckoutMap();
+            } else {
+                document.getElementById('coMapSection').style.display = 'none';
+                document.getElementById('coDetailSection').style.display = 'flex';
+                renderCheckoutParams();
+            }
+        }
+
+        function renderCheckoutParams() {
+            const lPanel = document.getElementById('coLeftPanel');
+            const rPanel = document.getElementById('coRightPanel');
+            const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+            if (!room) return;
+
+            let svHtml = '';
+            let cpHtml = '';
+            let svTotal = 0;
+            let svIdx = 1, cpIdx = 1;
+
+            room.items.forEach(item => {
+                const total = item.price * item.qty;
+                svTotal += total;
+                const row = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:15px; padding-left:15px;">
+                        <span style="flex:1;">${item.type === 'service' ? svIdx : cpIdx}. ${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</span>
+                        <div style="background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px;">- 0${item.qty} +</div>
+                        <div style="width:100px; text-align:right;">${formatMoney(total)}</div>
+                        <i class="fa-regular fa-trash-can" style="color:#aaa; margin-left:15px; cursor:pointer;" title="Tính năng xóa bị khóa ở mục checkout"></i>
+                    </div>`;
+                if (item.type === 'service') { svHtml += row; svIdx++; }
+                else { cpHtml += row; cpIdx++; }
+            });
+
+            lPanel.innerHTML = `
+                <div class="room-info-card" style="box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #ddd; flex-shrink: 0; margin-right: 15px;">
+                    <div class="room-title"><i class="fa-regular fa-calendar-check" style="font-size:24px; color:#555;"></i> Phòng ${room.name}</div>
+                    <div class="room-status">Trạng thái: <span class="status-badge bg-sudung">${room.status}</span></div>
+                    <div class="room-time" style="display:flex; justify-content:space-between;">
+                        <div>
+                            <span style="font-weight:600; color:#333;">Check-in:</span> <span style="background:#f4f4f4; padding:2px 8px; border-radius:4px; font-size:13px;">${room.date || ''} <i class="fa-regular fa-calendar" style="color:#888;"></i></span>
+                        </div>
+                        <div>
+                            <span style="font-weight:600; color:#333;">Check-out:</span> <span style="background:#f4f4f4; padding:2px 8px; border-radius:4px; font-size:13px;">${room.date2 || ''} <i class="fa-regular fa-calendar" style="color:#888;"></i></span>
+                        </div>
+                    </div>
+                    <div class="room-time" style="margin-top: 15px; margin-bottom: 20px;">Số người: 2</div>
+                    <div class="room-total" style="border-top:1px solid #ddd; padding-top:15px; color:#666;">
+                        Tiền phòng: <span style="font-weight:700; color:#333; border-bottom:1px solid #ccc; padding-bottom:2px;">${formatMoney(room.basePrice)}</span>
+                    </div>
+                </div>
+
+                <div class="room-info-card" style="box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #ddd; flex-shrink: 0; margin-right: 15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <span style="font-size:18px; font-weight:bold;">A. Dịch vụ phòng</span>
+                        <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="switchMainTab('service'); selectRoom('${room.id}');">+ Thêm dịch vụ</button>
+                    </div>
+                    ${svHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có dịch vụ phát sinh</i>'}
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:35px;">
+                        <span style="font-size:18px; font-weight:bold;">B. Bồi thường thiệt hại</span>
+                        <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="switchMainTab('service'); selectRoom('${room.id}'); switchTab('compensation');">+ Thêm tài sản</button>
+                    </div>
+                    ${cpHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có bồi thường</i>'}
+                </div>
+            `;
+
+            rPanel.innerHTML = `
+                <div class="room-info-card" style="box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #ddd; padding: 40px; flex-shrink: 0; min-height: 100%; display: flex; flex-direction: column; background:#fffcf5;">
+                    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
+                        <span>Tiền phòng:</span><span style="color:#222;">${formatMoney(room.basePrice)}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
+                        <span>Tổng dịch vụ phòng:</span><span style="color:#222;">${formatMoney(svTotal)}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
+                        <span>Phụ thu:</span><span style="color:#222;">0</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:22px; font-weight:bold; margin-bottom:20px; color:#111; margin-top:5px;">
+                        <span style="text-transform:uppercase;">Tổng tiền</span><span>${formatMoney(room.basePrice + svTotal)}</span>
+                    </div>
+                    <hr style="border:none; border-top:2px solid #eaddcf; margin: 30px 0;">
+                    
+                    <div style="font-weight:bold; font-size:18px; margin-bottom:25px; text-transform:uppercase; color:#111;">PHƯƠNG THỨC THANH TOÁN</div>
+                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-bottom:20px; cursor:pointer;">
+                        <span style="color:#333;">Thanh toán bằng tiền mặt</span>
+                        <input type="checkbox" id="cbCash" onchange="toggleCoPayment('cash')" style="width:22px; height:22px; accent-color:#d57e50; cursor:pointer;">
+                    </label>
+                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-bottom:40px; cursor:pointer;">
+                        <span style="color:#333;">Thanh toán bằng QR</span>
+                        <input type="checkbox" id="cbQr" onchange="toggleCoPayment('qr')" style="width:22px; height:22px; accent-color:#d57e50; cursor:pointer;">
+                    </label>
+
+                    <div style="margin-top:auto;">
+                        <button class="f-btn-save" style="width:100%; background:#cfb584; color:#333; border:none; padding:18px; border-radius:8px; font-weight:bold; font-size:18px; box-shadow:0 4px 8px rgba(0,0,0,0.1); cursor:pointer; transition:background 0.2s;" onclick="openInvoiceForm()">THANH TOÁN</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCoPayment(opt) {
+            if (opt === 'cash') {
+                if (document.getElementById('cbCash').checked) document.getElementById('cbQr').checked = false;
+            } else {
+                if (document.getElementById('cbQr').checked) document.getElementById('cbCash').checked = false;
+            }
+        }
+
+        function openInvoiceForm() {
+            const cbCash = document.getElementById('cbCash').checked;
+            const cbQr = document.getElementById('cbQr').checked;
+            if (!cbCash && !cbQr) { alert('Vui lòng chọn 1 phương thức thanh toán!'); return; }
+
+            const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+            document.getElementById('invCust').innerText = room.customer || '';
+            document.getElementById('invIn').innerText = room.date ? room.date.split(',')[0] : '';
+            document.getElementById('invOut').innerText = room.date2 ? room.date2.split(',')[0] : '';
+
+            let tbody = '';
+            let svTotal = 0;
+            room.items.forEach(item => {
+                const total = item.price * item.qty;
+                svTotal += total;
+                tbody += `<tr>
+                    <td style="padding:10px 0; border-bottom: 1px solid #eee; word-wrap: break-word; font-weight: 500; color: #111;">${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</td>
+                    <td style="text-align:center; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">0${item.qty}</td>
+                    <td style="text-align:right; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">${formatMoney(total)}</td>
+                </tr>`;
+            });
+            document.getElementById('invItemsBody').innerHTML = tbody;
+            document.getElementById('invRoom').innerText = formatMoney(room.basePrice);
+            document.getElementById('invSrv').innerText = formatMoney(svTotal);
+            document.getElementById('invTotal').innerText = formatMoney(room.basePrice + svTotal);
+
+            document.getElementById('invoicePopup').style.display = 'flex';
+        }
+
+        function closeInvoice() { document.getElementById('invoicePopup').style.display = 'none'; }
+
+        function printInvoice() {
+            document.getElementById('invoicePopup').style.display = 'none';
+            document.getElementById('printSuccessPopup').style.display = 'flex';
+        }
+
+        function exportInvoice() { closeInvoice(); resetCheckoutRoom(); }
+
+        function closePrintSuccess() {
+            document.getElementById('printSuccessPopup').style.display = 'none';
+            resetCheckoutRoom();
+        }
+
+        function resetCheckoutRoom() {
+            const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+            if (room) {
+                room.status = 'Trống';
+                room.customer = '';
+                room.date = '';
+                room.date2 = '';
+                room.items = [];
+                if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
+            }
+            selectCheckoutRoom(null);
+        }
+
+        // Init App 
+        switchTab('service');
+        switchMainTab('service');
+        renderMap();
+    </script>
+
+    <script>
+
+        function toggleLogoutPopup() {
+            var popups = document.querySelectorAll('.logout-popup');
+            popups.forEach(function(p) { p.classList.toggle('show'); });
+        }
+        document.addEventListener('click', function (e) {
+            const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
+            if (!isIcon) {
+                document.querySelectorAll('.logout-popup').forEach(function(p) {
+                    if (!p.contains(e.target)) {
+                        p.classList.remove('show');
+                    }
+                });
+            }
+        });
+        function openUserInfo() {
+            document.getElementById('userInfoOverlay').classList.add('show');
+        }
+        function closeUserInfo() {
+            document.getElementById('userInfoOverlay').classList.remove('show');
+        }
+        function showSaveSuccess() {
+            document.getElementById('saveSuccessOverlay').classList.add('show');
+        }
+        function closeSaveSuccess() {
+            document.getElementById('saveSuccessOverlay').classList.remove('show');
+            document.getElementById('userInfoOverlay').classList.remove('show');
+        }
+
+        function toggleChangePassword() {
+            const panel = document.getElementById('changePasswordPanel');
+            const footer = document.getElementById('userInfoFooter');
+            panel.classList.toggle('show');
+            if (panel.classList.contains('show')) {
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+            }
+        }
+
+        function showPwSuccess() {
+            document.getElementById('pwSuccessOverlay').classList.add('show');
+        }
+
+        function closePwSuccess() {
+            document.getElementById('pwSuccessOverlay').classList.remove('show');
+            toggleChangePassword(); // Quay lại view chính
+        }
+
+    </script>
+    <!-- Popup xác nhận đăng xuất -->
+    <div class="logout-popup" id="logoutPopup">
+        <p>Bạn muốn đăng xuất?</p>
+        <div class="logout-popup-actions">
+            <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+        </div>
+    </div>
+
+    <!-- Overlay Thông tin người dùng -->
+    <div class="user-info-overlay" id="userInfoOverlay">
+        <div class="user-info-card">
+            <h2>Thông tin người dùng</h2>
+            <div class="user-info-body">
+                <div class="user-left">
+                    <h3>Thông tin cá nhân</h3>
+                    <div class="user-avatar-row">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                        <div>
+                            <div class="user-avatar-name">Vương Văn Quyền</div>
+                            <div class="user-avatar-email">vvquyen@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span class="user-field-value">Vương Văn Quyền</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span class="user-field-value">25/07/2005</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span class="user-field-value">Nam</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span class="user-field-value">09123467898</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span class="user-field-value">Lễ tân</span></div>
+                </div>
+                <div class="user-right">
+                    <h3>Cài đặt tài khoản</h3>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Tên người dùng</span>
+                        <span class="account-field-value">vvquyen_2507</span>
+                    </div>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Mật khẩu</span>
+                        <span class="account-field-value">••••••••••••</span>
+                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i class="fa-solid fa-pen"></i></button>
+                    </div>
+                    <div class="change-password-panel" id="changePasswordPanel">
+                        <h4>Đổi mật khẩu</h4>
+                        <div class="pw-row"><span class="pw-label">Mật khẩu hiện tại:</span><input type="password" class="pw-input"></div>
+                        <div class="pw-row"><span class="pw-label">Mật khẩu mới:</span><input type="password" class="pw-input"></div>
+                        <div class="pw-row"><span class="pw-label">Nhập lại mật khẩu mới:</span><input type="password" class="pw-input"></div>
+                        <div class="pw-actions">
+                            <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                            <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="user-info-footer" id="userInfoFooter">
+                <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
+                <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Lưu thành công -->
+    <div class="save-success-overlay" id="saveSuccessOverlay">
+        <div class="save-success-card">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>Thông tin đã được lưu</p>
+            <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+        </div>
+    </div>
+
+    <!-- Popup Đổi mật khẩu thành công -->
+    <div class="pw-success-overlay" id="pwSuccessOverlay">
+        <div class="pw-success-card">
+            <i class="fa-regular fa-circle-check"></i>
+            <p>Đổi mật khẩu thành công</p>
+            <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+        </div>
+    </div>
+
+</body>
+
+</html>

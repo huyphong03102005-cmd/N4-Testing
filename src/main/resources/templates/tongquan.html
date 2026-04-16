@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+
+<head>
+    <title>Tổng quan</title>
+</head>
+
+<body>
+    <main layout:fragment="content">
+        <div class="summary-wrapper">
+            <div class="summary-card">
+                <div class="summary-content">
+                    <h3>Tổng số phòng</h3>
+                    <div class="number">45</div>
+                </div>
+                <div class="summary-icon icon-orange"><i class="fa-solid fa-hotel"></i></div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-content">
+                    <h3>Phòng đang trống</h3>
+                    <div class="number">22</div>
+                </div>
+                <div class="summary-icon icon-green"><i class="fa-solid fa-check"></i></div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-content">
+                    <h3>Phòng đang sử dụng</h3>
+                    <div class="number">18</div>
+                </div>
+                <div class="summary-icon icon-pink"><i class="fa-solid fa-user-group"></i></div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-content">
+                    <h3>Phòng đang sửa chữa</h3>
+                    <div class="number">5</div>
+                </div>
+                <div class="summary-icon icon-light-orange"><i class="fa-solid fa-wrench"></i></div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="room-diagram">
+                <h2>Sơ đồ phòng</h2>
+                <div class="floor-container">
+                    <div class="floor">
+                        <h3>TẦNG 1</h3>
+                        <div class="rooms">
+                            <div class="room status-trong">
+                                <div class="room-number">101</div>
+                                <div class="room-status">TRỐNG</div>
+                                <div class="room-detail">Đơn-Thường<br>1.200.000đ</div>
+                            </div>
+                            <!-- More rooms... -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="legend">
+                    <h3>Ghi chú:</h3>
+                    <div class="legend-item">
+                        <div class="legend-icon status-trong"></div>
+                        <div class="legend-text"><strong>TRỐNG</strong><span>Phòng chưa có người đặt.</span></div>
+                    </div>
+                    <!-- More legend items... -->
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
