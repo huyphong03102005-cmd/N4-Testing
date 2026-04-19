@@ -1051,20 +1051,20 @@
     <!-- 1. Thanh Top Bar -->
     <div class="top-bar">
         <div class="top-icons">
-                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
-                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
-            </div>
+            <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+            <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
+        </div>
     </div>
 
     <!-- 2. Phần Banner Ảnh nền, Navigation Bar & Search -->
     <div class="hero-banner">
         <nav class="nav-bar">
-            <a href="tongquan.html" class="nav-item">Tổng quan</a>
-            <a href="DAT_PHONG.html" class="nav-item">Đặt phòng</a>
-            <a href="QL_DatPhong.html" class="nav-item">Quản lý đặt phòng</a>
-            <a href="nhan_phong.html" class="nav-item active">Nhận phòng</a>
+            <a href="/tongquan" class="nav-item">Tổng quan</a>
+            <a href="/dat-phong" class="nav-item">Đặt phòng</a>
+            <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
+            <a href="/nhan-phong" class="nav-item active">Nhận phòng</a>
             <a href="#" class="nav-item">Trả phòng</a>
-            <a href="Service.html" class="nav-item">Dịch vụ phòng</a>
+            <a href="/service" class="nav-item">Dịch vụ phòng</a>
         </nav>
 
         <div class="search-container">
@@ -1388,12 +1388,12 @@
 
         function toggleLogoutPopup() {
             var popups = document.querySelectorAll('.logout-popup');
-            popups.forEach(function(p) { p.classList.toggle('show'); });
+            popups.forEach(function (p) { p.classList.toggle('show'); });
         }
         document.addEventListener('click', function (e) {
             const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
             if (!isIcon) {
-                document.querySelectorAll('.logout-popup').forEach(function(p) {
+                document.querySelectorAll('.logout-popup').forEach(function (p) {
                     if (!p.contains(e.target)) {
                         p.classList.remove('show');
                     }
@@ -1452,24 +1452,24 @@
             });
         }
 
-        window.onload = function() {
+        window.onload = function () {
             syncRoomStatuses();
 
             // Override inline Checkin clicks to save state
             const checkins = document.querySelectorAll('.btn-checkin');
             checkins.forEach(btn => {
                 btn.removeAttribute('onclick');
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const wrapper = this.closest('.booking-wrapper');
                     const infoFields = wrapper.querySelectorAll('.info-field .value');
-                    if(infoFields.length >= 2) {
+                    if (infoFields.length >= 2) {
                         const custName = infoFields[0].innerText.trim();
                         const roomId = infoFields[1].innerText.trim();
                         const rooms = window.sharedData.getSharedRooms();
                         const r = rooms.find(x => x.id === roomId);
-                        if(r) {
+                        if (r) {
                             r.status = 'Đang sử dụng';
-                            if(!r.customer) r.customer = custName;
+                            if (!r.customer) r.customer = custName;
                             window.sharedData.saveSharedRooms(rooms);
                         }
                     }
@@ -1482,20 +1482,20 @@
             const confBtns = document.querySelectorAll('.change-room-popup .btn-confirm');
             confBtns.forEach(btn => {
                 btn.removeAttribute('onclick');
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const wrapper = this.closest('.booking-wrapper');
                     const popup = wrapper.querySelector('.change-room-popup');
                     const infoFields = wrapper.querySelectorAll('.info-field .value');
                     const select = wrapper.querySelector('.popup-select');
-                    
-                    if(infoFields.length >= 2 && select.value) {
+
+                    if (infoFields.length >= 2 && select.value) {
                         const custName = infoFields[0].innerText.trim();
                         const roomId = infoFields[1].innerText.trim();
                         const newRoomId = select.value;
                         const rooms = window.sharedData.getSharedRooms();
                         const oldR = rooms.find(x => x.id === roomId);
                         const newR = rooms.find(x => x.id === newRoomId);
-                        if(oldR && newR && oldR.status !== 'Trống') {
+                        if (oldR && newR && oldR.status !== 'Trống') {
                             newR.status = oldR.status;
                             newR.customer = custName;
                             newR.date = oldR.date;
@@ -1507,7 +1507,7 @@
                             window.sharedData.saveSharedRooms(rooms);
                         }
                     }
-                    togglePopup(wrapper.querySelector('.btn-cancel')); 
+                    togglePopup(wrapper.querySelector('.btn-cancel'));
                     showSuccessPopup('Đổi phòng thành công');
                     syncRoomStatuses();
                 });
@@ -1520,7 +1520,7 @@
         <p>Bạn muốn đăng xuất?</p>
         <div class="logout-popup-actions">
             <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
         </div>
     </div>
 

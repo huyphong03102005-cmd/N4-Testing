@@ -48,6 +48,7 @@
             background-repeat: no-repeat;
             z-index: -1;
         }
+
         .top-icons {
             display: flex;
             gap: 25px;
@@ -209,7 +210,8 @@
         .search-container {
             margin-top: 45px;
             margin-bottom: 10px;
-            width: 1070px; /* Bằng với width của content bên dưới */
+            width: 1070px;
+            /* Bằng với width của content bên dưới */
             margin-left: auto;
             margin-right: auto;
         }
@@ -249,9 +251,12 @@
         .list-wrapper {
             background-color: white;
             border-radius: 16px;
-            padding: 25px 40px; /* Khoảng trống 2 bên (padding) giảm lại cho vừa vặn */
-            width: 1070px; /* Khóa độ rộng vừa khít 2 thẻ đặt phòng */
-            margin: 0 auto; /* Đưa toàn bộ khối trắng ra chính giữa màn hình */
+            padding: 25px 40px;
+            /* Khoảng trống 2 bên (padding) giảm lại cho vừa vặn */
+            width: 1070px;
+            /* Khóa độ rộng vừa khít 2 thẻ đặt phòng */
+            margin: 0 auto;
+            /* Đưa toàn bộ khối trắng ra chính giữa màn hình */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
         }
 
@@ -595,7 +600,8 @@
         }
 
         #detail-booking-date {
-            color: #111; /* Đen như trong hình */
+            color: #111;
+            /* Đen như trong hình */
         }
 
         .note-box {
@@ -608,7 +614,7 @@
             margin-top: 5px;
         }
 
-/* --- Popup xác nhận đăng xuất --- */
+        /* --- Popup xác nhận đăng xuất --- */
         .logout-popup {
             display: none;
             position: fixed;

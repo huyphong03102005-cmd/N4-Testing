@@ -26,12 +26,12 @@
         <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
         <div class="hero-banner">
             <nav class="nav-bar">
-                <a href="tongquan.html" class="nav-item">Tổng quan</a>
-                <a href="DAT_PHONG.html" class="nav-item">Đặt phòng</a>
-                <a href="QL_DatPhong.html" class="nav-item active">Quản lý đặt phòng</a>
-                <a href="nhan_phong.html" class="nav-item">Nhận phòng</a>
+                <a href="/tongquan" class="nav-item">Tổng quan</a>
+                <a href="/dat-phong" class="nav-item">Đặt phòng</a>
+                <a href="/ql-datphong" class="nav-item active">Quản lý đặt phòng</a>
+                <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
                 <a href="#" class="nav-item">Trả phòng</a>
-                <a href="Service.html" class="nav-item">Dịch vụ phòng</a>
+                <a href="/service" class="nav-item">Dịch vụ phòng</a>
             </nav>
         </div>
 
@@ -112,7 +112,7 @@
                 <h3>Chi tiết đặt phòng</h3>
                 <i class="fa-solid fa-xmark" id="btn-close-details"></i>
             </div>
-            
+
             <div class="details-grid" style="margin-bottom: 10px;">
                 <div class="detail-inline">
                     <span class="label">Mã đặt phòng:</span>
@@ -143,7 +143,7 @@
                         <div class="value" id="detail-guests">2 người lớn - 0 trẻ em</div>
                     </div>
                 </div>
-                
+
                 <div class="details-col">
                     <div class="detail-item">
                         <div class="label">Ngày nhận phòng</div>
@@ -165,13 +165,13 @@
         </div>
     </div>
 
-    
+
     <!-- Popup xác nhận đăng xuất -->
     <div class="logout-popup" id="logoutPopup">
         <p>Bạn muốn đăng xuất?</p>
         <div class="logout-popup-actions">
             <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
         </div>
     </div>
 
@@ -280,15 +280,15 @@
         let bookingsDaHuy = [];
 
         function loadFromShared() {
-            if(!window.sharedData) return;
+            if (!window.sharedData) return;
             const rooms = window.sharedData.getSharedRooms();
             bookingsChoCheckin = [];
             bookingsDaCheckin = [];
-            
+
             rooms.forEach((r) => {
-                if(r.status === 'Đã đặt' || r.status === 'Đang sử dụng') {
+                if (r.status === 'Đã đặt' || r.status === 'Đang sử dụng') {
                     const b = {
-                        id: r.id, 
+                        id: r.id,
                         guestName: r.customer || "Khách hàng",
                         roomName: "Phòng " + r.name,
                         phone: "0123456789",
@@ -304,7 +304,7 @@
                         guestsDetail: "2 người lớn",
                         note: "Dữ liệu được đồng bộ từ Quản lý phòng."
                     };
-                    if(r.status === 'Đã đặt') bookingsChoCheckin.push(b);
+                    if (r.status === 'Đã đặt') bookingsChoCheckin.push(b);
                     else bookingsDaCheckin.push(b);
                 }
             });
@@ -434,9 +434,9 @@
         }
 
         function getBookingById(id) {
-            return bookingsChoCheckin.find(b => b.id === id) || 
-                   bookingsDaCheckin.find(b => b.id === id) ||
-                   bookingsDaHuy.find(b => b.id === id);
+            return bookingsChoCheckin.find(b => b.id === id) ||
+                bookingsDaCheckin.find(b => b.id === id) ||
+                bookingsDaHuy.find(b => b.id === id);
         }
 
         function openDetailsModal(id) {
@@ -449,10 +449,10 @@
             document.getElementById("detail-phone").innerText = booking.phone;
             document.getElementById("detail-email").innerText = booking.email;
             document.getElementById("detail-guests").innerText = booking.guestsDetail || booking.guests;
-            
+
             document.getElementById("detail-checkin").innerText = booking.checkInTime || ("14h - " + booking.checkIn);
             document.getElementById("detail-checkout").innerText = booking.checkOutTime || ("12h - " + booking.checkOut);
-            
+
             document.getElementById("detail-note").innerText = booking.note || "Không có ghi chú.";
 
             document.getElementById("details-modal").style.display = "flex";
@@ -485,10 +485,10 @@
                 const targetBooking = bookingsChoCheckin.find(b => b.id === cancelTargetId);
                 if (targetBooking) {
                     bookingsDaHuy.push(targetBooking);
-                    if(window.sharedData) {
+                    if (window.sharedData) {
                         const rooms = window.sharedData.getSharedRooms();
                         const r = rooms.find(x => x.id === cancelTargetId);
-                        if(r) {
+                        if (r) {
                             r.status = 'Trống';
                             r.customer = '';
                             r.date = '';
@@ -528,12 +528,12 @@
 
         function toggleLogoutPopup() {
             var popups = document.querySelectorAll('.logout-popup');
-            popups.forEach(function(p) { p.classList.toggle('show'); });
+            popups.forEach(function (p) { p.classList.toggle('show'); });
         }
         document.addEventListener('click', function (e) {
             const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
             if (!isIcon) {
-                document.querySelectorAll('.logout-popup').forEach(function(p) {
+                document.querySelectorAll('.logout-popup').forEach(function (p) {
                     if (!p.contains(e.target)) {
                         p.classList.remove('show');
                     }

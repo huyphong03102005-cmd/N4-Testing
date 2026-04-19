@@ -34,12 +34,12 @@ function setupGlobalNav() {
     const defaultNavs = document.querySelectorAll('.nav-bar .nav-item');
     const tabNavs = document.querySelectorAll('.tabs-container .tab');
     const mapping = [
-        'Tongquan.html',
-        'DAT_PHONG.html',
-        'QL_DatPhong.html',
-        'nhan_phong.html',
-        'Service.html#checkout',
-        'Service.html#service'
+        '/tongquan',
+        '/dat-phong',
+        '/ql-datphong',
+        '/nhan-phong',
+        '/service',
+        '/service'
     ];
     
     const attachLinks = (navs) => {
@@ -51,7 +51,7 @@ function setupGlobalNav() {
                 } else {
                     const originalClick = nav.onclick;
                     nav.onclick = function(e) {
-                        if(window.location.pathname.includes('Service.html')) {
+                        if(window.location.pathname.includes('/service')) {
                             if (originalClick) originalClick.apply(this, arguments);
                             return; // let native logic run
                         }
@@ -63,7 +63,7 @@ function setupGlobalNav() {
     };
 
     attachLinks(defaultNavs);
-    if (!window.location.pathname.includes('Service.html')) {
+    if (!window.location.pathname.includes('/service')) {
         attachLinks(tabNavs);
     }
 
@@ -115,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupGlobalNav();
     
     const path = window.location.pathname;
-    if(path.includes('Tongquan.html')) {
+    if(path.includes('/tongquan')) {
         syncTongquan();
-    } else if(path.includes('Service.html')) {
+    } else if(path.includes('/service')) {
         overrideServiceData();
         if(window.location.hash === '#checkout' && typeof switchMainTab === 'function') {
             switchMainTab('checkout');

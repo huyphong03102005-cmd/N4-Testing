@@ -1437,12 +1437,13 @@
         <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
         <div class="hero-banner">
             <nav class="nav-bar">
-                <a href="tongquan.html" class="nav-item">Tổng quan</a>
-                <a href="DAT_PHONG.html" class="nav-item">Đặt phòng</a>
-                <a href="QL_DatPhong.html" class="nav-item">Quản lý đặt phòng</a>
-                <a href="nhan_phong.html" class="nav-item">Nhận phòng</a>
+                <a href="/tongquan" class="nav-item">Tổng quan</a>
+                <a href="/dat-phong" class="nav-item">Đặt phòng</a>
+                <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
+                <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
                 <a href="#" class="nav-item" id="navCheckout" onclick="switchMainTab('checkout')">Trả phòng</a>
-                <a href="Service.html" class="nav-item active" id="navService" onclick="switchMainTab('service')">Dịch vụ phòng</a>
+                <a href="/service" class="nav-item active" id="navService" onclick="switchMainTab('service')">Dịch
+                    vụ phòng</a>
             </nav>
         </div>
 
@@ -1541,7 +1542,8 @@
             style="background: #fffdf5; padding: 40px; border-radius: 12px; width: 620px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
             <div style="text-align: center; margin-bottom: 25px;">
-                <img src="./Picture/bill_logo_logo.png" alt="Logo" style="width: 70px; height: 70px; object-fit: contain;">
+                <img src="./Picture/bill_logo_logo.png" alt="Logo"
+                    style="width: 70px; height: 70px; object-fit: contain;">
                 <h2 style="color: #d35400; font-size: 26px; font-weight: bold; margin-top: 8px;">CamFusion House</h2>
             </div>
 
@@ -1640,7 +1642,7 @@
         <p>Bạn muốn đăng xuất?</p>
         <div class="logout-popup-actions">
             <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
         </div>
     </div>
 
@@ -2346,12 +2348,12 @@
 
         function toggleLogoutPopup() {
             var popups = document.querySelectorAll('.logout-popup');
-            popups.forEach(function(p) { p.classList.toggle('show'); });
+            popups.forEach(function (p) { p.classList.toggle('show'); });
         }
         document.addEventListener('click', function (e) {
             const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
             if (!isIcon) {
-                document.querySelectorAll('.logout-popup').forEach(function(p) {
+                document.querySelectorAll('.logout-popup').forEach(function (p) {
                     if (!p.contains(e.target)) {
                         p.classList.remove('show');
                     }
@@ -2398,7 +2400,7 @@
         <p>Bạn muốn đăng xuất?</p>
         <div class="logout-popup-actions">
             <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-            <button class="btn-logout-confirm" onclick="window.location.href='dang_nhap.html'">Xác nhận</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
         </div>
     </div>
 
@@ -2416,11 +2418,16 @@
                             <div class="user-avatar-email">vvquyen@gmail.com</div>
                         </div>
                     </div>
-                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span class="user-field-value">Vương Văn Quyền</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span class="user-field-value">25/07/2005</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span class="user-field-value">Nam</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span class="user-field-value">09123467898</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span class="user-field-value">Lễ tân</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                            class="user-field-value">Vương Văn Quyền</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                            class="user-field-value">25/07/2005</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                            class="user-field-value">Nam</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                            class="user-field-value">09123467898</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                            class="user-field-value">Lễ tân</span></div>
                 </div>
                 <div class="user-right">
                     <h3>Cài đặt tài khoản</h3>
@@ -2431,13 +2438,17 @@
                     <div class="account-field-row">
                         <span class="account-field-label">Mật khẩu</span>
                         <span class="account-field-value">••••••••••••</span>
-                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
+                                class="fa-solid fa-pen"></i></button>
                     </div>
                     <div class="change-password-panel" id="changePasswordPanel">
                         <h4>Đổi mật khẩu</h4>
-                        <div class="pw-row"><span class="pw-label">Mật khẩu hiện tại:</span><input type="password" class="pw-input"></div>
-                        <div class="pw-row"><span class="pw-label">Mật khẩu mới:</span><input type="password" class="pw-input"></div>
-                        <div class="pw-row"><span class="pw-label">Nhập lại mật khẩu mới:</span><input type="password" class="pw-input"></div>
+                        <div class="pw-row"><span class="pw-label">Mật khẩu hiện tại:</span><input type="password"
+                                class="pw-input"></div>
+                        <div class="pw-row"><span class="pw-label">Mật khẩu mới:</span><input type="password"
+                                class="pw-input"></div>
+                        <div class="pw-row"><span class="pw-label">Nhập lại mật khẩu mới:</span><input type="password"
+                                class="pw-input"></div>
                         <div class="pw-actions">
                             <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
                             <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>

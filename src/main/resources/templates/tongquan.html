@@ -1,74 +1,1475 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/base}">
+<html lang="vi">
 
 <head>
-    <title>Tổng quan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Khách sạn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Lora', serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+
+        #app-container {
+            width: 100%;
+            height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .top-bar {
+            height: 60px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .top-bar::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -18px;
+            background-image: url('./Picture/Logo_bar.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+        }
+
+        .top-icons {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .top-icons i {
+            font-size: 28px;
+            color: #111;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .top-icons i:hover {
+            color: #555;
+        }
+
+        .hero-banner {
+            background-image: url('./Picture/Background.png');
+            background-size: cover;
+            background-position: center;
+            height: 140px;
+            flex-shrink: 0;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            padding-top: 15px;
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .nav-bar {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            width: 95%;
+            max-width: 1368px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            height: 45px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #222;
+            font-weight: 600;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item:last-child {
+            border-right: none;
+        }
+
+        .nav-item:hover {
+            background-color: #d6cc9c;
+        }
+
+        .nav-item.active {
+            background-color: #c0ab7b;
+            color: #111;
+        }
+
+        .main-content {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 30px 40px;
+            overflow-y: auto;
+        }
+
+        .summary-wrapper {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+        }
+
+        .summary-card {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border: 1px solid #f0f0f0;
+        }
+
+        .summary-content h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .summary-content .number {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .summary-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        .icon-orange {
+            background-color: #e67e22;
+        }
+
+        .icon-green {
+            background-color: #2ecc71;
+        }
+
+        .icon-pink {
+            background-color: #ff7675;
+        }
+
+        .icon-light-orange {
+            background-color: #fab1a0;
+        }
+
+        .dashboard-content {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 40px;
+            align-items: flex-start;
+        }
+
+        .room-diagram {
+            flex: 2;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+        }
+
+        .room-diagram h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #111;
+            font-weight: bold;
+        }
+
+        .floor-container {
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .floor-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .floor-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .floor-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        .floor-container::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        .floor h3 {
+            font-size: 13px;
+            color: #555;
+            margin: 15px 0 10px;
+            font-weight: bold;
+        }
+
+        .rooms {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .room {
+            padding: 20px 10px;
+            border-radius: 8px;
+            text-align: center;
+            color: #333;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .room:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .room .room-number {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .room .room-status {
+            font-size: 13px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .room .room-detail {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #444;
+        }
+
+        .status-trong {
+            background-color: #a5d6a7;
+        }
+
+        .status-dadat {
+            background-color: #ffcc80;
+        }
+
+
+        .status-dangsu-dung {
+            background-color: #ef9a9a;
+        }
+
+        .status-baotri {
+            background-color: #90caf9;
+        }
+
+
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .legend,
+        .room-details {
+            background: #fdfdfd;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+        }
+
+        .room-details {
+            display: none;
+        }
+
+
+        .legend h3,
+        .room-details h3 {
+            font-size: 15px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .legend-icon {
+            width: 25px;
+            height: 25px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .legend-text strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .legend-text span {
+            font-size: 11px;
+            color: #777;
+        }
+
+
+        .room-details-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .room-details-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .room-details-header .room-number-display {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+
+        .info-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 20px;
+            margin-bottom: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 14px;
+        }
+
+        .info-row strong {
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .info-row span {
+            color: #222;
+            font-weight: 500;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .bill-summary {
+            background-color: #fadcc8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .bill-total {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 1px solid #e0c2ae;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .bill-total .amount {
+            color: #d03d15;
+            font-size: 15px;
+        }
+
+        .btn-confirm {
+            width: 100px;
+            padding: 10px;
+            background-color: #d67a4e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            margin: 0 0 0 auto;
+        }
+
+        .btn-confirm:hover {
+            background-color: #bf673d;
+        }
+
+        /* --- Popup xác nhận đăng xuất --- */
+        .logout-popup {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 35px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            min-width: 230px;
+            animation: popFadeIn 0.2s ease-out;
+        }
+
+        .logout-popup.show {
+            display: block;
+        }
+
+        @keyframes popFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-popup p {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logout-popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-logout-cancel {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #888;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-confirm {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #4a7c59;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-cancel:hover {
+            filter: brightness(0.9);
+        }
+
+        .btn-logout-confirm:hover {
+            filter: brightness(0.9);
+        }
+
+        /* --- Trang Thông tin Người dùng (overlay) --- */
+        .user-info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info-overlay.show {
+            display: flex;
+        }
+
+        .user-info-card {
+            background: #fff;
+            border-radius: 14px;
+            width: 860px;
+            max-width: 95vw;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            padding: 36px 40px 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .user-info-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .user-info-body {
+            display: flex;
+            gap: 48px;
+            flex: 1;
+        }
+
+        /* Cột trái */
+        .user-left {
+            flex: 1.4;
+        }
+
+        .user-left h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .user-avatar-row img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .user-avatar-email {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .user-field-row {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .user-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-field-label {
+            width: 130px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .user-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        /* Cột phải */
+        .user-right {
+            flex: 1;
+            border-left: 1px solid #e5e5e5;
+            padding-left: 40px;
+        }
+
+        .user-right h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .account-field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .account-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-field-label {
+            width: 110px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .account-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .btn-edit-pw {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        /* Footer buttons */
+        .user-info-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-user-cancel {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-save {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: none;
+            background: #c9b98a;
+            color: #222;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-cancel:hover {
+            filter: brightness(0.93);
+        }
+
+        .btn-user-save:hover {
+            filter: brightness(0.93);
+        }
+
+        /* --- Popup Lưu thành công --- */
+        .save-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-success-overlay.show {
+            display: flex;
+        }
+
+        .save-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+        }
+
+        /* --- Panel Đổi mật khẩu --- */
+        .change-password-panel {
+            display: none;
+            background-color: #f9ece2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .change-password-panel.show {
+            display: block;
+        }
+
+        .change-password-panel h4 {
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .pw-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .pw-label {
+            flex: 1;
+            font-size: 12px;
+            color: #d28c5a;
+            font-weight: bold;
+            font-style: italic;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .pw-input {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .pw-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-pw-cancel {
+            background-color: #999;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm {
+            background-color: #619a71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm:hover {
+            filter: brightness(0.95);
+        }
+
+        /* --- Popup Đổi mật khẩu thành công --- */
+        .pw-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pw-success-overlay.show {
+            display: flex;
+        }
+
+        .pw-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 320px;
+        }
+
+        .pw-success-card i {
+            font-size: 55px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .pw-success-card p {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .btn-pw-done {
+            padding: 10px 45px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-success-card i {
+            font-size: 48px;
+            color: #4a7c59;
+            margin-bottom: 18px;
+        }
+
+        .save-success-card p {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .btn-save-done {
+            padding: 10px 36px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-save-done:hover {
+            filter: brightness(0.92);
+        }
+    </style>
 </head>
 
 <body>
-    <main layout:fragment="content">
-        <div class="summary-wrapper">
-            <div class="summary-card">
-                <div class="summary-content">
-                    <h3>Tổng số phòng</h3>
-                    <div class="number">45</div>
-                </div>
-                <div class="summary-icon icon-orange"><i class="fa-solid fa-hotel"></i></div>
+
+    <div id="app-container">
+        <header class="top-bar">
+            <div class="top-icons">
+                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
             </div>
-            <div class="summary-card">
-                <div class="summary-content">
-                    <h3>Phòng đang trống</h3>
-                    <div class="number">22</div>
-                </div>
-                <div class="summary-icon icon-green"><i class="fa-solid fa-check"></i></div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-content">
-                    <h3>Phòng đang sử dụng</h3>
-                    <div class="number">18</div>
-                </div>
-                <div class="summary-icon icon-pink"><i class="fa-solid fa-user-group"></i></div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-content">
-                    <h3>Phòng đang sửa chữa</h3>
-                    <div class="number">5</div>
-                </div>
-                <div class="summary-icon icon-light-orange"><i class="fa-solid fa-wrench"></i></div>
-            </div>
+        </header>
+
+        <div class="hero-banner">
+            <nav class="nav-bar">
+                <a href="/tongquan" class="nav-item active">Tổng quan</a>
+                <a href="/dat-phong" class="nav-item">Đặt phòng</a>
+                <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
+                <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
+                <a href="#" class="nav-item">Trả phòng</a>
+                <a href="/service" class="nav-item">Dịch vụ phòng</a>
+            </nav>
         </div>
 
-        <div class="dashboard-content">
-            <div class="room-diagram">
-                <h2>Sơ đồ phòng</h2>
-                <div class="floor-container">
-                    <div class="floor">
-                        <h3>TẦNG 1</h3>
-                        <div class="rooms">
-                            <div class="room status-trong">
-                                <div class="room-number">101</div>
-                                <div class="room-status">TRỐNG</div>
-                                <div class="room-detail">Đơn-Thường<br>1.200.000đ</div>
+        <main class="main-content">
+
+            <div class="summary-wrapper">
+                <div class="summary-card">
+                    <div class="summary-content">
+                        <h3>Tổng phòng</h3>
+                        <div class="number" id="cnt-total">12</div>
+                    </div>
+                    <div class="summary-icon icon-orange"><i class="fa-solid fa-house"></i></div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-content">
+                        <h3>Phòng trống</h3>
+                        <div class="number" id="cnt-trong">6</div>
+                    </div>
+                    <div class="summary-icon icon-green"><i class="fa-solid fa-door-open"></i></div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-content">
+                        <h3>Đang sử dụng</h3>
+                        <div class="number" id="cnt-dangsu">3</div>
+                    </div>
+                    <div class="summary-icon icon-pink"><i class="fa-solid fa-bed"></i></div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-content">
+                        <h3>Đã đặt</h3>
+                        <div class="number" id="cnt-dadat">2</div>
+                    </div>
+                    <div class="summary-icon icon-light-orange"><i class="fa-regular fa-calendar-check"></i></div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-content">
+                        <h3>Bảo trì</h3>
+                        <div class="number" id="cnt-baotri">1</div>
+                    </div>
+                    <div class="summary-icon" style="background-color: #90caf9; color: white;"><i
+                            class="fa-solid fa-wrench"></i></div>
+                </div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="room-diagram">
+                    <h2>Sơ đồ phòng</h2>
+                    <div class="floor-container">
+                        <div class="floor">
+                            <h3>Tầng 1</h3>
+                            <div class="rooms">
+                                <div class="room status-trong">
+                                    <div class="room-number">101</div>
+                                    <div class="room-status">Trống</div>
+                                </div>
+                                <div class="room status-dangsu-dung">
+                                    <div class="room-number">102</div>
+                                    <div class="room-status">Đang sử dụng</div>
+                                    <div class="room-detail">Tôn Thất Huy Phong<br>→ 20/08/2025</div>
+                                </div>
+                                <div class="room status-trong">
+                                    <div class="room-number">103</div>
+                                    <div class="room-status">Trống</div>
+                                </div>
                             </div>
-                            <!-- More rooms... -->
+                        </div>
+
+                        <div class="floor">
+                            <h3>Tầng 2</h3>
+                            <div class="rooms">
+                                <div class="room status-dadat">
+                                    <div class="room-number">201</div>
+                                    <div class="room-status">Đã đặt</div>
+                                    <div class="room-detail">Nguyễn Thị Ny</div>
+                                </div>
+                                <div class="room status-trong">
+                                    <div class="room-number">202</div>
+                                    <div class="room-status">Trống</div>
+                                </div>
+                                <div class="room status-baotri">
+                                    <div class="room-number">203</div>
+                                    <div class="room-status">Bảo trì</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="floor">
+                            <h3>Tầng 3</h3>
+                            <div class="rooms">
+                                <div class="room status-trong">
+                                    <div class="room-number">301</div>
+                                    <div class="room-status">Trống</div>
+                                </div>
+                                <div class="room status-dangsu-dung">
+                                    <div class="room-number">302</div>
+                                    <div class="room-status">Đang sử dụng</div>
+                                    <div class="room-detail">Trần Thanh Nhã<br>→ 23/05/2024</div>
+                                </div>
+                                <div class="room status-dadat">
+                                    <div class="room-number">303</div>
+                                    <div class="room-status">Đã đặt</div>
+                                    <div class="room-detail">Vy Minh Quân</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="floor">
+                            <h3>Tầng 4</h3>
+                            <div class="rooms">
+                                <div class="room status-dangsu-dung">
+                                    <div class="room-number">401</div>
+                                    <div class="room-status">Đang sử dụng</div>
+                                    <div class="room-detail">Trần Thanh Nhã<br>→ 01/01/2026</div>
+                                </div>
+                                <div class="room status-trong">
+                                    <div class="room-number">402</div>
+                                    <div class="room-status">Trống</div>
+                                </div>
+                                <div class="room status-trong">
+                                    <div class="room-number">403</div>
+                                    <div class="room-status">Trống</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="legend">
+                        <h3>Chú thích trạng thái</h3>
+                        <div class="legend-item">
+                            <div class="legend-icon status-trong"><i class="fa-solid fa-door-open"></i></div>
+                            <div class="legend-text">
+                                <strong>Phòng trống</strong>
+                                <span>Sẵn sàng cho khách vào</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-icon status-dadat"><i class="fa-regular fa-calendar-check"></i></div>
+                            <div class="legend-text">
+                                <strong>Đã đặt</strong>
+                                <span>Chờ khách check-in</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-icon status-dangsu-dung"><i class="fa-solid fa-bed"></i></div>
+                            <div class="legend-text">
+                                <strong>Đang sử dụng</strong>
+                                <span>Khách đang ở</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-icon status-baotri"><i class="fa-solid fa-wrench"></i></div>
+                            <div class="legend-text">
+                                <strong>Bảo trì</strong>
+                                <span>Phòng đang sửa chữa hoặc vệ sinh</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="room-details">
+                        <div class="room-details-header">
+                            <h3>Chi tiết phòng:</h3>
+                            <span class="room-number-display">102</span>
+                            <i class="fa-solid fa-arrows-rotate btn-change-room"
+                                style="color:#f39c12; margin-left: 10px; cursor: pointer; display: none;"
+                                title="Đổi phòng"></i>
+                            <select class="room-selector"
+                                style="display: none; margin-left: 10px; padding: 4px 8px; border-radius: 4px; border: 1px solid #ddd; background-color: #f9f9f9; font-size: 13px; font-weight: bold; outline: none; cursor: pointer;">
+                                <option value="">Phòng</option>
+                            </select>
+                        </div>
+
+                        <div class="info-list">
+                            <div class="info-row">
+                                <strong>Tên khách hàng:</strong>
+                                <span id="dt-name">Tôn Thất Huy Phong</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Ngày nhận phòng:</strong>
+                                <span id="dt-checkin">20/08/2025</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Số điện thoại:</strong>
+                                <span id="dt-phone">03273144121</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Ngày trả phòng:</strong>
+                                <span id="dt-checkout">25/08/2025</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Email:</strong>
+                                <span id="dt-email">Phongphong@gmail.com</span>
+                            </div>
+                            <div class="info-row">
+                                <strong>Số lượng người:</strong>
+                                <span id="dt-guests">2 khách</span>
+                            </div>
+                        </div>
+
+                        <div class="bill-summary">
+                            <div class="bill-row">
+                                <span>Giá phòng/đêm:</span>
+                                <span id="dt-price">1.200.000đ</span>
+                            </div>
+                            <div class="bill-row">
+                                <span>Số đêm:</span>
+                                <span id="dt-nights">3 đêm</span>
+                            </div>
+                            <div class="bill-total">
+                                <span>Tổng cộng:</span>
+                                <span class="amount" id="dt-total">3.600.000đ</span>
+                            </div>
+                        </div>
+
+                        <button class="btn-confirm">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="roomChangeSuccessModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.3); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;">
+        <div
+            style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; gap: 15px; width: 320px;">
+            <i class="fa-regular fa-circle-check" style="font-size: 55px; color: #10b981;"></i>
+            <h2 style="font-size: 18px; font-weight: bold; color: #111; margin: 0;">Đổi phòng thành công</h2>
+            <button id="btn-close-modal"
+                style="background-color: #d9534f; color: white; border: none; padding: 10px 40px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: 0.2s;">Xong</button>
+        </div>
+    </div>
+
+    <script>
+
+        function updateSummaryCards() {
+            if (document.getElementById('cnt-total')) document.getElementById('cnt-total').innerText = document.querySelectorAll('.room').length;
+            if (document.getElementById('cnt-trong')) document.getElementById('cnt-trong').innerText = document.querySelectorAll('.room.status-trong').length;
+            if (document.getElementById('cnt-dangsu')) document.getElementById('cnt-dangsu').innerText = document.querySelectorAll('.room.status-dangsu-dung').length;
+            if (document.getElementById('cnt-dadat')) document.getElementById('cnt-dadat').innerText = document.querySelectorAll('.room.status-dadat').length;
+            if (document.getElementById('cnt-baotri')) document.getElementById('cnt-baotri').innerText = document.querySelectorAll('.room.status-baotri').length;
+        }
+
+        const roomData = {
+            '102': { name: 'Tôn Thất Huy Phong', phone: '03273144121', email: 'Phongphong@gmail.com', checkIn: '20/08/2025', checkOut: '25/08/2025', guests: '2 khách', price: '1.200.000đ', nights: '3 đêm', total: '3.600.000đ' },
+            '201': { name: 'Nguyễn Thị Ny', phone: '0987654321', email: 'nyny@gmail.com', checkIn: '21/08/2025', checkOut: '22/08/2025', guests: '1 khách', price: '1.000.000đ', nights: '1 đêm', total: '1.000.000đ' },
+            '302': { name: 'Trần Thanh Nhã', phone: '0912345678', email: 'nha.tran@example.com', checkIn: '23/05/2024', checkOut: '25/05/2024', guests: '2 khách', price: '1.500.000đ', nights: '2 đêm', total: '3.000.000đ' },
+            '303': { name: 'Vy Minh Quân', phone: '0909090909', email: 'quan.vy@example.com', checkIn: '24/05/2024', checkOut: '26/05/2024', guests: '3 khách', price: '1.500.000đ', nights: '2 đêm', total: '3.000.000đ' },
+            '401': { name: 'Trần Thanh Nhã', phone: '0912345678', email: 'nha.tran@example.com', checkIn: '01/01/2026', checkOut: '03/01/2026', guests: '2 khách', price: '2.000.000đ', nights: '2 đêm', total: '4.000.000đ' },
+        };
+
+        function updateDetailsPanel(roomNumber) {
+            const data = roomData[roomNumber] || { name: '---', phone: '---', email: '---', checkIn: '---', checkOut: '---', guests: '---', price: '---', nights: '---', total: '---' };
+            document.getElementById('dt-name').innerText = data.name;
+            document.getElementById('dt-phone').innerText = data.phone;
+            document.getElementById('dt-email').innerText = data.email;
+            document.getElementById('dt-checkin').innerText = data.checkIn;
+            document.getElementById('dt-checkout').innerText = data.checkOut;
+            document.getElementById('dt-guests').innerText = data.guests;
+            document.getElementById('dt-price').innerText = data.price;
+            document.getElementById('dt-nights').innerText = data.nights;
+            document.getElementById('dt-total').innerText = data.total;
+        }
+
+        let currentActiveRoom = null;
+        let roomChanged = false;
+
+        function getEmptyRooms() {
+            return Array.from(document.querySelectorAll('.room.status-trong')).map(room => room.querySelector('.room-number').innerText);
+        }
+
+        document.querySelectorAll('.room').forEach(room => {
+            room.addEventListener('click', function () {
+                currentActiveRoom = this;
+                roomChanged = false;
+                const roomNumber = this.querySelector('.room-number').innerText;
+                const detailsPanel = document.querySelector('.room-details');
+                const roomNumberDisplay = document.querySelector('.room-number-display');
+                const changeRoomBtn = document.querySelector('.btn-change-room');
+                const roomSelector = document.querySelector('.room-selector');
+
+                detailsPanel.style.display = 'block';
+
+                roomNumberDisplay.innerText = roomNumber;
+                updateDetailsPanel(roomNumber);
+
+                roomSelector.style.display = 'none';
+                roomSelector.value = '';
+                if (this.classList.contains('status-dangsu-dung') || this.classList.contains('status-dadat')) {
+                    changeRoomBtn.style.display = 'inline-block';
+                } else {
+                    changeRoomBtn.style.display = 'none';
+                }
+            });
+        });
+
+        document.querySelector('.btn-change-room').addEventListener('click', function () {
+            const roomSelector = document.querySelector('.room-selector');
+
+            const emptyRooms = getEmptyRooms();
+            roomSelector.innerHTML = '<option value="">Phòng</option>';
+            emptyRooms.forEach(num => {
+                roomSelector.innerHTML += `<option value="${num}">${num}</option>`;
+            });
+
+            roomSelector.style.display = roomSelector.style.display === 'none' ? 'inline-block' : 'none';
+        });
+
+        document.querySelector('.btn-confirm').addEventListener('click', function () {
+            const roomSelector = document.querySelector('.room-selector');
+            const targetRoomNumber = roomSelector.value;
+
+            if (targetRoomNumber && currentActiveRoom) {
+
+                const allRooms = Array.from(document.querySelectorAll('.room'));
+                const targetRoom = allRooms.find(r => r.querySelector('.room-number').innerText === targetRoomNumber);
+
+                if (targetRoom) {
+
+                    const oldStatusClass = Array.from(currentActiveRoom.classList).find(c => c.startsWith('status-'));
+                    const oldStatusText = currentActiveRoom.querySelector('.room-status').innerText;
+                    const oldDetailElement = currentActiveRoom.querySelector('.room-detail');
+                    const oldDetailHTML = oldDetailElement ? oldDetailElement.innerHTML : '';
+
+                    targetRoom.classList.remove('status-trong');
+                    targetRoom.classList.add(oldStatusClass);
+                    targetRoom.querySelector('.room-status').innerText = oldStatusText;
+
+                    let newDetailElement = targetRoom.querySelector('.room-detail');
+                    if (!newDetailElement && oldDetailHTML) {
+                        newDetailElement = document.createElement('div');
+                        newDetailElement.className = 'room-detail';
+                        targetRoom.appendChild(newDetailElement);
+                    }
+                    if (newDetailElement) {
+                        newDetailElement.innerHTML = oldDetailHTML;
+                    }
+
+                    const oldRoomNumber = currentActiveRoom.querySelector('.room-number').innerText;
+                    currentActiveRoom.classList.remove(oldStatusClass);
+                    currentActiveRoom.classList.add('status-trong');
+                    currentActiveRoom.querySelector('.room-status').innerText = 'Trống';
+                    if (oldDetailElement) {
+                        oldDetailElement.remove();
+                    }
+
+                    if (roomData[oldRoomNumber]) {
+                        roomData[targetRoomNumber] = roomData[oldRoomNumber];
+                        delete roomData[oldRoomNumber];
+                    }
+
+                    document.getElementById('roomChangeSuccessModal').style.display = 'flex';
+                    updateSummaryCards();
+                }
+            }
+
+            document.querySelector('.room-details').style.display = 'none';
+            roomSelector.style.display = 'none';
+            roomSelector.value = '';
+            currentActiveRoom = null;
+            roomChanged = false;
+        });
+
+        const modalBtn = document.getElementById('btn-close-modal');
+        if (modalBtn) {
+            modalBtn.addEventListener('click', function () {
+                document.getElementById('roomChangeSuccessModal').style.display = 'none';
+            });
+            modalBtn.addEventListener('mouseenter', () => modalBtn.style.backgroundColor = '#c9302c');
+            modalBtn.addEventListener('mouseleave', () => modalBtn.style.backgroundColor = '#d9534f');
+        }
+
+        document.querySelector('.nav-item').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector('.room-details').style.display = 'none';
+            if (document.querySelector('.room-selector')) {
+                document.querySelector('.room-selector').style.display = 'none';
+            }
+            currentActiveRoom = null;
+            roomChanged = false;
+        });
+        updateSummaryCards();
+    </script>
+    <!-- Popup xác nhận đăng xuất -->
+    <div class="logout-popup" id="logoutPopup">
+        <p>Bạn muốn đăng xuất?</p>
+        <div class="logout-popup-actions">
+            <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
+        </div>
+    </div>
+
+    <!-- Overlay Thông tin người dùng -->
+    <div class="user-info-overlay" id="userInfoOverlay">
+        <div class="user-info-card">
+            <h2>Thông tin người dùng</h2>
+            <div class="user-info-body">
+                <!-- Cột trái -->
+                <div class="user-left">
+                    <h3>Thông tin cá nhân</h3>
+                    <div class="user-avatar-row">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                        <div>
+                            <div class="user-avatar-name">Vương Văn Quyền</div>
+                            <div class="user-avatar-email">vvquyen@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                            class="user-field-value">Vương Văn Quyền</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                            class="user-field-value">25/07/2005</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                            class="user-field-value">Nam</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                            class="user-field-value">09123467898</span></div>
+                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                            class="user-field-value">Lễ tân</span></div>
+                </div>
+                <!-- Cột phải -->
+                <div class="user-right">
+                    <h3>Cài đặt tài khoản</h3>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Tên người dùng</span>
+                        <span class="account-field-value">vvquyen_2507</span>
+                    </div>
+                    <div class="account-field-row">
+                        <span class="account-field-label">Mật khẩu</span>
+                        <span class="account-field-value">••••••••••••</span>
+                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
+                                class="fa-solid fa-pen"></i></button>
+                    </div>
+
+                    <div class="change-password-panel" id="changePasswordPanel">
+                        <h4>Đổi mật khẩu</h4>
+                        <div class="pw-row">
+                            <span class="pw-label">Mật khẩu hiện tại:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-row">
+                            <span class="pw-label">Mật khẩu mới:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-row">
+                            <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                            <input type="password" class="pw-input">
+                        </div>
+                        <div class="pw-actions">
+                            <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                            <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="sidebar">
-                <div class="legend">
-                    <h3>Ghi chú:</h3>
-                    <div class="legend-item">
-                        <div class="legend-icon status-trong"></div>
-                        <div class="legend-text"><strong>TRỐNG</strong><span>Phòng chưa có người đặt.</span></div>
-                    </div>
-                    <!-- More legend items... -->
-                </div>
+            <div class="user-info-footer" id="userInfoFooter">
+                <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
+                <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
             </div>
         </div>
-    </main>
+    </div>
+
+    <!-- Popup Lưu thành công -->
+    <div class="save-success-overlay" id="saveSuccessOverlay">
+        <div class="save-success-card">
+            <i class="fa-solid fa-circle-check"></i>
+            <p>Thông tin đã được lưu</p>
+            <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+        </div>
+    </div>
+
+    <!-- Popup Đổi mật khẩu thành công -->
+    <div class="pw-success-overlay" id="pwSuccessOverlay">
+        <div class="pw-success-card">
+            <i class="fa-regular fa-circle-check"></i>
+            <p>Đổi mật khẩu thành công</p>
+            <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+        </div>
+    </div>
+
+
+    <script>
+        function toggleLogoutPopup() {
+            document.getElementById('logoutPopup').classList.toggle('show');
+        }
+        document.addEventListener('click', function (e) {
+            const popup = document.getElementById('logoutPopup');
+            const icon = document.querySelector('.fa-arrow-right-from-bracket');
+            if (!popup.contains(e.target) && e.target !== icon) {
+                popup.classList.remove('show');
+            }
+        });
+        function openUserInfo() {
+            document.getElementById('userInfoOverlay').classList.add('show');
+        }
+        function closeUserInfo() {
+            document.getElementById('userInfoOverlay').classList.remove('show');
+        }
+        function showSaveSuccess() {
+            document.getElementById('saveSuccessOverlay').classList.add('show');
+        }
+        function closeSaveSuccess() {
+            document.getElementById('saveSuccessOverlay').classList.remove('show');
+            document.getElementById('userInfoOverlay').classList.remove('show');
+        }
+
+        function toggleChangePassword() {
+            const panel = document.getElementById('changePasswordPanel');
+            const footer = document.getElementById('userInfoFooter');
+            panel.classList.toggle('show');
+            if (panel.classList.contains('show')) {
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+            }
+        }
+
+        function showPwSuccess() {
+            document.getElementById('pwSuccessOverlay').classList.add('show');
+        }
+
+        function closePwSuccess() {
+            document.getElementById('pwSuccessOverlay').classList.remove('show');
+            toggleChangePassword(); // Quay lại view chính
+        }
+    </script>
 </body>
+
 </html>
