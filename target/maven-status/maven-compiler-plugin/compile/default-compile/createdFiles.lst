@@ -1,6 +1,6 @@
 com\n4testing\model\User.class
 com\n4testing\service\UserService.class
 com\n4testing\controller\UserController.class
-com\n4testing\repository\UserRepository.class
 com\n4testing\N4TestingApplication.class
+com\n4testing\repository\UserRepository.class
 com\n4testing\controller\WebController.class

@@ -1,0 +1,63 @@
+package com.n4testing.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "dat_phong")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DatPhong {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ma_dat_phong")
+    private Integer maDatPhong;
+
+    @Column(name = "ngay_nhan", nullable = false)
+    private LocalDateTime ngayNhan;
+
+    @Column(name = "ngay_tra", nullable = false)
+    private LocalDateTime ngayTra;
+
+    @Column(name = "so_nguoi_lon")
+    private Integer soNguoiLon = 1;
+
+    @Column(name = "so_tre_em")
+    private Integer soTreEm = 0;
+
+    @Column(name = "tong_so_nguoi", insertable = false, updatable = false)
+    private Integer tongSoNguoi;
+
+    @Column(name = "so_phong")
+    private String soPhong;
+
+    @Column(name = "trang_thai")
+    private String trangThai; // Đã đặt, Đang ở, Đã trả, Đã hủy
+
+    @Column(name = "ten_nguoi_dat")
+    private String tenNguoiDat;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "sdt_nguoi_dat")
+    private String sdtNguoiDat;
+
+    @Column(name = "tien_coc")
+    private BigDecimal tienCoc = BigDecimal.ZERO;
+
+    @Column(name = "tong_thanh_toan")
+    private BigDecimal tongThanhToan = BigDecimal.ZERO;
+
+    @ManyToOne
+    @JoinColumn(name = "id_kh")
+    private KhachHang khachHang;
+
+    // id_letan reference can be added if LeTan entity is created
+}

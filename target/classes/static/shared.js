@@ -38,20 +38,20 @@ function setupGlobalNav() {
         '/dat-phong',
         '/ql-datphong',
         '/nhan-phong',
-        '/service',
+        '/tra-phong',
         '/service'
     ];
-    
+
     const attachLinks = (navs) => {
         navs.forEach((nav, idx) => {
-            if(mapping[idx]) {
+            if (mapping[idx]) {
                 // Keep onclick for Service if it's already there, else overwrite href
                 if (nav.tagName.toLowerCase() === 'a' && !nav.hasAttribute('onclick')) {
                     nav.href = mapping[idx];
                 } else {
                     const originalClick = nav.onclick;
-                    nav.onclick = function(e) {
-                        if(window.location.pathname.includes('/service')) {
+                    nav.onclick = function (e) {
+                        if (window.location.pathname.includes('/service')) {
                             if (originalClick) originalClick.apply(this, arguments);
                             return; // let native logic run
                         }
@@ -75,37 +75,37 @@ function syncTongquan() {
     const rooms = getSharedRooms();
     document.querySelectorAll('.room').forEach(roomEl => {
         const num = roomEl.querySelector('.room-number');
-        if(!num) return;
+        if (!num) return;
         const roomObj = rooms.find(r => r.id === num.innerText.trim());
-        if(roomObj) {
+        if (roomObj) {
             roomEl.className = 'room'; // reset
             let statusClass = 'status-trong';
             if (roomObj.status === 'Đang sử dụng') statusClass = 'status-dangsu-dung';
             else if (roomObj.status === 'Đã đặt') statusClass = 'status-dadat';
             else if (roomObj.status === 'Bảo trì') statusClass = 'status-baotri';
-            
+
             roomEl.classList.add(statusClass);
             roomEl.querySelector('.room-status').innerText = roomObj.status;
-            
+
             let detailEl = roomEl.querySelector('.room-detail');
             if (roomObj.customer) {
-                if(!detailEl) {
+                if (!detailEl) {
                     detailEl = document.createElement('div');
                     detailEl.className = 'room-detail';
                     roomEl.appendChild(detailEl);
                 }
                 detailEl.innerHTML = roomObj.customer + (roomObj.date ? '<br>→ ' + roomObj.date : '');
             } else {
-                if(detailEl) detailEl.remove();
+                if (detailEl) detailEl.remove();
             }
         }
     });
-    if(typeof updateSummaryCards === 'function') updateSummaryCards();
+    if (typeof updateSummaryCards === 'function') updateSummaryCards();
 }
 
 // 4. Sync Logic for Service.html
 function overrideServiceData() {
-    if(window.roomsData) {
+    if (window.roomsData) {
         window.roomsData = getSharedRooms();
     }
 }
@@ -113,15 +113,15 @@ function overrideServiceData() {
 document.addEventListener('DOMContentLoaded', () => {
     initSharedData();
     setupGlobalNav();
-    
+
     const path = window.location.pathname;
-    if(path.includes('/tongquan')) {
+    if (path.includes('/tongquan')) {
         syncTongquan();
-    } else if(path.includes('/service')) {
+    } else if (path.includes('/service')) {
         overrideServiceData();
-        if(window.location.hash === '#checkout' && typeof switchMainTab === 'function') {
+        if (window.location.hash === '#checkout' && typeof switchMainTab === 'function') {
             switchMainTab('checkout');
-        } else if(window.location.hash === '#service' && typeof switchMainTab === 'function') {
+        } else if (window.location.hash === '#service' && typeof switchMainTab === 'function') {
             switchMainTab('service');
         }
     }
