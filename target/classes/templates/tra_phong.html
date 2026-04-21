@@ -28,6 +28,32 @@
             overflow-x: hidden;
         }
 
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 10000;
+        }
+        .modal-content {
+            background: #fff; padding: 30px; border-radius: 20px; width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: center;
+            animation: modalScale 0.3s ease-out;
+        }
+        @keyframes modalScale {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #333; }
+        .modal-msg { font-size: 16px; color: #666; margin-bottom: 25px; line-height: 1.5; }
+        .modal-btns { display: flex; justify-content: center; gap: 15px; }
+        .modal-btn { 
+            padding: 10px 25px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .modal-btn-ok { background: #d57e50; color: #fff; text-transform: uppercase; }
+        .modal-btn-ok:hover { background: #b96a43; }
+        .modal-btn-cancel { background: #eee; color: #666; }
+        .modal-btn-cancel:hover { background: #ddd; }
+
         /* --- Khung màn hình --- */
         #app-container {
             width: 100%;
@@ -459,6 +485,16 @@
 </head>
 
 <body>
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modalTitle" class="modal-title">Thông báo</div>
+            <div id="modalMsg" class="modal-msg">Nội dung thông báo ở đây...</div>
+            <div class="modal-btns">
+                <button id="modalCancelBtn" class="modal-btn modal-btn-cancel" onclick="closeModal()">Hủy</button>
+                <button id="modalOkBtn" class="modal-btn modal-btn-ok" onclick="confirmModal()">OK</button>
+            </div>
+        </div>
+    </div>
 
     <div id="app-container">
         <!-- 1. Thanh Top Bar -->
@@ -614,12 +650,71 @@
         let roomsData = [];
         let selectedCheckoutRoomId = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.sharedData) {
-                roomsData = window.sharedData.getSharedRooms();
-            }
-            renderCheckoutMap();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchActiveStays();
         });
+
+        async function fetchActiveStays() {
+            try {
+                const res = await fetch('/api/tra-phong/active-stays');
+                const stays = await res.json();
+                roomsData = stays.map(s => {
+                    const servicesMap = {};
+                    (s.suDungDichVuList || []).forEach(sd => {
+                        const srvId = sd.dichVu ? sd.dichVu.idDichvu : 'srv-' + sd.idSudungDv;
+                        if (servicesMap[srvId]) {
+                            servicesMap[srvId].qty += (sd.soluong || 1);
+                            servicesMap[srvId].realIds.push(sd.idSudungDv);
+                        } else {
+                            servicesMap[srvId] = {
+                                id: srvId,
+                                realIds: [sd.idSudungDv],
+                                name: sd.dichVu ? sd.dichVu.tenDichVu : 'Dịch vụ',
+                                price: sd.thanhTien ? sd.thanhTien / sd.soluong : 0,
+                                qty: sd.soluong || 1,
+                                type: 'service'
+                            };
+                        }
+                    });
+
+                    const damagesMap = {};
+                    (s.thietHaiList || []).forEach(th => {
+                        const dmgId = th.taiSan ? th.taiSan.idTaisan : 'th-' + th.idThieThai;
+                        if (damagesMap[dmgId]) {
+                            damagesMap[dmgId].qty += 1;
+                            damagesMap[dmgId].realIds.push(th.idThieThai);
+                        } else {
+                            damagesMap[dmgId] = {
+                                id: dmgId,
+                                realIds: [th.idThieThai],
+                                name: th.taiSan ? th.taiSan.tenTaiSan : 'Tài sản',
+                                price: th.soTienBoiThuong || 0,
+                                qty: 1,
+                                type: 'compensation'
+                            };
+                        }
+                    });
+
+                    return {
+                        id: s.idLuutru,
+                        name: s.actualRoomName || s.datPhong.soPhong,
+                        floor: 1,
+                        status: 'Đang sử dụng',
+                        customer: s.datPhong.tenNguoiDat,
+                        date: s.thoiGianCheckinThucTe ? s.thoiGianCheckinThucTe.split('T')[0].split('-').reverse().join('/') : '',
+                        date2: s.datPhong.ngayTra ? s.datPhong.ngayTra.split('T')[0].split('-').reverse().join('/') : '',
+                        basePrice: s.calculatedBasePrice || 0,
+                        items: [...Object.values(servicesMap), ...Object.values(damagesMap)]
+                    };
+                });
+                renderCheckoutMap();
+                if (selectedCheckoutRoomId) {
+                    renderCheckoutParams();
+                }
+            } catch (error) {
+                console.error("Error fetching stays:", error);
+            }
+        }
 
         function searchCheckoutMap() {
             const query = document.getElementById('coSearchInput').value.toLowerCase();
@@ -676,7 +771,7 @@
         function renderCheckoutParams() {
             const lPanel = document.getElementById('coLeftPanel');
             const rPanel = document.getElementById('coRightPanel');
-            const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+            const room = roomsData.find(r => r.id == selectedCheckoutRoomId);
             if (!room) return;
 
             let svHtml = '';
@@ -684,15 +779,19 @@
             let svTotal = 0;
             let svIdx = 1, cpIdx = 1;
 
-            room.items.forEach(item => {
+            room.items.forEach((item, index) => {
                 const total = item.price * item.qty;
                 svTotal += total;
                 const row = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:15px; padding-left:15px;">
                         <span style="flex:1;">${item.type === 'service' ? svIdx : cpIdx}. ${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</span>
-                        <div style="background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px;">- 0${item.qty} +</div>
+                        <div style="display:flex; align-items:center; background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px;">
+                            <span style="cursor:pointer; padding:0 5px;" onclick="changeQty('${room.id}', ${index}, -1)">-</span>
+                            <span style="margin:0 10px;">${item.qty < 10 ? '0' + item.qty : item.qty}</span>
+                            <span style="cursor:pointer; padding:0 5px;" onclick="changeQty('${room.id}', ${index}, 1)">+</span>
+                        </div>
                         <div style="width:100px; text-align:right;">${formatMoney(total)}</div>
-                        <i class="fa-regular fa-trash-can" style="color:#aaa; margin-left:15px; cursor:pointer;" title="Tính năng xóa bị khóa ở mục checkout"></i>
+                        <i class="fa-regular fa-trash-can" style="color:#d57e50; margin-left:15px; cursor:pointer;" onclick="removeItem('${room.id}', ${index})"></i>
                     </div>`;
                 if (item.type === 'service') { svHtml += row; svIdx++; }
                 else { cpHtml += row; cpIdx++; }
@@ -764,57 +863,135 @@
             }
         }
 
-        function openInvoiceForm() {
+        /* Modal Logic */
+        let modalResolve = null;
+        function showModal(msg, title = "Thông báo", type = "alert") {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMsg').innerText = msg;
+            document.getElementById('modalCancelBtn').style.display = type === 'confirm' ? 'block' : 'none';
+            document.getElementById('customModal').style.display = 'flex';
+            return new Promise(resolve => { modalResolve = resolve; });
+        }
+        function closeModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (modalResolve) modalResolve(false);
+        }
+        function confirmModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (modalResolve) modalResolve(true);
+        }
+
+        async function changeQty(roomId, itemIdx, delta) {
+            const room = roomsData.find(r => r.id == roomId);
+            const item = room.items[itemIdx];
+
+            if (item.realIds && item.realIds.length > 0) {
+                 try {
+                     if (delta > 0) {
+                         if (item.type === 'service') {
+                             await fetch('/api/su-dung-dich-vu', {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ idLuutru: room.id, idDichvu: item.id, quantity: 1 })
+                             });
+                         } else {
+                             await fetch('/api/thiet-hai', {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ idLuutru: room.id, idTaisan: item.id, mucDo: 'Vừa', fineAmount: item.price })
+                             });
+                         }
+                     } else {
+                         const rid = item.realIds[0];
+                         const url = item.type === 'service' ? `/api/su-dung-dich-vu/${rid}` : `/api/thiet-hai/${rid}`;
+                         await fetch(url, { method: 'DELETE' });
+                     }
+                     await fetchActiveStays();
+                 } catch (e) {
+                     showModal("Lỗi khi cập nhật số lượng: " + e);
+                 }
+                 return;
+            }
+            if (item.qty + delta <= 0) removeItem(roomId, itemIdx);
+            else { item.qty += delta; renderCheckoutParams(); }
+        }
+
+        async function removeItem(roomId, itemIdx) {
+            const room = roomsData.find(r => r.id == roomId);
+            const item = room.items[itemIdx];
+
+            if (item.realIds && item.realIds.length > 0) {
+                const ok = await showModal("Bạn có chắc chắn muốn xóa dịch vụ này khỏi hệ thống?", "Xác nhận", "confirm");
+                if (!ok) return;
+                try {
+                    for (const rid of item.realIds) {
+                        const url = item.type === 'service' ? `/api/su-dung-dich-vu/${rid}` : `/api/thiet-hai/${rid}`;
+                        await fetch(url, { method: 'DELETE' });
+                    }
+                    await fetchActiveStays();
+                    showModal("Đã xóa thành công.");
+                } catch (error) { showModal("Lỗi khi xóa: " + error); }
+            }
+        }
+
+        async function openInvoiceForm() {
             const cbCash = document.getElementById('cbCash').checked;
             const cbQr = document.getElementById('cbQr').checked;
             if (!cbCash && !cbQr) { alert('Vui lòng chọn 1 phương thức thanh toán!'); return; }
 
-            const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
-            document.getElementById('invCust').innerText = room.customer || '';
-            document.getElementById('invIn').innerText = room.date ? room.date.split(',')[0] : '';
-            document.getElementById('invOut').innerText = room.date2 ? room.date2.split(',')[0] : '';
+            const room = roomsData.find(r => r.id == selectedCheckoutRoomId);
+            
+            // Fetch real total from backend
+            try {
+                const res = await fetch(`/api/tra-phong/checkout-info/${room.id}`);
+                const data = await res.json();
+                
+                document.getElementById('invCust').innerText = room.customer || '';
+                document.getElementById('invIn').innerText = room.date || '';
+                document.getElementById('invOut').innerText = room.date2 || '';
 
-            let tbody = '';
-            let svTotal = 0;
-            room.items.forEach(item => {
-                const total = item.price * item.qty;
-                svTotal += total;
-                tbody += `<tr>
-                    <td style="padding:10px 0; border-bottom: 1px solid #eee; word-wrap: break-word; font-weight: 500; color: #111;">${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</td>
-                    <td style="text-align:center; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">0${item.qty}</td>
-                    <td style="text-align:right; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">${formatMoney(total)}</td>
-                </tr>`;
-            });
-            document.getElementById('invItemsBody').innerHTML = tbody;
-            document.getElementById('invRoom').innerText = formatMoney(room.basePrice);
-            document.getElementById('invSrv').innerText = formatMoney(svTotal);
-            document.getElementById('invTotal').innerText = formatMoney(room.basePrice + svTotal);
-
-            document.getElementById('invoicePopup').style.display = 'flex';
+                // For simplicity in this demo, we keep the room items display as is, 
+                // but real app should fetch used services from backend here.
+                
+                document.getElementById('invRoom').innerText = formatMoney(room.basePrice);
+                document.getElementById('invTotal').innerText = formatMoney(data.total);
+                document.getElementById('invoicePopup').style.display = 'flex';
+            } catch (error) {
+                alert("Lỗi khi lấy thông tin hóa đơn: " + error);
+            }
         }
 
         function closeInvoice() { document.getElementById('invoicePopup').style.display = 'none'; }
 
-        function printInvoice() {
-            document.getElementById('invoicePopup').style.display = 'none';
-            document.getElementById('printSuccessPopup').style.display = 'flex';
+        async function printInvoice() {
+            const cbCash = document.getElementById('cbCash').checked;
+            const paymentMethod = cbCash ? 'CASH' : 'QR';
+            
+            try {
+                const res = await fetch('/api/tra-phong/finalize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idLuutru: selectedCheckoutRoomId,
+                        paymentMethod: paymentMethod
+                    })
+                });
+                
+                if (res.ok) {
+                    document.getElementById('invoicePopup').style.display = 'none';
+                    document.getElementById('printSuccessPopup').style.display = 'flex';
+                } else {
+                    const err = await res.text();
+                    alert("Lỗi khi thanh toán: " + err);
+                }
+            } catch (error) {
+                alert("Lỗi kết nối: " + error);
+            }
         }
 
         function closePrintSuccess() {
             document.getElementById('printSuccessPopup').style.display = 'none';
-            resetCheckoutRoom();
-        }
-
-        function resetCheckoutRoom() {
-            const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
-            if (room) {
-                room.status = 'Trống';
-                room.customer = '';
-                room.date = '';
-                room.date2 = '';
-                room.items = [];
-                if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
-            }
+            fetchActiveStays(); // Refresh map
             selectCheckoutRoom(null);
         }
 

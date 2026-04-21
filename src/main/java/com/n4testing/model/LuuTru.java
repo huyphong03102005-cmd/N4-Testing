@@ -1,11 +1,13 @@
 package com.n4testing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "luu_tru")
@@ -30,4 +32,12 @@ public class LuuTru {
 
     @Column(name = "so_nguoi_thuc_te")
     private Integer soNguoiThucTe;
+
+    @OneToMany(mappedBy = "luuTru", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("luuTru")
+    private List<SuDungDichVu> suDungDichVuList;
+
+    @OneToMany(mappedBy = "luuTru", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("luuTru")
+    private List<ThietHai> thietHaiList;
 }

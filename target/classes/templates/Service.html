@@ -28,6 +28,32 @@
             overflow-x: hidden;
         }
 
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 10000;
+        }
+        .modal-content {
+            background: #fff; padding: 30px; border-radius: 20px; width: 400px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: center;
+            animation: modalScale 0.3s ease-out;
+        }
+        @keyframes modalScale {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #333; }
+        .modal-msg { font-size: 16px; color: #666; margin-bottom: 25px; line-height: 1.5; }
+        .modal-btns { display: flex; justify-content: center; gap: 15px; }
+        .modal-btn { 
+            padding: 10px 25px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .modal-btn-ok { background: #d57e50; color: #fff; text-transform: uppercase; }
+        .modal-btn-ok:hover { background: #b96a43; }
+        .modal-btn-cancel { background: #eee; color: #666; }
+        .modal-btn-cancel:hover { background: #ddd; }
+
         /* --- Khung màn hình --- */
         #app-container {
             width: 100%;
@@ -1424,6 +1450,16 @@
 </head>
 
 <body>
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modalTitle" class="modal-title">Thông báo</div>
+            <div id="modalMsg" class="modal-msg">Nội dung thông báo ở đây...</div>
+            <div class="modal-btns">
+                <button id="modalCancelBtn" class="modal-btn modal-btn-cancel" onclick="closeModal()">Hủy</button>
+                <button id="modalOkBtn" class="modal-btn modal-btn-ok" onclick="confirmModal()">OK</button>
+            </div>
+        </div>
+    </div>
 
     <div id="app-container">
         <!-- 1. Thanh Top Bar -->
@@ -1701,54 +1737,108 @@
         </div>
     </div>
 
-    <script src="shared.js"></script>
     <script>
         const formatMoney = (amount) => amount.toLocaleString('vi-VN');
 
-        const catalog = {
-            service: [
-                { id: 's1', name: 'Dịch vụ ăn uống', price: 150000, icon: 'fa-utensils', type: 'service' },
-                { id: 's2', name: 'Giặt ủi', price: 100000, icon: 'fa-shirt', type: 'service' },
-                { id: 's3', name: 'Dịch vụ dọn phòng', price: 100000, icon: 'fa-broom', type: 'service' },
-                { id: 's4', name: 'Dịch vụ hỗ trợ khách', price: 50000, icon: 'fa-bell-concierge', type: 'service' },
-                { id: 's5', name: 'Dịch vụ đặc biệt theo yêu cầu', price: 100000, icon: 'fa-gift', type: 'service' }
-            ],
-            compensation: [
-                { id: 'c1', name: 'Bàn', price: 300000, icon: 'fa-table', type: 'compensation' },
-                { id: 'c2', name: 'Ghế', price: 150000, icon: 'fa-chair', type: 'compensation' },
-                { id: 'c3', name: 'Tủ quần áo', price: 500000, icon: 'fa-door-closed', type: 'compensation' },
-                { id: 'c4', name: 'Tủ đầu giường', price: 200000, icon: 'fa-box-archive', type: 'compensation' },
-                { id: 'c5', name: 'Kệ', price: 100000, icon: 'fa-bars-staggered', type: 'compensation' },
-                { id: 'c6', name: 'Máy sấy', price: 150000, icon: 'fa-wind', type: 'compensation' },
-                { id: 'c7', name: 'Khăn tắm', price: 50000, icon: 'fa-scroll', type: 'compensation' },
-                { id: 'c8', name: 'Khác', price: 100000, icon: 'fa-plus', type: 'compensation' }
-            ]
+        let catalog = {
+            service: [],
+            compensation: []
         };
 
-        let roomsData = window.sharedData ? window.sharedData.getSharedRooms() : [
-            { id: 'r101', name: '101', floor: 1, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r102', name: '102', floor: 1, status: 'Đang sử dụng', customer: 'Tôn Thất Huy Phong', date: '20 Th8 2025, 14:00', date2: '26 Th8 2025, 12:00', basePrice: 1600000, items: [] },
-            { id: 'r103', name: '103', floor: 1, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
-
-            { id: 'r201', name: '201', floor: 2, status: 'Đã đặt', customer: 'Nguyễn Thị Ny', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r202', name: '202', floor: 2, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r203', name: '203', floor: 2, status: 'Bảo trì', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
-
-            { id: 'r301', name: '301', floor: 3, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r302', name: '302', floor: 3, status: 'Đang sử dụng', customer: 'Trần Thanh Nhã', date: '23 Th5 2024, 14:00', date2: '25 Th5 2024, 12:00', basePrice: 1600000, items: [] },
-            { id: 'r303', name: '303', floor: 3, status: 'Đã đặt', customer: 'Vy Minh Quân', date: '', date2: '', basePrice: 1200000, items: [] },
-
-            { id: 'r401', name: '401', floor: 4, status: 'Đang sử dụng', customer: 'Thái Ngọc Kim Dung', date: '16 Th3 2026, 14:00', date2: '18 Th3 2026, 12:00', basePrice: 1600000, items: [] },
-            { id: 'r402', name: '402', floor: 4, status: 'Đã đặt', customer: 'Lê Nguyễn Nhật Anh', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r403', name: '403', floor: 4, status: 'Bảo trì', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
-
-            { id: 'r501', name: '501', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r502', name: '502', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-            { id: 'r503', name: '503', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1200000, items: [] }
-        ];
-
+        let roomsData = [];
         let currentTab = 'service';
         let selectedRoomId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchInitialData();
+        });
+
+        async function fetchInitialData() {
+            try {
+                // 1. Fetch Services
+                const srvRes = await fetch('/api/dich-vu');
+                const services = await srvRes.json();
+                catalog.service = services.map(s => ({
+                    id: s.idDichvu,
+                    name: s.tenDichVu,
+                    price: s.donGia,
+                    icon: 'fa-utensils',
+                    type: 'service'
+                }));
+
+                // 2. Fetch Assets (for compensation)
+                const assetRes = await fetch('/api/tai-san');
+                const assets = await assetRes.json();
+                catalog.compensation = assets.map(a => ({
+                    id: a.idTaisan,
+                    name: a.tenTaiSan,
+                    price: a.giaTriBoiThuong,
+                    icon: 'fa-chair',
+                    type: 'compensation'
+                }));
+
+                // 3. Fetch Active Stays
+                const staysRes = await fetch('/api/tra-phong/active-stays');
+                const stays = await staysRes.json();
+                roomsData = stays.map(stay => {
+                    const servicesMap = {};
+                    (stay.suDungDichVuList || []).forEach(sd => {
+                        const srvId = sd.dichVu ? sd.dichVu.idDichvu : 'srv-' + sd.idSudungDv;
+                        if (servicesMap[srvId]) {
+                            servicesMap[srvId].qty += (sd.soluong || 1);
+                            servicesMap[srvId].realIds.push(sd.idSudungDv);
+                        } else {
+                            servicesMap[srvId] = {
+                                id: srvId,
+                                realIds: [sd.idSudungDv],
+                                name: sd.dichVu ? sd.dichVu.tenDichVu : 'Dịch vụ',
+                                price: sd.thanhTien ? sd.thanhTien / sd.soluong : 0,
+                                qty: sd.soluong || 1,
+                                type: 'service'
+                            };
+                        }
+                    });
+
+                    const damagesMap = {};
+                    (stay.thietHaiList || []).forEach(th => {
+                        const dmgId = th.taiSan ? th.taiSan.idTaisan : 'th-' + th.idThieThai;
+                        if (damagesMap[dmgId]) {
+                            damagesMap[dmgId].qty += 1;
+                            damagesMap[dmgId].realIds.push(th.idThieThai);
+                        } else {
+                            damagesMap[dmgId] = {
+                                id: dmgId,
+                                realIds: [th.idThieThai],
+                                name: th.taiSan ? th.taiSan.tenTaiSan : 'Tài sản',
+                                price: th.soTienBoiThuong || 0,
+                                qty: 1,
+                                type: 'compensation'
+                            };
+                        }
+                    });
+
+                    return {
+                        id: stay.idLuutru,
+                        name: stay.actualRoomName || stay.datPhong.soPhong,
+                        floor: 1, 
+                        status: 'Đang sử dụng',
+                        customer: stay.datPhong.tenNguoiDat,
+                        date: stay.thoiGianCheckinThucTe ? stay.thoiGianCheckinThucTe.split('T')[0] : '',
+                        date2: stay.datPhong.ngayTra ? stay.datPhong.ngayTra.split('T')[0] : '',
+                        basePrice: stay.calculatedBasePrice || 0,
+                        items: [...Object.values(servicesMap), ...Object.values(damagesMap)]
+                    };
+                });
+
+                renderMap();
+                renderItemsList();
+                if (selectedRoomId) {
+                    renderRoomDetail();
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
 
         function switchTab(tab) {
             currentTab = tab;
@@ -1888,7 +1978,7 @@
         // Render Chi Tiết Bill cho 1 Phòng (Thẻ Tách Rời)
         function renderRoomDetail() {
             const container = document.getElementById('roomDetailContent');
-            const room = roomsData.find(r => r.id === selectedRoomId);
+            const room = roomsData.find(r => r.id == selectedRoomId);
             if (!room) return;
 
             // Xử lý Thẻ Thông Tin Phòng Chính
@@ -2003,7 +2093,7 @@
         function selectRoom(id) {
             // Ngăn chặn thao tác trên phòng trống
             if (id) {
-                const room = roomsData.find(r => r.id === id);
+                const room = roomsData.find(r => r.id == id);
                 if (room.status === 'Trống') {
                     alert('Phòng đang trống! Không thể thêm dịch vụ hoặc bồi thường cho phòng trống.');
                     return;
@@ -2023,39 +2113,107 @@
             }
         }
 
-        function addItemToSelected(itemId) {
+        /* Modal Logic */
+        let modalResolve = null;
+        function showModal(msg, title = "Thông báo", type = "alert") {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMsg').innerText = msg;
+            document.getElementById('modalCancelBtn').style.display = type === 'confirm' ? 'block' : 'none';
+            document.getElementById('customModal').style.display = 'flex';
+            return new Promise(resolve => { modalResolve = resolve; });
+        }
+        function closeModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (modalResolve) modalResolve(false);
+        }
+        function confirmModal() {
+            document.getElementById('customModal').style.display = 'none';
+            if (modalResolve) modalResolve(true);
+        }
+
+        async function addItemToSelected(itemId) {
             if (!selectedRoomId) {
-                alert('Vui lòng vào chọn một phòng ở Sơ đồ (Bên phải) trước khi thêm Dịch vụ / Bồi thường!');
+                showModal('Vui lòng chọn một phòng ở Sơ đồ trước khi thêm!');
                 return;
             }
 
-            const room = roomsData.find(r => r.id === selectedRoomId);
-            const itemDef = catalog[currentTab].find(i => i.id === itemId);
+            const room = roomsData.find(r => r.id == selectedRoomId);
+            const itemDef = catalog[currentTab].find(i => i.id == itemId);
 
-            const existing = room.items.find(i => i.id === itemId);
+            if (!itemDef) return;
+
+            // Look for existing item that IS ALSO NEW (unsaved), to group them locally
+            const existing = room.items.find(i => i.id == itemId && i.isNew);
             if (existing) {
                 existing.qty++;
             } else {
-                room.items.push({ ...itemDef, qty: 1 });
+                room.items.push({ ...itemDef, qty: 1, isNew: true });
             }
 
             renderRoomDetail();
         }
 
-        function changeQty(roomId, itemIdx, delta) {
-            const room = roomsData.find(r => r.id === roomId);
-            if (room.items[itemIdx].qty + delta <= 0) {
+        async function changeQty(roomId, itemIdx, delta) {
+            const room = roomsData.find(r => r.id == roomId);
+            const item = room.items[itemIdx];
+
+            if (item.realIds && item.realIds.length > 0) {
+                 try {
+                     if (delta > 0) {
+                         if (item.type === 'service') {
+                             await fetch('/api/su-dung-dich-vu', {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ idLuutru: room.id, idDichvu: item.id, quantity: 1 })
+                             });
+                         } else {
+                             await fetch('/api/thiet-hai', {
+                                 method: 'POST',
+                                 headers: { 'Content-Type': 'application/json' },
+                                 body: JSON.stringify({ idLuutru: room.id, idTaisan: item.id, mucDo: 'Vừa', fineAmount: item.price })
+                             });
+                         }
+                     } else {
+                         const rid = item.realIds[0];
+                         const url = item.type === 'service' ? `/api/su-dung-dich-vu/${rid}` : `/api/thiet-hai/${rid}`;
+                         await fetch(url, { method: 'DELETE' });
+                     }
+                     await fetchInitialData();
+                 } catch (e) {
+                     showModal("Lỗi khi cập nhật: " + e);
+                 }
+                 return;
+            }
+
+            if (item.qty + delta <= 0) {
                 room.items.splice(itemIdx, 1);
             } else {
-                room.items[itemIdx].qty += delta;
+                item.qty += delta;
             }
             renderRoomDetail();
         }
 
-        function removeItem(roomId, itemIdx) {
-            const room = roomsData.find(r => r.id === roomId);
-            room.items.splice(itemIdx, 1);
-            renderRoomDetail();
+        async function removeItem(roomId, itemIdx) {
+            const room = roomsData.find(r => r.id == roomId);
+            const item = room.items[itemIdx];
+
+            if (item.realIds && item.realIds.length > 0) {
+                const ok = await showModal("Bạn có chắc muốn xóa dịch vụ này khỏi hệ thống?", "Xác nhận", "confirm");
+                if (!ok) return;
+                try {
+                    for (const rid of item.realIds) {
+                        const url = item.type === 'service' ? `/api/su-dung-dich-vu/${rid}` : `/api/thiet-hai/${rid}`;
+                        await fetch(url, { method: 'DELETE' });
+                    }
+                    await fetchInitialData();
+                    showModal("Đã xóa thành công.");
+                } catch (error) {
+                    showModal("Lỗi khi xóa: " + error);
+                }
+            } else {
+                room.items.splice(itemIdx, 1);
+                renderRoomDetail();
+            }
         }
 
         function cancelAll() {
@@ -2067,12 +2225,42 @@
             selectRoom(null);
         }
 
-        function saveAll() {
-            if (selectedRoomId) {
-                if (window.sharedData) {
-                    window.sharedData.saveSharedRooms(roomsData);
+        async function saveAll() {
+            const room = roomsData.find(r => r.id == selectedRoomId);
+            if (!room || room.items.length === 0) return;
+
+            try {
+                for (const item of room.items) {
+                    if (item.type === 'service') {
+                        await fetch('/api/su-dung-dich-vu', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                idLuutru: room.id,
+                                idDichvu: item.id,
+                                quantity: item.qty
+                            })
+                        });
+                    } else {
+                        await fetch('/api/thiet-hai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                idLuutru: room.id,
+                                idTaisan: item.id,
+                                mucDo: 'Vừa',
+                                fineAmount: item.price
+                            })
+                        });
+                    }
                 }
+                
+                // Re-fetch data to sync with backend
+                await fetchInitialData();
+                
                 document.getElementById('successPopup').style.display = 'flex';
+            } catch (error) {
+                alert("Lỗi khi lưu dịch vụ: " + error);
             }
         }
 
@@ -2080,9 +2268,7 @@
             document.getElementById('successPopup').style.display = 'none';
         }
 
-        // Init App 
-        renderMap();
-        renderMap();
+        // renderMap() and renderItemsList() are called in fetchInitialData() on DOMContentLoaded
     </script>
 
     <script>
