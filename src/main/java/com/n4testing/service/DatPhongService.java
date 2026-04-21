@@ -56,19 +56,8 @@ public class DatPhongService {
         Phong phong = phongRepository.findByTenPhong(tenPhong)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng: " + tenPhong));
 
-        // 3. Tạo mã đặt phòng tự động
-        String baseCode = "DPW" + tenPhong.replaceAll("\\s+", "");
-        
-        java.util.Random rnd = new java.util.Random();
-        String finalCode;
-        do {
-            int randomNum = 100000 + rnd.nextInt(900000); // 6 digits
-            finalCode = baseCode + randomNum;
-        } while (datPhongRepository.existsById(finalCode));
-
-        // 4. Tạo phiếu đặt phòng
+        // 3. Tạo phiếu đặt phòng
         DatPhong datPhong = new DatPhong();
-        datPhong.setMaDatPhong(finalCode);
         datPhong.setKhachHang(khachHang);
         datPhong.setTenNguoiDat(hoTen);
         datPhong.setSdtNguoiDat(sdt);

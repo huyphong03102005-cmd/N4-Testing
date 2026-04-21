@@ -70,6 +70,9 @@ public class DatPhong {
     @Column(name = "tong_thanh_toan")
     private BigDecimal tongThanhToan = BigDecimal.ZERO;
 
+    @Column(name = "phuong_thuc_thanh_toan")
+    private String phuongThucThanhToan;
+
     @ManyToOne
     @JoinColumn(name = "id_kh")
     private KhachHang khachHang;

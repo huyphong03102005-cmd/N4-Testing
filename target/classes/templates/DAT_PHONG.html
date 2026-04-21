@@ -2114,30 +2114,7 @@
                     <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
                     <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Popup Lưu thành công -->
-        <div class="save-success-overlay" id="saveSuccessOverlay">
-            <div class="save-success-card">
-                <i class="fa-solid fa-circle-check"></i>
-                <p>Thông tin đã được lưu</p>
-                <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
-            </div>
-        </div>
-
-        <!-- Popup Đổi mật khẩu thành công -->
-        <div class="pw-success-overlay" id="pwSuccessOverlay">
-            <div class="pw-success-card">
-                <i class="fa-regular fa-circle-check"></i>
-                <p>Đổi mật khẩu thành công</p>
-                <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
-            </div>
-        </div>
-
-
-        <script src="shared.js"></script>
-        <script>
+           <script>
             const modal = document.getElementById('bookingModal');
             const btnBooks = document.querySelectorAll('.btn-book');
             const btnCancel = document.getElementById('btnCancelModal');
@@ -2172,6 +2149,8 @@
             const mCheckin = document.getElementById('mCheckin');
             const mCheckout = document.getElementById('mCheckout');
             const mPaymentValue = document.getElementById('mPaymentValue');
+            const mBookingCode = document.getElementById('mBookingCode');
+            const successModal = document.getElementById('successModal');
             let currentRoomPrice = 0;
 
             // Open modal when any Book button is clicked
@@ -2239,6 +2218,56 @@
             let qrTimeout;
             let visaTimeout;
 
+            function sendBookingData(onSuccess) {
+                const formData = new URLSearchParams();
+                const roomNum = mRoom.value;
+                formData.append('phong', roomNum);
+                formData.append('hoTen', document.querySelector('#bookingModal input[placeholder="Nhập họ và tên"]').value);
+                formData.append('sdt', document.querySelector('#bookingModal input[placeholder="Nhập số điện thoại"]').value);
+                formData.append('cccd', document.querySelector('#bookingModal input[placeholder="Nhập số CCCD/Hộ chiếu"]').value);
+                formData.append('ngayNhan', mCheckin.value);
+                formData.append('ngayTra', mCheckout.value);
+                formData.append('soNguoiLon', document.getElementById('mSoNguoiLon').innerText);
+                formData.append('soTreEm', document.getElementById('mSoTreEm').innerText);
+
+                const deposit = currentRoomPrice / 2;
+                formData.append('tienCoc', deposit || 0);
+                formData.append('tongThanhToan', currentRoomPrice || 0);
+                formData.append('phuongThuc', 'Thanh toán cọc');
+
+                fetch('/dat-phong/xac-nhan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        mBookingCode.innerText = data.maDatPhong;
+                        // Sync with localStorage for frontend simulation
+                        if (window.sharedData) {
+                            const rooms = window.sharedData.getSharedRooms();
+                            const r = rooms.find(x => x.id === roomNum);
+                            if (r) {
+                                r.status = 'Đã đặt';
+                                r.customer = document.querySelector('#bookingModal input[placeholder="Nhập họ và tên"]').value;
+                                r.date = mCheckin.value;
+                                r.date2 = mCheckout.value;
+                                r.maDatPhong = data.maDatPhong; 
+                                window.sharedData.saveSharedRooms(rooms);
+                            }
+                        }
+                        onSuccess();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Đã có lỗi kết nối hệ thống.');
+                });
+            }
+
             if (btnPayDomestic) {
                 btnPayDomestic.addEventListener('click', () => {
                     paymentMethodModal.style.display = 'none';
@@ -2246,21 +2275,9 @@
 
                     qrTimeout = setTimeout(() => {
                         qrModal.style.display = 'none';
-                        if (mRoom && mBookingCode) {
-                            const randomId = Math.floor(100000 + Math.random() * 900000);
-                            mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
-                            if (window.sharedData) {
-                                const rooms = window.sharedData.getSharedRooms();
-                                const r = rooms.find(x => x.id === mRoom.value);
-                                if (r) {
-                                    r.status = 'ÄĂ£ Ä‘áº·t';
-                                    r.date = mCheckin ? mCheckin.value : '';
-                                    r.date2 = mCheckout ? mCheckout.value : '';
-                                    window.sharedData.saveSharedRooms(rooms);
-                                }
-                            }
-                        }
-                        if (successModal) successModal.style.display = 'flex';
+                        sendBookingData(() => {
+                            if (successModal) successModal.style.display = 'flex';
+                        });
                     }, 5000);
                 });
             }
@@ -2278,7 +2295,17 @@
                             visaModal.style.display = 'none';
                             document.getElementById('paymentFailModal').style.display = 'flex';
                         }
-                    }, 60000);
+                    }, 30000); // Reduced timeout for better UX
+                });
+            }
+
+            if (btnConfirmVisa) {
+                btnConfirmVisa.addEventListener('click', () => {
+                    clearTimeout(visaTimeout);
+                    sendBookingData(() => {
+                        visaModal.style.display = 'none';
+                        if (successModal) successModal.style.display = 'flex';
+                    });
                 });
             }
 
@@ -2298,139 +2325,25 @@
                 });
             }
 
-            const successModal = document.getElementById('successModal');
             const btnCloseSuccess = document.getElementById('btnCloseSuccess');
-            const mBookingCode = document.getElementById('mBookingCode');
-
-            if (btnConfirmVisa) {
-                btnConfirmVisa.addEventListener('click', () => {
-                    clearTimeout(visaTimeout);
-                    visaModal.style.display = 'none';
-                    if (mRoom && mBookingCode) {
-                        const randomId = Math.floor(100000 + Math.random() * 900000);
-                        mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
-                        if (window.sharedData) {
-                            const rooms = window.sharedData.getSharedRooms();
-                            const r = rooms.find(x => x.id === mRoom.value);
-                            if (r) {
-                                r.status = 'ÄĂ£ Ä‘áº·t';
-                                r.date = mCheckin ? mCheckin.value : '';
-                                r.date2 = mCheckout ? mCheckout.value : '';
-                                window.sharedData.saveSharedRooms(rooms);
-                            }
-                        }
-                    }
-                    if (successModal) successModal.style.display = 'flex';
-                });
-            }
-
             if (btnCloseSuccess) {
                 btnCloseSuccess.addEventListener('click', () => {
                     successModal.style.display = 'none';
                 });
             }
-            const cancelBookingModal = document.getElementById('cancelBookingModal');
-            const btnCloseCancelBooking = document.getElementById('btnCloseCancelBooking');
-            const btnCancelAction = document.querySelector('.btn-cancel');
-
-            if (btnCancelAction) {
-                btnCancelAction.addEventListener('click', () => {
-                    cancelBookingModal.style.display = 'flex';
-                });
-            }
-
-            const confirmCancelModal = document.getElementById('confirmCancelModal');
-            const btnNoCancel = document.getElementById('btnNoCancel');
-            const btnYesCancel = document.getElementById('btnYesCancel');
-            const btnSubmitCancelCode = document.getElementById('btnSubmitCancelCode');
-            let confirmCancelTimeout;
-
-            if (btnSubmitCancelCode) {
-                btnSubmitCancelCode.addEventListener('click', () => {
-                    const code = document.querySelector('.cancel-booking-input').value.trim();
-                    cancelBookingModal.style.display = 'none';
-
-                    if (code === 'DPW101150106') {
-                        confirmCancelModal.style.display = 'flex';
-                        confirmCancelTimeout = setTimeout(() => {
-                            if (confirmCancelModal.style.display === 'flex') {
-                                confirmCancelModal.style.display = 'none';
-                                document.getElementById('refundFailModal').style.display = 'flex';
-                            }
-                        }, 5000);
-                    } else if (code === 'DPW101150105') {
-                        document.getElementById('overdueModal').style.display = 'flex';
-                    } else {
-                        document.getElementById('invalidCodeModal').style.display = 'flex';
-                    }
-                });
-            }
-
-            if (btnNoCancel) {
-                btnNoCancel.addEventListener('click', () => {
-                    clearTimeout(confirmCancelTimeout);
-                    confirmCancelModal.style.display = 'none';
-                });
-            }
-
-            if (btnYesCancel) {
-                btnYesCancel.addEventListener('click', () => {
-                    clearTimeout(confirmCancelTimeout);
-                    confirmCancelModal.style.display = 'none';
-                    document.getElementById('cancelSuccessModal').style.display = 'flex';
-                });
-            }
-
-            const btnCloseCancelSuccess = document.getElementById('btnCloseCancelSuccess');
-            const btnCloseInvalidCode = document.getElementById('btnCloseInvalidCode');
-            const btnOverdueDone = document.getElementById('btnOverdueDone');
-            const btnCloseRefundFail = document.getElementById('btnCloseRefundFail');
-            const btnClosePaymentFail = document.getElementById('btnClosePaymentFail');
-
-            if (btnCloseCancelSuccess) btnCloseCancelSuccess.addEventListener('click', () => { document.getElementById('cancelSuccessModal').style.display = 'none'; });
-            if (btnCloseInvalidCode) btnCloseInvalidCode.addEventListener('click', () => {
-                document.getElementById('invalidCodeModal').style.display = 'none';
-                if (cancelBookingModal) cancelBookingModal.style.display = 'flex';
-            });
-            if (btnOverdueDone) btnOverdueDone.addEventListener('click', () => { document.getElementById('overdueModal').style.display = 'none'; });
-            if (btnCloseRefundFail) btnCloseRefundFail.addEventListener('click', () => { document.getElementById('refundFailModal').style.display = 'none'; });
-            if (btnClosePaymentFail) btnClosePaymentFail.addEventListener('click', () => { document.getElementById('paymentFailModal').style.display = 'none'; });
-
-            if (btnCloseCancelBooking) {
-                btnCloseCancelBooking.addEventListener('click', () => {
-                    cancelBookingModal.style.display = 'none';
-                });
-            }
 
             // Close when clicking outside of modal content
             window.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-                if (e.target === paymentModal) {
-                    paymentModal.style.display = 'none';
-                }
-                if (e.target === paymentMethodModal) {
-                    paymentMethodModal.style.display = 'none';
-                }
-                if (e.target === qrModal) {
-                    qrModal.style.display = 'none';
-                }
-                if (e.target === visaModal) {
-                    clearTimeout(visaTimeout);
-                    visaModal.style.display = 'none';
-                }
-                if (successModal && e.target === successModal) {
-                    successModal.style.display = 'none';
-                }
-                if (cancelBookingModal && e.target === cancelBookingModal) {
-                    cancelBookingModal.style.display = 'none';
-                }
-                if (confirmCancelModal && e.target === confirmCancelModal) {
-                    clearTimeout(confirmCancelTimeout);
-                    confirmCancelModal.style.display = 'none';
-                }
-                const cancelSuccessModal = document.getElementById('cancelSuccessModal');
+                const modals = [modal, paymentModal, paymentMethodModal, qrModal, visaModal, successModal];
+                modals.forEach(m => {
+                    if (e.target === m) {
+                        if (m === visaModal) clearTimeout(visaTimeout);
+                        if (m === qrModal) clearTimeout(qrTimeout);
+                        m.style.display = 'none';
+                    }
+                });
+            });
+        </script>essModal');
                 if (cancelSuccessModal && e.target === cancelSuccessModal) cancelSuccessModal.style.display = 'none';
 
                 const invalidCodeModal = document.getElementById('invalidCodeModal');
