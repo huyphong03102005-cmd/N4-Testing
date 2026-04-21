@@ -487,7 +487,7 @@
             <i class="fa-solid fa-magnifying-glass"></i>
             <form th:action="@{/nhan-phong}" method="get" style="flex: 1; display: flex;">
                 <input type="text" name="search" th:value="${searchKeyword}"
-                    placeholder="Tìm kiếm theo tên khách hoặc SĐT">
+                    placeholder="Tìm kiếm theo mã đặt phòng, tên khách hoặc SĐT">
                 <button type="submit" style="display: none;"></button>
             </form>
         </div>
@@ -503,6 +503,10 @@
                         <div th:each="booking : ${bookings}" class="booking-wrapper">
                             <div class="booking-item">
                                 <div class="booking-info-grid">
+                                    <div class="info-field">
+                                        <span class="label">Mã đặt phòng:</span>
+                                        <span class="value" th:text="${booking.maDatPhong}" style="color: #d64545;">DPW...</span>
+                                    </div>
                                     <div class="info-field">
                                         <span class="label">Tên người đặt:</span>
                                         <span class="value" th:text="${booking.tenNguoiDat}">Tên khách</span>

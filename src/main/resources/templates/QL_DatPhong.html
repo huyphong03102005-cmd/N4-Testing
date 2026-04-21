@@ -298,7 +298,7 @@
                         guests: "2 người - 1 đêm",
                         bookingDate: formatDate(yesterday),
                         price: (r.basePrice || 1500000).toLocaleString('vi-VN') + ' ₫',
-                        code: "DP" + r.id,
+                        code: r.maDatPhong || ("DP" + r.id),
                         checkInTime: "14h - " + (r.date || formatDate(yesterday)),
                         checkOutTime: "12h - " + (r.date2 || formatDate(tomorrow)),
                         guestsDetail: "2 người lớn",
@@ -339,6 +339,7 @@
                         </div>
                         <div class="room-name">${booking.roomName}</div>
                         
+                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong>${booking.code}</strong></div>
                         <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
                         <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
                         <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
@@ -373,6 +374,7 @@
                         </div>
                         <div class="room-name">${booking.roomName}</div>
                         
+                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong>${booking.code}</strong></div>
                         <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
                         <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
                         <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
