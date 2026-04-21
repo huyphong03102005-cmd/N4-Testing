@@ -83,6 +83,7 @@ function syncTongquan() {
             if (roomObj.status === 'Đang sử dụng') statusClass = 'status-dangsu-dung';
             else if (roomObj.status === 'Đã đặt') statusClass = 'status-dadat';
             else if (roomObj.status === 'Bảo trì') statusClass = 'status-baotri';
+            else if (roomObj.status === 'Đã hủy') statusClass = 'status-dahuy';
             
             roomEl.classList.add(statusClass);
             roomEl.querySelector('.room-status').innerText = roomObj.status;

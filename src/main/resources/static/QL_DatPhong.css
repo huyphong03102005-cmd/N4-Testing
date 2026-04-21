@@ -433,6 +433,27 @@
             color: #f2f2f2;
         }
 
+        .btn-cancel.btn-cancel-active {
+            background-color: #ef4444; /* Bright Red */
+            animation: pulse-red 2s infinite;
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
         .btn-cancel:disabled:hover {
             background-color: #a5a5a5;
         }

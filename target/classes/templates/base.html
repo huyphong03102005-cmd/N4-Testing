@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <!-- Thêm Font Awesome để lấy icon User và Logout -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <style>
         /* CSS Reset cơ bản */
         * {
@@ -154,7 +154,7 @@
         /* --- Phần Nội Dung Chính (Main Content) --- */
         .main-content {
             flex: 1;
-            background-color: #ffffff;
+            background-color: #FAEBD7;
             padding: 20px 40px;
             overflow-y: auto;
         }
@@ -608,6 +608,7 @@
 </head>
 
 <body>
+<div>
 
     <div id="app-container">
         <!-- 1. Thanh Top Bar (Logo & Trạng thái) -->
@@ -626,14 +627,14 @@
                 <a href="/dat-phong" class="nav-item">Đặt phòng</a>
                 <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
                 <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
-                <a href="#" class="nav-item">Trả phòng</a>
+                <a href="/tra-phong" class="nav-item">Trả phòng</a>
                 <a href="/service" class="nav-item">Dịch vụ phòng</a>
             </nav>
         </div>
 
         <!-- 3. Vùng Nội Dung Chính (Khung trống cho các trang kế thừa) -->
         <main class="main-content">
-            <!-- Nội dung mẫu trống -->
+            <div th:replace="${content}"></div>
         </main>
     </div>
 
@@ -779,6 +780,7 @@
         }
     </script>
 
+</div>
 </body>
 
 </html>
