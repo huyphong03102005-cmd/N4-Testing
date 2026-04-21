@@ -954,35 +954,35 @@
                 <div class="summary-card">
                     <div class="summary-content">
                         <h3>Tổng phòng</h3>
-                        <div class="number" id="cnt-total">12</div>
+                        <div class="number" id="cnt-total" th:text="${stats.total}">12</div>
                     </div>
                     <div class="summary-icon icon-orange"><i class="fa-solid fa-house"></i></div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-content">
                         <h3>Phòng trống</h3>
-                        <div class="number" id="cnt-trong">6</div>
+                        <div class="number" id="cnt-trong" th:text="${stats.available}">6</div>
                     </div>
                     <div class="summary-icon icon-green"><i class="fa-solid fa-door-open"></i></div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-content">
                         <h3>Đang sử dụng</h3>
-                        <div class="number" id="cnt-dangsu">3</div>
+                        <div class="number" id="cnt-dangsu" th:text="${stats.occupied}">3</div>
                     </div>
                     <div class="summary-icon icon-pink"><i class="fa-solid fa-bed"></i></div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-content">
                         <h3>Đã đặt</h3>
-                        <div class="number" id="cnt-dadat">2</div>
+                        <div class="number" id="cnt-dadat" th:text="${stats.reserved}">2</div>
                     </div>
                     <div class="summary-icon icon-light-orange"><i class="fa-regular fa-calendar-check"></i></div>
                 </div>
                 <div class="summary-card">
                     <div class="summary-content">
                         <h3>Bảo trì</h3>
-                        <div class="number" id="cnt-baotri">1</div>
+                        <div class="number" id="cnt-baotri" th:text="${stats.maintenance}">1</div>
                     </div>
                     <div class="summary-icon" style="background-color: #90caf9; color: white;"><i
                             class="fa-solid fa-wrench"></i></div>
@@ -993,79 +993,31 @@
                 <div class="room-diagram">
                     <h2>Sơ đồ phòng</h2>
                     <div class="floor-container">
-                        <div class="floor">
-                            <h3>Tầng 1</h3>
+                        <!-- Lặp qua từng tầng -->
+                        <div class="floor" th:each="floor : ${floors}">
+                            <h3 th:text="${floor.key}">Tầng 1</h3>
                             <div class="rooms">
-                                <div class="room status-trong">
-                                    <div class="room-number">101</div>
-                                    <div class="room-status">Trống</div>
-                                </div>
-                                <div class="room status-dangsu-dung">
-                                    <div class="room-number">102</div>
-                                    <div class="room-status">Đang sử dụng</div>
-                                    <div class="room-detail">Tôn Thất Huy Phong<br>→ 20/08/2025</div>
-                                </div>
-                                <div class="room status-trong">
-                                    <div class="room-number">103</div>
-                                    <div class="room-status">Trống</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="floor">
-                            <h3>Tầng 2</h3>
-                            <div class="rooms">
-                                <div class="room status-dadat">
-                                    <div class="room-number">201</div>
-                                    <div class="room-status">Đã đặt</div>
-                                    <div class="room-detail">Nguyễn Thị Ny</div>
-                                </div>
-                                <div class="room status-trong">
-                                    <div class="room-number">202</div>
-                                    <div class="room-status">Trống</div>
-                                </div>
-                                <div class="room status-baotri">
-                                    <div class="room-number">203</div>
-                                    <div class="room-status">Bảo trì</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="floor">
-                            <h3>Tầng 3</h3>
-                            <div class="rooms">
-                                <div class="room status-trong">
-                                    <div class="room-number">301</div>
-                                    <div class="room-status">Trống</div>
-                                </div>
-                                <div class="room status-dangsu-dung">
-                                    <div class="room-number">302</div>
-                                    <div class="room-status">Đang sử dụng</div>
-                                    <div class="room-detail">Trần Thanh Nhã<br>→ 23/05/2024</div>
-                                </div>
-                                <div class="room status-dadat">
-                                    <div class="room-number">303</div>
-                                    <div class="room-status">Đã đặt</div>
-                                    <div class="room-detail">Vy Minh Quân</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="floor">
-                            <h3>Tầng 4</h3>
-                            <div class="rooms">
-                                <div class="room status-dangsu-dung">
-                                    <div class="room-number">401</div>
-                                    <div class="room-status">Đang sử dụng</div>
-                                    <div class="room-detail">Trần Thanh Nhã<br>→ 01/01/2026</div>
-                                </div>
-                                <div class="room status-trong">
-                                    <div class="room-number">402</div>
-                                    <div class="room-status">Trống</div>
-                                </div>
-                                <div class="room status-trong">
-                                    <div class="room-number">403</div>
-                                    <div class="room-status">Trống</div>
+                                <!-- Lặp qua từng phòng trong tầng -->
+                                <div th:each="phong : ${floor.value}" th:with="booking=${roomBookings.get(phong.idPhong)}"
+                                     class="room"
+                                     th:classappend="${phong.trangThai == 'Bận' ? 'status-dangsu-dung' : 
+                                                    (phong.trangThai == 'Trống' && booking != null && booking.datPhong.trangThai == 'Chờ check-in' ? 'status-dadat' : 
+                                                    (phong.trangThai == 'Sửa chữa' ? 'status-baotri' : 'status-trong'))}">
+                                    
+                                    <div class="room-number" th:text="${phong.tenPhong}">101</div>
+                                    
+                                    <div class="room-status" th:text="${phong.trangThai == 'Bận' ? 'Đang sử dụng' : 
+                                                                     (phong.trangThai == 'Trống' && booking != null && booking.datPhong.trangThai == 'Chờ check-in' ? 'Đã đặt' : 
+                                                                     (phong.trangThai == 'Sửa chữa' ? 'Bảo trì' : 'Trống'))}">Trống</div>
+                                    
+                                    <!-- Chi tiết khách (nếu có) -->
+                                    <div class="room-detail" th:if="${phong.trangThai == 'Bận' && booking != null}">
+                                        <span th:text="${booking.datPhong.tenNguoiDat}">Tên khách</span><br>
+                                        <span th:text="'→ ' + ${#temporals.format(booking.datPhong.ngayTra, 'dd/MM/yyyy')}">→ Ngày đi</span>
+                                    </div>
+                                    <div class="room-detail" th:if="${phong.trangThai == 'Trống' && booking != null && booking.datPhong.trangThai == 'Chờ check-in'}">
+                                        <span th:text="${booking.datPhong.tenNguoiDat}">Tên khách</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

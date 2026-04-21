@@ -73,7 +73,7 @@ INSERT INTO tai_san (ten_tai_san, gia_tri_boi_thuong, id_phong) VALUES
 ('Tủ Quần Áo', 4000000.00, 11);
 
 -- 8. dat_phong (100 records)
-INSERT INTO dat_phong (ngay_nhan, ngay_tra, so_nguoi_lon, so_tre_em, so_phong, trang_thai, ten_nguoi_dat, email, sdt_nguoi_dat, id_letan, id_kh)
+INSERT INTO dat_phong (ngay_nhan, ngay_tra, so_nguoi_lon, so_tre_em, so_phong, trang_thai, ten_nguoi_dat, email, sdt_nguoi_dat, tien_coc, tong_thanh_toan, id_letan, id_kh)
 SELECT 
     NOW() + (random() * interval '30 days') - interval '15 days', 
     NOW() + (random() * interval '35 days'), 
@@ -84,6 +84,8 @@ SELECT
     'Khách Hàng ' || i, 
     'khach'||i||'@email.vn', 
     '09'||(random()*100000000+100000000)::bigint::text, 
+    floor(random() * (1500000 - 400 + 1) + 400), 
+    floor(random() * (3000000 - 1500001 + 1) + 1500001),
     (random()*2+1)::int, 
     (random()*19+1)::int
 FROM generate_series(1, 100) s(i);

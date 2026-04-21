@@ -13,7 +13,8 @@ import org.springframework.data.repository.query.Param;
 public interface DatPhongRepository extends JpaRepository<DatPhong, Integer> {
     List<DatPhong> findByTrangThai(String trangThai);
     
-    @Query("SELECT d FROM DatPhong d WHERE (LOWER(d.tenNguoiDat) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+    @Query("SELECT d FROM DatPhong d LEFT JOIN FETCH d.chiTietDatPhongs ct LEFT JOIN FETCH ct.phong " +
+           "WHERE (LOWER(d.tenNguoiDat) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
            "OR d.sdtNguoiDat LIKE CONCAT('%', :keyword, '%')) AND d.trangThai = :status")
     List<DatPhong> searchBookings(@Param("keyword") String keyword, @Param("status") String status);
 }

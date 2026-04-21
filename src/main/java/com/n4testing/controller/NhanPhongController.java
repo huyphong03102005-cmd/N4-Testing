@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -25,23 +26,30 @@ public class NhanPhongController {
     public String viewNhanPhong(@RequestParam(value = "search", required = false) String search, Model model) {
         // 1. Lấy danh sách đặt phòng
         List<DatPhong> bookings = nhanPhongService.searchBookings(search);
-        
+
         // 2. Lấy danh sách phòng và nhóm theo tầng
         List<Phong> rooms = nhanPhongService.getAllPhongs();
-        
-        // Nhóm phòng theo tầng dựa trên chữ số đầu tiên của tên phòng (ví dụ 101 -> Tầng 1)
+
+        // Nhóm phòng theo tầng dựa trên chữ số đầu tiên của tên phòng (ví dụ 101 ->
+        // Tầng 1)
         Map<String, List<Phong>> floors = rooms.stream()
+                .sorted(Comparator.comparing(Phong::getTenPhong, (s1, s2) -> {
+                    try {
+                        return Integer.compare(Integer.parseInt(s1), Integer.parseInt(s2));
+                    } catch (NumberFormatException e) {
+                        return s1.compareTo(s2);
+                    }
+                }))
                 .collect(Collectors.groupingBy(
                         p -> "Tầng " + p.getTenPhong().substring(0, 1),
                         TreeMap::new, // Để giữ thứ tự tầng
-                        Collectors.toList()
-                ));
+                        Collectors.toList()));
 
         model.addAttribute("bookings", bookings);
         model.addAttribute("floors", floors);
         model.addAttribute("searchKeyword", search);
         model.addAttribute("currentPage", "nhanphong");
-        
+
         return "nhan_phong";
     }
 

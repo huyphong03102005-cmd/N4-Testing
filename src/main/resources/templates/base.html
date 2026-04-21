@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
 
 <head>
     <meta charset="UTF-8">
@@ -154,7 +154,7 @@
         /* --- Phần Nội Dung Chính (Main Content) --- */
         .main-content {
             flex: 1;
-            background-color: #ffffff;
+            background-color: #FAEBD7;
             padding: 20px 40px;
             overflow-y: auto;
         }
@@ -608,177 +608,179 @@
 </head>
 
 <body>
+    <div>
 
-    <div id="app-container">
-        <!-- 1. Thanh Top Bar (Logo & Trạng thái) -->
-        <header class="top-bar">
-            <div class="top-icons">
-                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
-                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
-            </div>
-        </header>
-
-        <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
-        <div class="hero-banner">
-            <nav class="nav-bar">
-                <!-- Thêm class active vào thẻ a nào là trang hiện tại -->
-                <a href="/tongquan" class="nav-item">Tổng quan</a>
-                <a href="/dat-phong" class="nav-item">Đặt phòng</a>
-                <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
-                <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
-                <a href="/tra-phong" class="nav-item">Trả phòng</a>
-                <a href="/service" class="nav-item">Dịch vụ phòng</a>
-            </nav>
-        </div>
-
-        <!-- 3. Vùng Nội Dung Chính (Khung trống cho các trang kế thừa) -->
-        <main class="main-content">
-            <!-- Nội dung mẫu trống -->
-        </main>
-    </div>
-
-    <!-- Popup xác nhận đăng xuất -->
-    <div class="logout-popup" id="logoutPopup">
-        <p>Bạn muốn đăng xuất?</p>
-        <div class="logout-popup-actions">
-            <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
-        </div>
-    </div>
-
-    <!-- Overlay Thông tin người dùng -->
-    <div class="user-info-overlay" id="userInfoOverlay">
-        <div class="user-info-card">
-            <h2>Thông tin người dùng</h2>
-            <div class="user-info-body">
-                <!-- Cột trái -->
-                <div class="user-left">
-                    <h3>Thông tin cá nhân</h3>
-                    <div class="user-avatar-row">
-                        <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
-                        <div>
-                            <div class="user-avatar-name">Vương Văn Quyền</div>
-                            <div class="user-avatar-email">vvquyen@gmail.com</div>
-                        </div>
-                    </div>
-                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
-                            class="user-field-value">Vương Văn Quyền</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
-                            class="user-field-value">25/07/2005</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
-                            class="user-field-value">Nam</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
-                            class="user-field-value">09123467898</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
-                            class="user-field-value">Lễ tân</span></div>
+        <div id="app-container">
+            <!-- 1. Thanh Top Bar (Logo & Trạng thái) -->
+            <header class="top-bar">
+                <div class="top-icons">
+                    <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+                    <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
                 </div>
-                <!-- Cột phải -->
-                <div class="user-right">
-                    <h3>Cài đặt tài khoản</h3>
-                    <div class="account-field-row">
-                        <span class="account-field-label">Tên người dùng</span>
-                        <span class="account-field-value">vvquyen_2507</span>
-                    </div>
-                    <div class="account-field-row">
-                        <span class="account-field-label">Mật khẩu</span>
-                        <span class="account-field-value">••••••••••••</span>
-                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
-                                class="fa-solid fa-pen"></i></button>
-                    </div>
+            </header>
 
-                    <div class="change-password-panel" id="changePasswordPanel">
-                        <h4>Đổi mật khẩu</h4>
-                        <div class="pw-row">
-                            <span class="pw-label">Mật khẩu hiện tại:</span>
-                            <input type="password" class="pw-input">
+            <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
+            <div class="hero-banner">
+                <nav class="nav-bar">
+                    <!-- Thêm class active vào thẻ a nào là trang hiện tại -->
+                    <a href="/tongquan" class="nav-item">Tổng quan</a>
+                    <a href="/dat-phong" class="nav-item">Đặt phòng</a>
+                    <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
+                    <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
+                    <a href="/tra-phong" class="nav-item">Trả phòng</a>
+                    <a href="/service" class="nav-item">Dịch vụ phòng</a>
+                </nav>
+            </div>
+
+            <!-- 3. Vùng Nội Dung Chính (Khung trống cho các trang kế thừa) -->
+            <main class="main-content">
+                <div th:replace="${content}"></div>
+            </main>
+        </div>
+
+        <!-- Popup xác nhận đăng xuất -->
+        <div class="logout-popup" id="logoutPopup">
+            <p>Bạn muốn đăng xuất?</p>
+            <div class="logout-popup-actions">
+                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+                <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
+            </div>
+        </div>
+
+        <!-- Overlay Thông tin người dùng -->
+        <div class="user-info-overlay" id="userInfoOverlay">
+            <div class="user-info-card">
+                <h2>Thông tin người dùng</h2>
+                <div class="user-info-body">
+                    <!-- Cột trái -->
+                    <div class="user-left">
+                        <h3>Thông tin cá nhân</h3>
+                        <div class="user-avatar-row">
+                            <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
+                            <div>
+                                <div class="user-avatar-name">Vương Văn Quyền</div>
+                                <div class="user-avatar-email">vvquyen@gmail.com</div>
+                            </div>
                         </div>
-                        <div class="pw-row">
-                            <span class="pw-label">Mật khẩu mới:</span>
-                            <input type="password" class="pw-input">
+                        <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                                class="user-field-value">Vương Văn Quyền</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                                class="user-field-value">25/07/2005</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                                class="user-field-value">Nam</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                                class="user-field-value">09123467898</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                                class="user-field-value">Lễ tân</span></div>
+                    </div>
+                    <!-- Cột phải -->
+                    <div class="user-right">
+                        <h3>Cài đặt tài khoản</h3>
+                        <div class="account-field-row">
+                            <span class="account-field-label">Tên người dùng</span>
+                            <span class="account-field-value">vvquyen_2507</span>
                         </div>
-                        <div class="pw-row">
-                            <span class="pw-label">Nhập lại mật khẩu mới:</span>
-                            <input type="password" class="pw-input">
+                        <div class="account-field-row">
+                            <span class="account-field-label">Mật khẩu</span>
+                            <span class="account-field-value">••••••••••••</span>
+                            <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
+                                    class="fa-solid fa-pen"></i></button>
                         </div>
-                        <div class="pw-actions">
-                            <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
-                            <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+
+                        <div class="change-password-panel" id="changePasswordPanel">
+                            <h4>Đổi mật khẩu</h4>
+                            <div class="pw-row">
+                                <span class="pw-label">Mật khẩu hiện tại:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-row">
+                                <span class="pw-label">Mật khẩu mới:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-row">
+                                <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                                <input type="password" class="pw-input">
+                            </div>
+                            <div class="pw-actions">
+                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
+                                <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="user-info-footer" id="userInfoFooter">
+                    <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
+                    <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+                </div>
             </div>
-            <div class="user-info-footer" id="userInfoFooter">
-                <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
-                <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+        </div>
+
+        <!-- Popup Lưu thành công -->
+        <div class="save-success-overlay" id="saveSuccessOverlay">
+            <div class="save-success-card">
+                <i class="fa-solid fa-circle-check"></i>
+                <p>Thông tin đã được lưu</p>
+                <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
             </div>
         </div>
-    </div>
 
-    <!-- Popup Lưu thành công -->
-    <div class="save-success-overlay" id="saveSuccessOverlay">
-        <div class="save-success-card">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>Thông tin đã được lưu</p>
-            <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+        <!-- Popup Đổi mật khẩu thành công -->
+        <div class="pw-success-overlay" id="pwSuccessOverlay">
+            <div class="pw-success-card">
+                <i class="fa-regular fa-circle-check"></i>
+                <p>Đổi mật khẩu thành công</p>
+                <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+            </div>
         </div>
-    </div>
 
-    <!-- Popup Đổi mật khẩu thành công -->
-    <div class="pw-success-overlay" id="pwSuccessOverlay">
-        <div class="pw-success-card">
-            <i class="fa-regular fa-circle-check"></i>
-            <p>Đổi mật khẩu thành công</p>
-            <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
-        </div>
-    </div>
-
-    <script src="shared.js"></script>
-    <script>
-        function toggleLogoutPopup() {
-            document.getElementById('logoutPopup').classList.toggle('show');
-        }
-        document.addEventListener('click', function (e) {
-            const popup = document.getElementById('logoutPopup');
-            const icon = document.querySelector('.fa-arrow-right-from-bracket');
-            if (!popup.contains(e.target) && e.target !== icon) {
-                popup.classList.remove('show');
+        <script src="shared.js"></script>
+        <script>
+            function toggleLogoutPopup() {
+                document.getElementById('logoutPopup').classList.toggle('show');
             }
-        });
-        function openUserInfo() {
-            document.getElementById('userInfoOverlay').classList.add('show');
-        }
-        function closeUserInfo() {
-            document.getElementById('userInfoOverlay').classList.remove('show');
-        }
-        function showSaveSuccess() {
-            document.getElementById('saveSuccessOverlay').classList.add('show');
-        }
-        function closeSaveSuccess() {
-            document.getElementById('saveSuccessOverlay').classList.remove('show');
-            document.getElementById('userInfoOverlay').classList.remove('show');
-        }
-
-        function toggleChangePassword() {
-            const panel = document.getElementById('changePasswordPanel');
-            const footer = document.getElementById('userInfoFooter');
-            panel.classList.toggle('show');
-            if (panel.classList.contains('show')) {
-                footer.style.display = 'none';
-            } else {
-                footer.style.display = 'flex';
+            document.addEventListener('click', function (e) {
+                const popup = document.getElementById('logoutPopup');
+                const icon = document.querySelector('.fa-arrow-right-from-bracket');
+                if (!popup.contains(e.target) && e.target !== icon) {
+                    popup.classList.remove('show');
+                }
+            });
+            function openUserInfo() {
+                document.getElementById('userInfoOverlay').classList.add('show');
             }
-        }
+            function closeUserInfo() {
+                document.getElementById('userInfoOverlay').classList.remove('show');
+            }
+            function showSaveSuccess() {
+                document.getElementById('saveSuccessOverlay').classList.add('show');
+            }
+            function closeSaveSuccess() {
+                document.getElementById('saveSuccessOverlay').classList.remove('show');
+                document.getElementById('userInfoOverlay').classList.remove('show');
+            }
 
-        function showPwSuccess() {
-            document.getElementById('pwSuccessOverlay').classList.add('show');
-        }
+            function toggleChangePassword() {
+                const panel = document.getElementById('changePasswordPanel');
+                const footer = document.getElementById('userInfoFooter');
+                panel.classList.toggle('show');
+                if (panel.classList.contains('show')) {
+                    footer.style.display = 'none';
+                } else {
+                    footer.style.display = 'flex';
+                }
+            }
 
-        function closePwSuccess() {
-            document.getElementById('pwSuccessOverlay').classList.remove('show');
-            toggleChangePassword(); // Quay lại view chính
-        }
-    </script>
+            function showPwSuccess() {
+                document.getElementById('pwSuccessOverlay').classList.add('show');
+            }
 
+            function closePwSuccess() {
+                document.getElementById('pwSuccessOverlay').classList.remove('show');
+                toggleChangePassword(); // Quay lại view chính
+            }
+        </script>
+
+    </div>
 </body>
 
 </html>

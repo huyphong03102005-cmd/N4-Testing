@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "dat_phong")
@@ -36,6 +38,19 @@ public class DatPhong {
 
     @Column(name = "so_phong")
     private String soPhong;
+
+    @OneToMany(mappedBy = "datPhong", fetch = FetchType.LAZY)
+    private List<ChiTietDatPhong> chiTietDatPhongs;
+
+    public String getDisplaySoPhong() {
+        if (chiTietDatPhongs == null || chiTietDatPhongs.isEmpty()) {
+            return soPhong;
+        }
+        return chiTietDatPhongs.stream()
+                .filter(ct -> ct.getPhong() != null)
+                .map(ct -> ct.getPhong().getTenPhong())
+                .collect(Collectors.joining(", "));
+    }
 
     @Column(name = "trang_thai")
     private String trangThai; // Đã đặt, Đang ở, Đã trả, Đã hủy

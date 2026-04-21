@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,5 +78,16 @@ public class NhanPhongService {
                 phongRepository.save(phong);
             }
         }
+    }
+
+    public Map<Integer, ChiTietDatPhong> getActiveBookingMap() {
+        List<ChiTietDatPhong> activeDetails = chiTietDatPhongRepository.findActiveDetails();
+        return activeDetails.stream()
+                .filter(ct -> ct.getPhong() != null)
+                .collect(Collectors.toMap(
+                        ct -> ct.getPhong().getIdPhong(),
+                        ct -> ct,
+                        (existing, replacement) -> existing // Nếu một phòng có nhiều đặt phòng (hiếm), lấy cái đầu
+                ));
     }
 }

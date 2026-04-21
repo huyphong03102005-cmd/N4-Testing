@@ -169,30 +169,38 @@
         <div class="login-box">
             <h1 class="login-title">Đăng nhập</h1>
 
-            <div class="form-group">
-                <label for="username">Tên đăng nhập</label>
-                <div class="input-wrapper">
-                    <input type="text" id="username" placeholder="">
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" name="username" required placeholder="">
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group">
-                <label for="password">Mật khẩu</label>
-                <div class="input-wrapper">
-                    <input type="password" id="password" placeholder="">
-                    <button class="btn-show-pw" onclick="togglePassword()" type="button">Hiện</button>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" name="password" required placeholder="">
+                        <button class="btn-show-pw" onclick="togglePassword()" type="button">Hiện</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-options">
-                <label class="remember-me">
-                    <input type="checkbox" id="remember">
-                    Ghi nhớ đăng nhập
-                </label>
-                <a href="#" class="forgot-pw">Quên mật khẩu?</a>
-            </div>
+                <!-- Hiển thị lỗi nếu có -->
+                <div th:if="${error}"
+                    style="color: #de5e5e; font-size: 13px; margin-bottom: 15px; font-weight: 600; text-align: center;">
+                    <span th:text="${error}"></span>
+                </div>
 
-            <button class="btn-login" onclick="handleLogin()">Đăng nhập</button>
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember">
+                        Ghi nhớ đăng nhập
+                    </label>
+                    <a href="#" class="forgot-pw">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn-login">Đăng nhập</button>
+            </form>
         </div>
     </div>
 
@@ -207,17 +215,6 @@
                 pw.type = 'password';
                 btn.textContent = 'Hiện';
             }
-        }
-
-        function handleLogin() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            if (!username || !password) {
-                alert('Vui lòng nhập tên đăng nhập và mật khẩu!');
-                return;
-            }
-            // Chuyển sang trang chính sau khi đăng nhập
-            window.location.href = '/tongquan';
         }
     </script>
 
