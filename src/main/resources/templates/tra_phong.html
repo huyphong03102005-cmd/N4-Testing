@@ -1,1004 +1,635 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="base :: layout(~{::content})">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ thống Quản lý Khách sạn - Trả phòng</title>
-    <!-- Thêm Font Awesome để lấy icon User và Logout -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
-        rel="stylesheet">
-    <style>
-        /* CSS Reset cơ bản */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Lora', serif;
-        }
-
-        body {
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Custom Modal Styles */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 10000;
-        }
-        .modal-content {
-            background: #fff; padding: 30px; border-radius: 20px; width: 400px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2); text-align: center;
-            animation: modalScale 0.3s ease-out;
-        }
-        @keyframes modalScale {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .modal-title { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #333; }
-        .modal-msg { font-size: 16px; color: #666; margin-bottom: 25px; line-height: 1.5; }
-        .modal-btns { display: flex; justify-content: center; gap: 15px; }
-        .modal-btn { 
-            padding: 10px 25px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .modal-btn-ok { background: #d57e50; color: #fff; text-transform: uppercase; }
-        .modal-btn-ok:hover { background: #b96a43; }
-        .modal-btn-cancel { background: #eee; color: #666; }
-        .modal-btn-cancel:hover { background: #ddd; }
-
-        /* --- Khung màn hình --- */
-        #app-container {
-            width: 100%;
-            height: 100vh;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* --- Thanh Top Bar --- */
-        .top-bar {
-            height: 60px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 0 40px;
-            position: relative;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-
-        .top-bar::before {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: -12px;
-            right: -12px;
-            bottom: -18px;
-            background-image: url('./Picture/Logo_bar.png');
-            background-size: 100% 100%;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: -1;
-        }
-
-        .top-icons {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
-
-        .top-icons i {
-            font-size: 28px;
-            color: #111;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .top-icons i:hover {
-            color: #555;
-        }
-
-        /* --- Phần Banner --- */
-        .hero-banner {
-            background-image: url('./Picture/Background.png');
-            background-size: cover;
-            background-position: center;
-            height: 140px;
-            flex-shrink: 0;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            padding-top: 15px;
-        }
-
-        .hero-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.2);
-            z-index: 1;
-        }
-
-        /* --- Thanh Điều Hướng --- */
-        .nav-bar {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            width: 95%;
-            max-width: 1368px;
-            background-color: #e5deb5;
-            border-radius: 12px;
-            height: 45px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            color: #222;
-            font-weight: 600;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            border-right: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .nav-item:last-child {
-            border-right: none;
-        }
-
-        .nav-item:hover {
-            background-color: #d6cc9c;
-        }
-
-        .nav-item.active {
-            background-color: #c0ab7b;
-            color: #111;
-        }
-
-        /* --- Phần Nội Dung Chính --- */
-        .main-content {
-            flex: 1;
-            background-color: #f7ebdf;
-            padding: 20px 40px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        .layout-grid {
-            display: flex;
-            gap: 30px;
-            flex: 1;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        /* --- THÀNH PHẦN SEARCH MAP --- */
-        .search-room-wrapper {
-            position: relative;
-            width: 100%;
-        }
-
-        .search-room-wrapper i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #888;
-        }
-
-        .search-room-wrapper input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            outline: none;
-            font-size: 14px;
-            background: #fff;
-            transition: 0.2s;
-        }
-
-        .search-room-wrapper input:focus {
-            border-color: #c0ab7b;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        /* --- SƠ ĐỒ PHÒNG --- */
-        .map-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            padding-bottom: 20px;
-            padding-right: 15px;
-        }
-
-        .map-section-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #111;
-            margin-bottom: 30px;
-            flex-shrink: 0;
-        }
-
-        .floor-group {
-            margin-bottom: 40px;
-        }
-
-        .floor-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #111;
-            margin-bottom: 20px;
-        }
-
-        .floor-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-        }
-
-        .map-room-card {
-            border-radius: 12px;
-            padding: 25px 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 140px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .map-room-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            opacity: 0.8;
-        }
-
-        .map-room-name {
-            font-weight: bold;
-            font-size: 16px;
-            color: #111;
-            margin-bottom: 12px;
-        }
-
-        .map-room-status {
-            font-size: 15px;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .map-room-customer {
-            font-size: 14px;
-            color: #111;
-            margin-bottom: 6px;
-        }
-
-        .map-room-date {
-            font-size: 13px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .bg-sudung {
-            background-color: #f79e9a;
-        }
-
-        /* --- CHI TIẾT PHÒNG --- */
-        .detail-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 20px;
-            padding-right: 15px;
-            overflow-y: auto;
-        }
-
-        .btn-back-wrapper {
-            margin-bottom: 15px;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: transparent;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            color: #d35400;
-            cursor: pointer;
-            text-decoration: none;
-            padding: 0;
-        }
-
-        .btn-back:hover {
-            text-decoration: underline;
-        }
-
-        .room-info-card {
-            background: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            margin-bottom: 15px;
-        }
-
-        .room-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: #222;
-        }
-
-        .room-status {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .status-badge {
-            padding: 4px 15px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #111;
-        }
-
-        .room-time {
-            font-size: 14px;
-            color: #444;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .room-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 15px;
-            font-weight: 600;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-            color: #333;
-        }
-
-        /* Thẻ vật phẩm bồi thường / dịch vụ */
-        .selected-item {
-            background: white;
-            border-radius: 8px;
-            padding: 20px 25px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        /* Overlay & Popups */
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .popup {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            width: 400px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .popup-icon {
-            font-size: 60px;
-            color: #2ecc71;
-            margin-bottom: 20px;
-        }
-
-        .popup-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 25px;
-            color: #222;
-        }
-
-        .popup-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 12px 40px;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .f-btn-save {
-            background: #d1b88a;
-            color: #222;
-            padding: 12px 35px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            transition: 0.2s;
-        }
-
-        .f-btn-save:hover {
-            background: #c0ab7b;
-        }
-
-        /* --- Logout Popup --- */
-        .logout-popup {
-            display: none;
-            position: fixed;
-            top: 65px;
-            right: 35px;
-            background-color: #e5deb5;
-            border-radius: 12px;
-            padding: 20px 24px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
-            min-width: 230px;
-        }
-
-        .logout-popup.show {
-            display: block;
-        }
-    </style>
 </head>
 
 <body>
-    <div id="customModal" class="modal-overlay">
-        <div class="modal-content">
-            <div id="modalTitle" class="modal-title">Thông báo</div>
-            <div id="modalMsg" class="modal-msg">Nội dung thông báo ở đây...</div>
-            <div class="modal-btns">
-                <button id="modalCancelBtn" class="modal-btn modal-btn-cancel" onclick="closeModal()">Hủy</button>
-                <button id="modalOkBtn" class="modal-btn modal-btn-ok" onclick="confirmModal()">OK</button>
-            </div>
-        </div>
-    </div>
+    <div th:fragment="content">
+        <style>
+            /* --- Ghi đè Scroll theo chuẩn Dashboard --- */
+            .main-content {
+                overflow: hidden !important;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                flex: 1;
+                min-height: 0;
+            }
 
-    <div id="app-container">
-        <!-- 1. Thanh Top Bar -->
-        <header class="top-bar">
-            <div class="top-icons">
-                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
-                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
-            </div>
-        </header>
+            /* --- CSS riêng của trang Trả Phòng --- */
+            .layout-grid {
+                display: flex;
+                gap: 30px;
+                flex: 1;
+                height: calc(100vh - 280px);
+                /* Tránh bị che bởi Taskbar */
+                overflow: hidden;
+            }
 
-        <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
-        <div class="hero-banner">
-            <nav class="nav-bar">
-                <a href="/tongquan" class="nav-item">Tổng quan</a>
-                <a href="/dat-phong" class="nav-item">Đặt phòng</a>
-                <a href="/ql-datphong" class="nav-item">Quản lý đặt phòng</a>
-                <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
-                <a href="/tra-phong" class="nav-item active">Trả phòng</a>
-                <a href="/service" class="nav-item">Dịch vụ phòng</a>
-            </nav>
-        </div>
+            .search-room-wrapper {
+                position: relative;
+                width: 100%;
+            }
 
-        <!-- 3. Vùng Nội Dung Chính -->
-        <main class="main-content">
-            <div class="layout-grid" id="checkoutView">
-                <!-- Trả Phòng - Bản đồ Đang Sử Dụng -->
-                <div id="coMapSection" class="map-section" style="width: 100%; border-right: none; padding-right: 0;">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-shrink: 0; max-width: 100%;">
-                        <div class="map-section-title" style="margin-bottom: 0;">Sơ đồ phòng (Đang sử dụng)</div>
-                        <div class="search-room-wrapper" style="max-width: 400px;">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" id="coSearchInput" placeholder="Tìm kiếm phòng..."
-                                onkeyup="searchCheckoutMap()">
-                        </div>
+            .search-room-wrapper i {
+                position: absolute;
+                left: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #888;
+            }
+
+            .search-room-wrapper input {
+                width: 100%;
+                padding: 10px 15px 10px 40px;
+                border-radius: 20px;
+                border: 1px solid #ddd;
+                outline: none;
+                font-size: 14px;
+                background: #fff;
+                transition: 0.2s;
+            }
+
+            .search-room-wrapper input:focus {
+                border-color: #c0ab7b;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            }
+
+            .map-section {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                padding-bottom: 20px;
+                padding-right: 15px;
+            }
+
+            .map-section-title {
+                font-size: 24px;
+                font-weight: bold;
+                color: #111;
+                margin-bottom: 30px;
+                flex-shrink: 0;
+            }
+
+            .floor-group {
+                margin-bottom: 40px;
+            }
+
+            .floor-title {
+                font-size: 16px;
+                font-weight: bold;
+                color: #111;
+                margin-bottom: 20px;
+            }
+
+            .floor-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 25px;
+            }
+
+            .map-room-card {
+                border-radius: 12px;
+                padding: 25px 15px;
+                text-align: center;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 140px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            .map-room-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+                opacity: 0.8;
+            }
+
+            .map-room-name {
+                font-weight: bold;
+                font-size: 16px;
+                color: #111;
+                margin-bottom: 12px;
+            }
+
+            .map-room-status {
+                font-size: 15px;
+                color: #333;
+                margin-bottom: 8px;
+            }
+
+            .map-room-customer {
+                font-size: 14px;
+                color: #111;
+                margin-bottom: 6px;
+            }
+
+            .map-room-date {
+                font-size: 13px;
+                color: #555;
+                font-weight: 500;
+            }
+
+            .bg-sudung {
+                background-color: #f79e9a;
+            }
+
+            .detail-section {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                padding-bottom: 20px;
+                padding-right: 15px;
+                overflow-y: auto;
+            }
+
+            .btn-back-wrapper {
+                margin-bottom: 15px;
+                flex-shrink: 0;
+            }
+
+            .btn-back {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: transparent;
+                border: none;
+                font-size: 16px;
+                font-weight: bold;
+                color: #d35400;
+                cursor: pointer;
+                text-decoration: none;
+                padding: 0;
+            }
+
+            .btn-back:hover {
+                text-decoration: underline;
+            }
+
+            .room-info-card {
+                background: white;
+                border-radius: 8px;
+                padding: 25px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                margin-bottom: 15px;
+            }
+
+            .room-title {
+                font-size: 20px;
+                font-weight: bold;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                color: #222;
+            }
+
+            .room-status {
+                font-size: 14px;
+                color: #555;
+                margin-bottom: 15px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .status-badge {
+                padding: 4px 15px;
+                border-radius: 15px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #111;
+            }
+
+            .room-time {
+                font-size: 14px;
+                color: #444;
+                margin-bottom: 25px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .room-total {
+                display: flex;
+                justify-content: space-between;
+                font-size: 15px;
+                font-weight: 600;
+                padding-top: 15px;
+                border-top: 1px solid #eee;
+                color: #333;
+            }
+
+            .selected-item {
+                background: white;
+                border-radius: 8px;
+                padding: 20px 25px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+
+            .overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 100;
+                display: none;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .popup {
+                background: white;
+                padding: 40px;
+                border-radius: 12px;
+                text-align: center;
+                width: 400px;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            }
+
+            .popup-icon {
+                font-size: 60px;
+                color: #2ecc71;
+                margin-bottom: 20px;
+            }
+
+            .popup-title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 25px;
+                color: #222;
+            }
+
+            .popup-btn {
+                background: #e74c3c;
+                color: white;
+                border: none;
+                padding: 12px 40px;
+                border-radius: 6px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .f-btn-save {
+                background: #d1b88a;
+                color: #222;
+                padding: 12px 35px;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 16px;
+                cursor: pointer;
+                border: none;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                transition: 0.2s;
+            }
+
+            .f-btn-save:hover {
+                background: #c0ab7b;
+            }
+        </style>
+
+        <div class="layout-grid" id="checkoutView">
+            <div id="coMapSection" class="map-section" style="width: 100%; border-right: none; padding-right: 0;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-shrink: 0; max-width: 100%;">
+                    <div class="map-section-title" style="margin-bottom: 0;">Sơ đồ phòng (Đang sử dụng)</div>
+                    <div class="search-room-wrapper" style="max-width: 400px;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="coSearchInput" placeholder="Tìm kiếm phòng..."
+                            onkeyup="searchCheckoutMap()">
                     </div>
-                    <div id="coMapContainer" style="display: flex; flex-direction: column;"></div>
                 </div>
+                <div id="coMapContainer" style="display: flex; flex-direction: column;"></div>
+            </div>
 
-                <!-- Trả Phòng - Chi tiết thanh toán & In hóa đơn -->
-                <div id="coDetailSection" class="detail-section" style="display: none; width: 100%;">
-                    <div class="btn-back-wrapper">
-                        <button class="btn-back" onclick="selectCheckoutRoom(null)">
-                            <i class="fa-solid fa-arrow-left"></i> Quay lại Sơ đồ
-                        </button>
-                    </div>
-                    <div style="display: flex; gap: 30px; flex: 1;">
-                        <div style="flex: 1.2; display: flex; flex-direction: column; overflow-y: auto; padding-right: 25px;"
-                            id="coLeftPanel"></div>
-                        <div style="flex: 0.8; max-width: 500px; display: flex; flex-direction: column;"
-                            id="coRightPanel"></div>
-                    </div>
+            <div id="coDetailSection" class="detail-section" style="display: none; width: 100%;">
+                <div class="btn-back-wrapper">
+                    <button class="btn-back" onclick="selectCheckoutRoom(null)">
+                        <i class="fa-solid fa-arrow-left"></i> Quay lại Sơ đồ
+                    </button>
+                </div>
+                <div style="display: flex; gap: 30px; flex: 1; overflow: hidden;">
+                    <div style="flex: 1.2; display: flex; flex-direction: column; overflow-y: auto; padding-right: 25px;"
+                        id="coLeftPanel"></div>
+                    <div style="flex: 0.8; max-width: 500px; display: flex; flex-direction: column; overflow-y: auto;"
+                        id="coRightPanel"></div>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
 
-    <!-- Popup: Hoá Đơn Thanh Toán (Checkout) -->
-    <div class="overlay" id="invoicePopup">
-        <div
-            style="background: #fffdf5; padding: 40px; border-radius: 12px; width: 620px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <img src="./Picture/bill_logo_logo.png" alt="Logo"
-                    style="width: 70px; height: 70px; object-fit: contain;">
-                <h2 style="color: #d35400; font-size: 26px; font-weight: bold; margin-top: 8px;">CamFusion House</h2>
-            </div>
-            <h3
-                style="color: #d35400; border-bottom: 2px solid #eaddcf; padding-bottom: 5px; margin-bottom: 15px; font-size: 20px;">
-                Thông tin khách hàng</h3>
-            <table
-                style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 16px; text-align: left; table-layout: fixed;">
-                <colgroup>
-                    <col style="width: 50%;">
-                    <col style="width: 25%;">
-                    <col style="width: 25%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th style="padding-bottom:5px; color: #111;">Tên khách</th>
-                        <th style="padding-bottom:5px; text-align:center; color: #111;">Check-in</th>
-                        <th style="padding-bottom:5px; text-align:right; color: #111;">Check-out</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="invCust"
-                            style="color:#333; font-weight: normal; padding-top: 5px; word-wrap: break-word;"></td>
-                        <td id="invIn" style="text-align:center; color:#333; font-weight: normal; padding-top: 5px;">
-                        </td>
-                        <td id="invOut" style="text-align:right; color:#333; font-weight: normal; padding-top: 5px;">
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <h3
-                style="color: #d35400; border-bottom: 2px solid #eaddcf; padding-bottom: 5px; margin-bottom: 15px; font-size: 20px;">
-                Dịch vụ phòng</h3>
-            <table
-                style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 16px; text-align: left; table-layout: fixed;">
-                <colgroup>
-                    <col style="width: 50%;">
-                    <col style="width: 25%;">
-                    <col style="width: 25%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th style="padding-bottom:10px; color: #111;">Tên dịch vụ</th>
-                        <th style="padding-bottom:10px; text-align:center; color: #111;">Số lượng</th>
-                        <th style="padding-bottom:10px; text-align:right; color: #111;">Giá</th>
-                    </tr>
-                </thead>
-                <tbody id="invItemsBody"></tbody>
-            </table>
-            <div style="border-top: 2px solid #eaddcf; margin-bottom: 15px;"></div>
+        <div class="overlay" id="invoicePopup">
             <div
-                style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 17px; font-weight: bold;">
-                <span>Tiền phòng:</span><span id="invRoom">0</span>
-            </div>
-            <div
-                style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 17px; font-weight: bold;">
-                <span>Dịch vụ phòng:</span><span id="invSrv">0</span>
-            </div>
-            <div
-                style="border-top: 3px double #d35400; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                <span style="font-size: 22px; font-weight: bold; color: #d35400; text-transform: uppercase;">Tổng
-                    cộng</span>
-                <span id="invTotal" style="font-size: 24px; font-weight: bold; color: #d35400;">0</span>
-            </div>
-            <div style="text-align: center; margin-top: 30px; font-style: italic; color: #777;">Cảm ơn quý khách đã sử
-                dụng dịch vụ của CamFusion House!</div>
-            <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px;">
-                <button onclick="closeInvoice()"
-                    style="background: #999; color: #fff; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer;">ĐÓNG</button>
-                <button onclick="printInvoice()"
-                    style="background: #d35400; color: #fff; border: none; padding: 12px 45px; border-radius: 6px; font-weight: bold; cursor: pointer;">IN
-                    HÓA ĐƠN</button>
+                style="background: #fffdf5; padding: 40px; border-radius: 12px; width: 620px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <img src="./Picture/bill_logo_logo.png" alt="Logo"
+                        style="width: 70px; height: 70px; object-fit: contain;">
+                    <h2 style="color: #d35400; font-size: 26px; font-weight: bold; margin-top: 8px;">CamFusion House
+                    </h2>
+                </div>
+                <h3
+                    style="color: #d35400; border-bottom: 2px solid #eaddcf; padding-bottom: 5px; margin-bottom: 15px; font-size: 20px;">
+                    Thông tin khách hàng</h3>
+                <table
+                    style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 16px; text-align: left; table-layout: fixed;">
+                    <colgroup>
+                        <col style="width: 50%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th style="padding-bottom:5px; color: #111;">Tên khách</th>
+                            <th style="padding-bottom:5px; text-align:center; color: #111;">Check-in</th>
+                            <th style="padding-bottom:5px; text-align:right; color: #111;">Check-out</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="invCust"
+                                style="color:#333; font-weight: normal; padding-top: 5px; word-wrap: break-word;"></td>
+                            <td id="invIn"
+                                style="text-align:center; color:#333; font-weight: normal; padding-top: 5px;"></td>
+                            <td id="invOut"
+                                style="text-align:right; color:#333; font-weight: normal; padding-top: 5px;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3
+                    style="color: #d35400; border-bottom: 2px solid #eaddcf; padding-bottom: 5px; margin-bottom: 15px; font-size: 20px;">
+                    Dịch vụ phòng</h3>
+                <table
+                    style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 16px; text-align: left; table-layout: fixed;">
+                    <colgroup>
+                        <col style="width: 50%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th style="padding-bottom:10px; color: #111;">Tên dịch vụ</th>
+                            <th style="padding-bottom:10px; text-align:center; color: #111;">Số lượng</th>
+                            <th style="padding-bottom:10px; text-align:right; color: #111;">Giá</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invItemsBody"></tbody>
+                </table>
+                <div style="border-top: 2px solid #eaddcf; margin-bottom: 15px;"></div>
+                <div
+                    style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 17px; font-weight: bold;">
+                    <span>Tiền phòng:</span><span id="invRoom">0</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 17px; font-weight: bold;">
+                    <span>Dịch vụ phòng:</span><span id="invSrv">0</span>
+                </div>
+                <div
+                    style="border-top: 3px double #d35400; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+                    <span style="font-size: 22px; font-weight: bold; color: #d35400; text-transform: uppercase;">Tổng
+                        cộng</span>
+                    <span id="invTotal" style="font-size: 24px; font-weight: bold; color: #d35400;">0</span>
+                </div>
+                <div style="text-align: center; margin-top: 30px; font-style: italic; color: #777;">Cảm ơn quý khách đã
+                    sử dụng dịch vụ của CamFusion House!</div>
+                <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px;">
+                    <button onclick="closeInvoice()"
+                        style="background: #999; color: #fff; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer;">ĐÓNG</button>
+                    <button onclick="printInvoice()"
+                        style="background: #d35400; color: #fff; border: none; padding: 12px 45px; border-radius: 6px; font-weight: bold; cursor: pointer;">IN
+                        HÓA ĐƠN</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Popup: In Thành Công -->
-    <div class="overlay" id="printSuccessPopup">
-        <div class="popup">
-            <div class="popup-icon"><i class="fa-solid fa-print"></i></div>
-            <div class="popup-title">Đã gửi lệnh in hóa đơn!</div>
-            <button class="popup-btn" onclick="closePrintSuccess()">Xong</button>
+        <div class="overlay" id="printSuccessPopup">
+            <div class="popup">
+                <div class="popup-icon"><i class="fa-solid fa-print"></i></div>
+                <div class="popup-title">Đã gửi lệnh in hóa đơn!</div>
+                <button class="popup-btn" onclick="closePrintSuccess()">Xong</button>
+            </div>
         </div>
-    </div>
 
-    <script src="shared.js"></script>
-    <script>
-        const formatMoney = (amount) => amount.toLocaleString('vi-VN');
-        let roomsData = [];
-        let selectedCheckoutRoomId = null;
+        <script src="shared.js"></script>
+        <script>
+            const formatMoney = (amount) => amount.toLocaleString('vi-VN');
+            let roomsData = [];
+            let selectedCheckoutRoomId = null;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await fetchActiveStays();
-        });
-
-        async function fetchActiveStays() {
-            try {
-                const res = await fetch('/api/tra-phong/active-stays');
-                const stays = await res.json();
-                roomsData = stays.map(s => {
-                    const servicesMap = {};
-                    (s.suDungDichVuList || []).forEach(sd => {
-                        const srvId = sd.dichVu ? sd.dichVu.idDichvu : 'srv-' + sd.idSudungDv;
-                        if (servicesMap[srvId]) {
-                            servicesMap[srvId].qty += (sd.soluong || 1);
-                            servicesMap[srvId].realIds.push(sd.idSudungDv);
-                        } else {
-                            servicesMap[srvId] = {
-                                id: srvId,
-                                realIds: [sd.idSudungDv],
-                                name: sd.dichVu ? sd.dichVu.tenDichVu : 'Dịch vụ',
-                                price: sd.thanhTien ? sd.thanhTien / sd.soluong : 0,
-                                qty: sd.soluong || 1,
-                                type: 'service'
-                            };
-                        }
-                    });
-
-                    const damagesMap = {};
-                    (s.thietHaiList || []).forEach(th => {
-                        const dmgId = th.taiSan ? th.taiSan.idTaisan : 'th-' + th.idThieThai;
-                        if (damagesMap[dmgId]) {
-                            damagesMap[dmgId].qty += 1;
-                            damagesMap[dmgId].realIds.push(th.idThieThai);
-                        } else {
-                            damagesMap[dmgId] = {
-                                id: dmgId,
-                                realIds: [th.idThieThai],
-                                name: th.taiSan ? th.taiSan.tenTaiSan : 'Tài sản',
-                                price: th.soTienBoiThuong || 0,
-                                qty: 1,
-                                type: 'compensation'
-                            };
-                        }
-                    });
-
-                    return {
-                        id: s.idLuutru,
-                        name: s.actualRoomName || s.datPhong.soPhong,
-                        floor: 1,
-                        status: 'Đang sử dụng',
-                        customer: s.datPhong.tenNguoiDat,
-                        date: s.thoiGianCheckinThucTe ? s.thoiGianCheckinThucTe.split('T')[0].split('-').reverse().join('/') : '',
-                        date2: s.datPhong.ngayTra ? s.datPhong.ngayTra.split('T')[0].split('-').reverse().join('/') : '',
-                        basePrice: s.calculatedBasePrice || 0,
-                        items: [...Object.values(servicesMap), ...Object.values(damagesMap)]
-                    };
-                });
+            document.addEventListener('DOMContentLoaded', () => {
+                if (window.sharedData) {
+                    roomsData = window.sharedData.getSharedRooms();
+                }
                 renderCheckoutMap();
-                if (selectedCheckoutRoomId) {
+            });
+
+            function searchCheckoutMap() {
+                const query = document.getElementById('coSearchInput').value.toLowerCase();
+                const floors = document.getElementById('coMapContainer').querySelectorAll('.floor-group');
+                floors.forEach(f => {
+                    let hasVisible = false;
+                    f.querySelectorAll('.map-room-card').forEach(c => {
+                        if (c.querySelector('.map-room-name').innerText.toLowerCase().includes(query)) {
+                            c.style.display = 'flex';
+                            hasVisible = true;
+                        } else c.style.display = 'none';
+                    });
+                    f.style.display = hasVisible ? 'block' : 'none';
+                });
+            }
+
+            function renderCheckoutMap() {
+                const container = document.getElementById('coMapContainer');
+                let html = '';
+                const floors = [1, 2, 3, 4, 5];
+                floors.forEach(floor => {
+                    const floorRooms = roomsData.filter(r => r.floor === floor && r.status === 'Đang sử dụng');
+                    if (floorRooms.length > 0) {
+                        html += `<div class="floor-group"><div class="floor-title">Tầng ${floor}</div><div class="floor-grid">`;
+                        floorRooms.forEach(room => {
+                            html += `
+                                <div class="map-room-card bg-sudung" onclick="selectCheckoutRoom('${room.id}')">
+                                    <div class="map-room-name">${room.name}</div>
+                                    <div class="map-room-status">${room.status}</div>
+                                    <div class="map-room-customer">${room.customer}</div>
+                                    <div class="map-room-date">→ ${room.date ? room.date.split(',')[0] : ''}</div>
+                                </div>`;
+                        });
+                        html += `</div></div>`;
+                    }
+                });
+                container.innerHTML = html;
+                document.getElementById('coSearchInput').value = '';
+            }
+
+            function selectCheckoutRoom(id) {
+                selectedCheckoutRoomId = id;
+                if (!id) {
+                    document.getElementById('coMapSection').style.display = 'flex';
+                    document.getElementById('coDetailSection').style.display = 'none';
+                    renderCheckoutMap();
+                } else {
+                    document.getElementById('coMapSection').style.display = 'none';
+                    document.getElementById('coDetailSection').style.display = 'flex';
                     renderCheckoutParams();
                 }
-            } catch (error) {
-                console.error("Error fetching stays:", error);
             }
-        }
 
-        function searchCheckoutMap() {
-            const query = document.getElementById('coSearchInput').value.toLowerCase();
-            const floors = document.getElementById('coMapContainer').querySelectorAll('.floor-group');
-            floors.forEach(f => {
-                let hasVisible = false;
-                f.querySelectorAll('.map-room-card').forEach(c => {
-                    if (c.querySelector('.map-room-name').innerText.toLowerCase().includes(query)) {
-                        c.style.display = 'flex';
-                        hasVisible = true;
-                    } else c.style.display = 'none';
+            function renderCheckoutParams() {
+                const lPanel = document.getElementById('coLeftPanel');
+                const rPanel = document.getElementById('coRightPanel');
+                const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+                if (!room) return;
+
+                let svHtml = '';
+                let cpHtml = '';
+                let svTotal = 0;
+                let svIdx = 1, cpIdx = 1;
+
+                room.items.forEach(item => {
+                    const total = item.price * item.qty;
+                    svTotal += total;
+                    const row = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:15px; padding-left:15px;">
+                            <span style="flex:1;">${item.type === 'service' ? svIdx : cpIdx}. ${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</span>
+                            <div style="background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px;">- 0${item.qty} +</div>
+                            <div style="width:100px; text-align:right;">${formatMoney(total)}</div>
+                            <i class="fa-regular fa-trash-can" style="color:#aaa; margin-left:15px; cursor:pointer;" title="Tính năng xóa bị khóa ở mục checkout"></i>
+                        </div>`;
+                    if (item.type === 'service') { svHtml += row; svIdx++; }
+                    else { cpHtml += row; cpIdx++; }
                 });
-                f.style.display = hasVisible ? 'block' : 'none';
-            });
-        }
 
-        function renderCheckoutMap() {
-            const container = document.getElementById('coMapContainer');
-            let html = '';
-            const floors = [1, 2, 3, 4, 5];
-            floors.forEach(floor => {
-                const floorRooms = roomsData.filter(r => r.floor === floor && r.status === 'Đang sử dụng');
-                if (floorRooms.length > 0) {
-                    html += `<div class="floor-group"><div class="floor-title">Tầng ${floor}</div><div class="floor-grid">`;
-                    floorRooms.forEach(room => {
-                        html += `
-                            <div class="map-room-card bg-sudung" onclick="selectCheckoutRoom('${room.id}')">
-                                <div class="map-room-name">${room.name}</div>
-                                <div class="map-room-status">${room.status}</div>
-                                <div class="map-room-customer">${room.customer}</div>
-                                <div class="map-room-date">→ ${room.date ? room.date.split(',')[0] : ''}</div>
-                            </div>`;
-                    });
-                    html += `</div></div>`;
-                }
-            });
-            container.innerHTML = html;
-            document.getElementById('coSearchInput').value = '';
-        }
-
-        function selectCheckoutRoom(id) {
-            selectedCheckoutRoomId = id;
-            if (!id) {
-                document.getElementById('coMapSection').style.display = 'flex';
-                document.getElementById('coDetailSection').style.display = 'none';
-                renderCheckoutMap();
-            } else {
-                document.getElementById('coMapSection').style.display = 'none';
-                document.getElementById('coDetailSection').style.display = 'flex';
-                renderCheckoutParams();
-            }
-        }
-
-        function renderCheckoutParams() {
-            const lPanel = document.getElementById('coLeftPanel');
-            const rPanel = document.getElementById('coRightPanel');
-            const room = roomsData.find(r => r.id == selectedCheckoutRoomId);
-            if (!room) return;
-
-            let svHtml = '';
-            let cpHtml = '';
-            let svTotal = 0;
-            let svIdx = 1, cpIdx = 1;
-
-            room.items.forEach((item, index) => {
-                const total = item.price * item.qty;
-                svTotal += total;
-                const row = `
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:15px; padding-left:15px;">
-                        <span style="flex:1;">${item.type === 'service' ? svIdx : cpIdx}. ${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</span>
-                        <div style="display:flex; align-items:center; background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px;">
-                            <span style="cursor:pointer; padding:0 5px;" onclick="changeQty('${room.id}', ${index}, -1)">-</span>
-                            <span style="margin:0 10px;">${item.qty < 10 ? '0' + item.qty : item.qty}</span>
-                            <span style="cursor:pointer; padding:0 5px;" onclick="changeQty('${room.id}', ${index}, 1)">+</span>
+                lPanel.innerHTML = `
+                    <div class="room-info-card">
+                        <div class="room-title"><i class="fa-regular fa-calendar-check" style="font-size:24px; color:#555;"></i> Phòng ${room.name}</div>
+                        <div class="room-status">Trạng thái: <span class="status-badge bg-sudung">${room.status}</span></div>
+                        <div class="room-time" style="display:flex; justify-content:space-between;">
+                            <div><span style="font-weight:600; color:#333;">Check-in:</span> <span style="background:#f4f4f4; padding:2px 8px; border-radius:4px; font-size:13px;">${room.date || ''} <i class="fa-regular fa-calendar" style="color:#888;"></i></span></div>
+                            <div><span style="font-weight:600; color:#333;">Check-out:</span> <span style="background:#f4f4f4; padding:2px 8px; border-radius:4px; font-size:13px;">${room.date2 || ''} <i class="fa-regular fa-calendar" style="color:#888;"></i></span></div>
                         </div>
-                        <div style="width:100px; text-align:right;">${formatMoney(total)}</div>
-                        <i class="fa-regular fa-trash-can" style="color:#d57e50; margin-left:15px; cursor:pointer;" onclick="removeItem('${room.id}', ${index})"></i>
-                    </div>`;
-                if (item.type === 'service') { svHtml += row; svIdx++; }
-                else { cpHtml += row; cpIdx++; }
-            });
+                        <div class="room-time" style="margin-top: 15px; margin-bottom: 20px;">Số người: 2</div>
+                        <div class="room-total" style="border-top:1px solid #ddd; padding-top:15px; color:#666;">
+                            Tiền phòng: <span style="font-weight:700; color:#333; border-bottom:1px solid #ccc; padding-bottom:2px;">${formatMoney(room.basePrice)}</span>
+                        </div>
+                    </div>
+                    <div class="room-info-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                            <span style="font-size:18px; font-weight:bold;">A. Dịch vụ phòng</span>
+                            <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="window.location.href='/service'">+ Thêm dịch vụ</button>
+                        </div>
+                        ${svHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có dịch vụ phát sinh</i>'}
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:35px;">
+                            <span style="font-size:18px; font-weight:bold;">B. Bồi thường thiệt hại</span>
+                            <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="window.location.href='/service'">+ Thêm tài sản</button>
+                        </div>
+                        ${cpHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có bồi thường</i>'}
+                    </div>
+                `;
 
-            lPanel.innerHTML = `
-                <div class="room-info-card">
-                    <div class="room-title"><i class="fa-regular fa-calendar-check" style="font-size:24px; color:#555;"></i> Phòng ${room.name}</div>
-                    <div class="room-status">Trạng thái: <span class="status-badge bg-sudung">${room.status}</span></div>
-                    <div class="room-time" style="display:flex; justify-content:space-between;">
-                        <div><span style="font-weight:600; color:#333;">Check-in:</span> <span style="background:#f4f4f4; padding:2px 8px; border-radius:4px; font-size:13px;">${room.date || ''} <i class="fa-regular fa-calendar" style="color:#888;"></i></span></div>
-                        <div><span style="font-weight:600; color:#333;">Check-out:</span> <span style="background:#f4f4f4; padding:2px 8px; border-radius:4px; font-size:13px;">${room.date2 || ''} <i class="fa-regular fa-calendar" style="color:#888;"></i></span></div>
+                rPanel.innerHTML = `
+                    <div class="room-info-card" style="padding: 40px; display: flex; flex-direction: column; background:#fffcf5; min-height: 100%;">
+                        <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
+                            <span>Tiền phòng:</span><span style="color:#222;">${formatMoney(room.basePrice)}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
+                            <span>Tổng dịch vụ phòng:</span><span style="color:#222;">${formatMoney(svTotal)}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
+                            <span>Phụ thu:</span><span style="color:#222;">0</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:22px; font-weight:bold; margin-bottom:20px; color:#111; margin-top:5px;">
+                            <span style="text-transform:uppercase;">Tổng tiền</span><span>${formatMoney(room.basePrice + svTotal)}</span>
+                        </div>
+                        <hr style="border:none; border-top:2px solid #eaddcf; margin: 30px 0;">
+                        <div style="font-weight:bold; font-size:18px; margin-bottom:25px; text-transform:uppercase; color:#111;">PHƯƠNG THỨC THANH TOÁN</div>
+                        <label style="display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-bottom:20px; cursor:pointer;">
+                            <span style="color:#333;">Thanh toán bằng tiền mặt</span>
+                            <input type="checkbox" id="cbCash" onchange="toggleCoPayment('cash')" style="width:22px; height:22px; accent-color:#d57e50; cursor:pointer;">
+                        </label>
+                        <label style="display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-bottom:40px; cursor:pointer;">
+                            <span style="color:#333;">Thanh toán bằng QR</span>
+                            <input type="checkbox" id="cbQr" onchange="toggleCoPayment('qr')" style="width:22px; height:22px; accent-color:#d57e50; cursor:pointer;">
+                        </label>
+                        <div style="margin-top:auto;">
+                            <button class="f-btn-save" style="width:100%;" onclick="openInvoiceForm()">THANH TOÁN</button>
+                        </div>
                     </div>
-                    <div class="room-time" style="margin-top: 15px; margin-bottom: 20px;">Số người: 2</div>
-                    <div class="room-total" style="border-top:1px solid #ddd; padding-top:15px; color:#666;">
-                        Tiền phòng: <span style="font-weight:700; color:#333; border-bottom:1px solid #ccc; padding-bottom:2px;">${formatMoney(room.basePrice)}</span>
-                    </div>
-                </div>
-                <div class="room-info-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                        <span style="font-size:18px; font-weight:bold;">A. Dịch vụ phòng</span>
-                        <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="window.location.href='/service'">+ Thêm dịch vụ</button>
-                    </div>
-                    ${svHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có dịch vụ phát sinh</i>'}
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:35px;">
-                        <span style="font-size:18px; font-weight:bold;">B. Bồi thường thiệt hại</span>
-                        <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="window.location.href='/service'">+ Thêm tài sản</button>
-                    </div>
-                    ${cpHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có bồi thường</i>'}
-                </div>
-            `;
-
-            rPanel.innerHTML = `
-                <div class="room-info-card" style="padding: 40px; display: flex; flex-direction: column; background:#fffcf5; min-height: 100%;">
-                    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
-                        <span>Tiền phòng:</span><span style="color:#222;">${formatMoney(room.basePrice)}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
-                        <span>Tổng dịch vụ phòng:</span><span style="color:#222;">${formatMoney(svTotal)}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:18px; margin-bottom:30px; color:#333;">
-                        <span>Phụ thu:</span><span style="color:#222;">0</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:22px; font-weight:bold; margin-bottom:20px; color:#111; margin-top:5px;">
-                        <span style="text-transform:uppercase;">Tổng tiền</span><span>${formatMoney(room.basePrice + svTotal)}</span>
-                    </div>
-                    <hr style="border:none; border-top:2px solid #eaddcf; margin: 30px 0;">
-                    <div style="font-weight:bold; font-size:18px; margin-bottom:25px; text-transform:uppercase; color:#111;">PHƯƠNG THỨC THANH TOÁN</div>
-                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-bottom:20px; cursor:pointer;">
-                        <span style="color:#333;">Thanh toán bằng tiền mặt</span>
-                        <input type="checkbox" id="cbCash" onchange="toggleCoPayment('cash')" style="width:22px; height:22px; accent-color:#d57e50; cursor:pointer;">
-                    </label>
-                    <label style="display:flex; justify-content:space-between; align-items:center; font-size:17px; margin-bottom:40px; cursor:pointer;">
-                        <span style="color:#333;">Thanh toán bằng QR</span>
-                        <input type="checkbox" id="cbQr" onchange="toggleCoPayment('qr')" style="width:22px; height:22px; accent-color:#d57e50; cursor:pointer;">
-                    </label>
-                    <div style="margin-top:auto;">
-                        <button class="f-btn-save" style="width:100%;" onclick="openInvoiceForm()">THANH TOÁN</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function toggleCoPayment(opt) {
-            if (opt === 'cash') {
-                if (document.getElementById('cbCash').checked) document.getElementById('cbQr').checked = false;
-            } else {
-                if (document.getElementById('cbQr').checked) document.getElementById('cbCash').checked = false;
+                `;
             }
-        }
 
-        /* Modal Logic */
-        let modalResolve = null;
-        function showModal(msg, title = "Thông báo", type = "alert") {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMsg').innerText = msg;
-            document.getElementById('modalCancelBtn').style.display = type === 'confirm' ? 'block' : 'none';
-            document.getElementById('customModal').style.display = 'flex';
-            return new Promise(resolve => { modalResolve = resolve; });
-        }
-        function closeModal() {
-            document.getElementById('customModal').style.display = 'none';
-            if (modalResolve) modalResolve(false);
-        }
-        function confirmModal() {
-            document.getElementById('customModal').style.display = 'none';
-            if (modalResolve) modalResolve(true);
-        }
-
-        async function changeQty(roomId, itemIdx, delta) {
-            const room = roomsData.find(r => r.id == roomId);
-            const item = room.items[itemIdx];
-
-            if (item.realIds && item.realIds.length > 0) {
-                 try {
-                     if (delta > 0) {
-                         if (item.type === 'service') {
-                             await fetch('/api/su-dung-dich-vu', {
-                                 method: 'POST',
-                                 headers: { 'Content-Type': 'application/json' },
-                                 body: JSON.stringify({ idLuutru: room.id, idDichvu: item.id, quantity: 1 })
-                             });
-                         } else {
-                             await fetch('/api/thiet-hai', {
-                                 method: 'POST',
-                                 headers: { 'Content-Type': 'application/json' },
-                                 body: JSON.stringify({ idLuutru: room.id, idTaisan: item.id, mucDo: 'Vừa', fineAmount: item.price })
-                             });
-                         }
-                     } else {
-                         const rid = item.realIds[0];
-                         const url = item.type === 'service' ? `/api/su-dung-dich-vu/${rid}` : `/api/thiet-hai/${rid}`;
-                         await fetch(url, { method: 'DELETE' });
-                     }
-                     await fetchActiveStays();
-                 } catch (e) {
-                     showModal("Lỗi khi cập nhật số lượng: " + e);
-                 }
-                 return;
-            }
-            if (item.qty + delta <= 0) removeItem(roomId, itemIdx);
-            else { item.qty += delta; renderCheckoutParams(); }
-        }
-
-        async function removeItem(roomId, itemIdx) {
-            const room = roomsData.find(r => r.id == roomId);
-            const item = room.items[itemIdx];
-
-            if (item.realIds && item.realIds.length > 0) {
-                const ok = await showModal("Bạn có chắc chắn muốn xóa dịch vụ này khỏi hệ thống?", "Xác nhận", "confirm");
-                if (!ok) return;
-                try {
-                    for (const rid of item.realIds) {
-                        const url = item.type === 'service' ? `/api/su-dung-dich-vu/${rid}` : `/api/thiet-hai/${rid}`;
-                        await fetch(url, { method: 'DELETE' });
-                    }
-                    await fetchActiveStays();
-                    showModal("Đã xóa thành công.");
-                } catch (error) { showModal("Lỗi khi xóa: " + error); }
-            }
-        }
-
-        async function openInvoiceForm() {
-            const cbCash = document.getElementById('cbCash').checked;
-            const cbQr = document.getElementById('cbQr').checked;
-            if (!cbCash && !cbQr) { alert('Vui lòng chọn 1 phương thức thanh toán!'); return; }
-
-            const room = roomsData.find(r => r.id == selectedCheckoutRoomId);
-            
-            // Fetch real total from backend
-            try {
-                const res = await fetch(`/api/tra-phong/checkout-info/${room.id}`);
-                const data = await res.json();
-                
-                document.getElementById('invCust').innerText = room.customer || '';
-                document.getElementById('invIn').innerText = room.date || '';
-                document.getElementById('invOut').innerText = room.date2 || '';
-
-                // For simplicity in this demo, we keep the room items display as is, 
-                // but real app should fetch used services from backend here.
-                
-                document.getElementById('invRoom').innerText = formatMoney(room.basePrice);
-                document.getElementById('invTotal').innerText = formatMoney(data.total);
-                document.getElementById('invoicePopup').style.display = 'flex';
-            } catch (error) {
-                alert("Lỗi khi lấy thông tin hóa đơn: " + error);
-            }
-        }
-
-        function closeInvoice() { document.getElementById('invoicePopup').style.display = 'none'; }
-
-        async function printInvoice() {
-            const cbCash = document.getElementById('cbCash').checked;
-            const paymentMethod = cbCash ? 'CASH' : 'QR';
-            
-            try {
-                const res = await fetch('/api/tra-phong/finalize', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        idLuutru: selectedCheckoutRoomId,
-                        paymentMethod: paymentMethod
-                    })
-                });
-                
-                if (res.ok) {
-                    document.getElementById('invoicePopup').style.display = 'none';
-                    document.getElementById('printSuccessPopup').style.display = 'flex';
+            function toggleCoPayment(opt) {
+                if (opt === 'cash') {
+                    if (document.getElementById('cbCash').checked) document.getElementById('cbQr').checked = false;
                 } else {
-                    const err = await res.text();
-                    alert("Lỗi khi thanh toán: " + err);
+                    if (document.getElementById('cbQr').checked) document.getElementById('cbCash').checked = false;
                 }
-            } catch (error) {
-                alert("Lỗi kết nối: " + error);
             }
-        }
 
-        function closePrintSuccess() {
-            document.getElementById('printSuccessPopup').style.display = 'none';
-            fetchActiveStays(); // Refresh map
-            selectCheckoutRoom(null);
-        }
+            function openInvoiceForm() {
+                const cbCash = document.getElementById('cbCash').checked;
+                const cbQr = document.getElementById('cbQr').checked;
+                if (!cbCash && !cbQr) { alert('Vui lòng chọn 1 phương thức thanh toán!'); return; }
 
-        function toggleLogoutPopup() {
-            document.getElementById('logoutPopup').classList.toggle('show');
-        }
-    </script>
+                const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+                document.getElementById('invCust').innerText = room.customer || '';
+                document.getElementById('invIn').innerText = room.date ? room.date.split(',')[0] : '';
+                document.getElementById('invOut').innerText = room.date2 ? room.date2.split(',')[0] : '';
+
+                let tbody = '';
+                let svTotal = 0;
+                room.items.forEach(item => {
+                    const total = item.price * item.qty;
+                    svTotal += total;
+                    tbody += `<tr>
+                        <td style="padding:10px 0; border-bottom: 1px solid #eee; word-wrap: break-word; font-weight: 500; color: #111;">${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</td>
+                        <td style="text-align:center; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">0${item.qty}</td>
+                        <td style="text-align:right; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">${formatMoney(total)}</td>
+                    </tr>`;
+                });
+                document.getElementById('invItemsBody').innerHTML = tbody;
+                document.getElementById('invRoom').innerText = formatMoney(room.basePrice);
+                document.getElementById('invSrv').innerText = formatMoney(svTotal);
+                document.getElementById('invTotal').innerText = formatMoney(room.basePrice + svTotal);
+
+                document.getElementById('invoicePopup').style.display = 'flex';
+            }
+
+            function closeInvoice() { document.getElementById('invoicePopup').style.display = 'none'; }
+
+            function printInvoice() {
+                document.getElementById('invoicePopup').style.display = 'none';
+                document.getElementById('printSuccessPopup').style.display = 'flex';
+            }
+
+            function closePrintSuccess() {
+                document.getElementById('printSuccessPopup').style.display = 'none';
+                resetCheckoutRoom();
+            }
+
+            function resetCheckoutRoom() {
+                const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+                if (room) {
+                    room.status = 'Trống';
+                    room.customer = '';
+                    room.date = '';
+                    room.date2 = '';
+                    room.items = [];
+                    if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
+                }
+                selectCheckoutRoom(null);
+            }
+        </script>
+    </div>
 </body>
 
 </html>
