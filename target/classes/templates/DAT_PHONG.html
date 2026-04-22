@@ -135,8 +135,8 @@
         }
 
         .tab.active {
-            background-color: #c0ab7b;
-            color: #111;
+            background-color: #c9b98a;
+            color: #222;
         }
 
         /* ----- SEARCH SECTION ----- */
@@ -579,7 +579,7 @@
             opacity: 0.8 !important;
         }
 
-        /* --- Popup xĂ¡c nháº­n Ä‘Äƒng xuáº¥t --- */
+        /* --- Popup xÄ‚Â¡c nhÃ¡ÂºÂ­n Ã„â€˜Ã„Æ’ng xuÃ¡ÂºÂ¥t --- */
         .logout-popup {
             display: none;
             position: fixed;
@@ -654,7 +654,7 @@
             filter: brightness(0.9);
         }
 
-        /* --- Trang ThĂ´ng tin NgÆ°á»i dĂ¹ng (overlay) --- */
+        /* --- Trang ThÄ‚Â´ng tin NgÃ†Â°Ã¡Â»Âi dÄ‚Â¹ng (overlay) --- */
         .user-info-overlay {
             display: none;
             position: fixed;
@@ -695,7 +695,453 @@
             flex: 1;
         }
 
-        /* Cá»™t trĂ¡i */
+        /* CÃ¡Â»â„¢t trÄ‚Â¡i */
+        .user-left {
+            flex: 1.4;
+        }
+
+        .user-left h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .user-avatar-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .user-avatar-row img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-avatar-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .user-avatar-email {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .user-field-row {
+            display: flex;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .user-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-field-label {
+            width: 130px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .user-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        /* CÃ¡Â»â„¢t phÃ¡ÂºÂ£i */
+        .user-right {
+            flex: 1;
+            border-left: 1px solid #e5e5e5;
+            padding-left: 40px;
+        }
+
+        .user-right h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .account-field-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e5e5;
+            gap: 16px;
+        }
+
+        .account-field-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-field-label {
+            width: 110px;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .account-field-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .btn-edit-pw {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        /* Footer buttons */
+        .user-info-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-user-cancel {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            background: #f5f5f5;
+            color: #333;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-save {
+            padding: 9px 28px;
+            border-radius: 6px;
+            border: none;
+            background: #c9b98a;
+            color: #222;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-user-cancel:hover {
+            filter: brightness(0.93);
+        }
+
+        .btn-user-save:hover {
+            filter: brightness(0.93);
+        }
+
+        /* --- Popup LÃ†Â°u thÄ‚Â nh cÄ‚Â´ng --- */
+        .save-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .save-success-overlay.show {
+            display: flex;
+        }
+
+        .save-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+        }
+
+        /* --- Panel Ã„ÂÃ¡Â»â€¢i mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u --- */
+        .change-password-panel {
+            display: none;
+            background-color: #f9ece2;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .change-password-panel.show {
+            display: block;
+        }
+
+        .change-password-panel h4 {
+            font-size: 18px;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .pw-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .pw-label {
+            flex: 1;
+            font-size: 12px;
+            color: #d28c5a;
+            font-weight: bold;
+            font-style: italic;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        .pw-input {
+            flex: 2;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .pw-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-pw-cancel {
+            background-color: #999;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm {
+            background-color: #619a71;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .btn-pw-confirm:hover {
+            filter: brightness(0.95);
+        }
+
+        /* --- Popup Ã„ÂÃ¡Â»â€¢i mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u thÄ‚Â nh cÄ‚Â´ng --- */
+        .pw-success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pw-success-overlay.show {
+            display: flex;
+        }
+
+        .pw-success-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            min-width: 320px;
+        }
+
+        .pw-success-card i {
+            font-size: 55px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+
+        .pw-success-card p {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+        }
+
+        .btn-pw-done {
+            padding: 10px 45px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-success-card i {
+            font-size: 48px;
+            color: #4a7c59;
+            margin-bottom: 18px;
+        }
+
+        .save-success-card p {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .btn-save-done {
+            padding: 10px 36px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-save-done:hover {
+            filter: brightness(0.92);
+        }
+
+        /* --- Popup xÃ¡c nháº­n Ä‘Äƒng xuáº¥t --- */
+        .logout-popup {
+            display: none;
+            position: fixed;
+            top: 65px;
+            right: 35px;
+            background-color: #e5deb5;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            min-width: 230px;
+            animation: popFadeIn 0.2s ease-out;
+        }
+
+        .logout-popup.show {
+            display: block;
+        }
+
+        @keyframes popFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-popup p {
+            font-size: 15px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .logout-popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-logout-cancel {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #888;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-confirm {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: #4a7c59;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-logout-cancel:hover {
+            filter: brightness(0.9);
+        }
+
+        .btn-logout-confirm:hover {
+            filter: brightness(0.9);
+        }
+
+        /* --- Trang ThÃ´ng tin NgÆ°á»i dÃ¹ng (overlay) --- */
+        .user-info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            background: rgba(0, 0, 0, 0.25);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info-overlay.show {
+            display: flex;
+        }
+
+        .user-info-card {
+            background: #fff;
+            border-radius: 14px;
+            width: 860px;
+            max-width: 95vw;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+            padding: 36px 40px 28px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+            position: relative;
+        }
+
+        .user-info-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+        }
+
+        .user-info-body {
+            display: flex;
+            gap: 48px;
+            flex: 1;
+        }
+
+        /* Cá»™t trÃ¡i */
         .user-left {
             flex: 1.4;
         }
@@ -846,7 +1292,7 @@
             filter: brightness(0.93);
         }
 
-        /* --- Popup LÆ°u thĂ nh cĂ´ng --- */
+        /* --- Popup LÆ°u thÃ nh cÃ´ng --- */
         .save-success-overlay {
             display: none;
             position: fixed;
@@ -949,453 +1395,7 @@
             filter: brightness(0.95);
         }
 
-        /* --- Popup Äá»•i máº­t kháº©u thĂ nh cĂ´ng --- */
-        .pw-success-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9500;
-            background: rgba(0, 0, 0, 0.25);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .pw-success-overlay.show {
-            display: flex;
-        }
-
-        .pw-success-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 40px 50px 32px;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            min-width: 320px;
-        }
-
-        .pw-success-card i {
-            font-size: 55px;
-            color: #10b981;
-            margin-bottom: 20px;
-        }
-
-        .pw-success-card p {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 25px;
-        }
-
-        .btn-pw-done {
-            padding: 10px 45px;
-            border-radius: 8px;
-            border: none;
-            background: #e05c5c;
-            color: #fff;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .save-success-card i {
-            font-size: 48px;
-            color: #4a7c59;
-            margin-bottom: 18px;
-        }
-
-        .save-success-card p {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 24px;
-        }
-
-        .btn-save-done {
-            padding: 10px 36px;
-            border-radius: 8px;
-            border: none;
-            background: #e05c5c;
-            color: #fff;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .btn-save-done:hover {
-            filter: brightness(0.92);
-        }
-
-        /* --- Popup xác nhận đăng xuất --- */
-        .logout-popup {
-            display: none;
-            position: fixed;
-            top: 65px;
-            right: 35px;
-            background-color: #e5deb5;
-            border-radius: 12px;
-            padding: 20px 24px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
-            min-width: 230px;
-            animation: popFadeIn 0.2s ease-out;
-        }
-
-        .logout-popup.show {
-            display: block;
-        }
-
-        @keyframes popFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logout-popup p {
-            font-size: 15px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .logout-popup-actions {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-logout-cancel {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            background-color: #888;
-            color: #fff;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .btn-logout-confirm {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            background-color: #4a7c59;
-            color: #fff;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .btn-logout-cancel:hover {
-            filter: brightness(0.9);
-        }
-
-        .btn-logout-confirm:hover {
-            filter: brightness(0.9);
-        }
-
-        /* --- Trang Thông tin Người dùng (overlay) --- */
-        .user-info-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 8000;
-            background: rgba(0, 0, 0, 0.25);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .user-info-overlay.show {
-            display: flex;
-        }
-
-        .user-info-card {
-            background: #fff;
-            border-radius: 14px;
-            width: 860px;
-            max-width: 95vw;
-            min-height: 580px;
-            display: flex;
-            flex-direction: column;
-            padding: 36px 40px 28px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
-            position: relative;
-        }
-
-        .user-info-card h2 {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 24px;
-        }
-
-        .user-info-body {
-            display: flex;
-            gap: 48px;
-            flex: 1;
-        }
-
-        /* Cột trái */
-        .user-left {
-            flex: 1.4;
-        }
-
-        .user-left h3 {
-            font-size: 14px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 16px;
-        }
-
-        .user-avatar-row {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            margin-bottom: 22px;
-        }
-
-        .user-avatar-row img {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-avatar-name {
-            font-size: 17px;
-            font-weight: 700;
-            color: #222;
-        }
-
-        .user-avatar-email {
-            font-size: 13px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .user-field-row {
-            display: flex;
-            align-items: baseline;
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e5e5;
-            gap: 16px;
-        }
-
-        .user-field-row:last-child {
-            border-bottom: none;
-        }
-
-        .user-field-label {
-            width: 130px;
-            font-size: 14px;
-            color: #555;
-            flex-shrink: 0;
-        }
-
-        .user-field-value {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1a1a1a;
-            flex: 1;
-        }
-
-        /* Cột phải */
-        .user-right {
-            flex: 1;
-            border-left: 1px solid #e5e5e5;
-            padding-left: 40px;
-        }
-
-        .user-right h3 {
-            font-size: 15px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .account-field-row {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e5e5;
-            gap: 16px;
-        }
-
-        .account-field-row:last-child {
-            border-bottom: none;
-        }
-
-        .account-field-label {
-            width: 110px;
-            font-size: 14px;
-            color: #555;
-            flex-shrink: 0;
-        }
-
-        .account-field-value {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1a1a1a;
-            flex: 1;
-        }
-
-        .btn-edit-pw {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #555;
-            font-size: 16px;
-            padding: 0 4px;
-        }
-
-        /* Footer buttons */
-        .user-info-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            margin-top: 28px;
-        }
-
-        .btn-user-cancel {
-            padding: 9px 28px;
-            border-radius: 6px;
-            border: 1px solid #bbb;
-            background: #f5f5f5;
-            color: #333;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .btn-user-save {
-            padding: 9px 28px;
-            border-radius: 6px;
-            border: none;
-            background: #c9b98a;
-            color: #222;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .btn-user-cancel:hover {
-            filter: brightness(0.93);
-        }
-
-        .btn-user-save:hover {
-            filter: brightness(0.93);
-        }
-
-        /* --- Popup Lưu thành công --- */
-        .save-success-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9000;
-            background: rgba(0, 0, 0, 0.25);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .save-success-overlay.show {
-            display: flex;
-        }
-
-        .save-success-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 40px 50px 32px;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            min-width: 280px;
-        }
-
-        /* --- Panel Đổi mật khẩu --- */
-        .change-password-panel {
-            display: none;
-            background-color: #f9ece2;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 15px;
-        }
-
-        .change-password-panel.show {
-            display: block;
-        }
-
-        .change-password-panel h4 {
-            font-size: 18px;
-            font-family: 'Times New Roman', Times, serif;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #222;
-        }
-
-        .pw-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .pw-label {
-            flex: 1;
-            font-size: 12px;
-            color: #d28c5a;
-            font-weight: bold;
-            font-style: italic;
-            font-family: 'Times New Roman', Times, serif;
-        }
-
-        .pw-input {
-            flex: 2;
-            padding: 6px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #fff;
-            outline: none;
-            font-size: 13px;
-        }
-
-        .pw-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .btn-pw-cancel {
-            background-color: #999;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .btn-pw-confirm {
-            background-color: #619a71;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .btn-pw-confirm:hover {
-            filter: brightness(0.95);
-        }
-
-        /* --- Popup Đổi mật khẩu thành công --- */
+        /* --- Popup Äá»•i máº­t kháº©u thÃ nh cÃ´ng --- */
         .pw-success-overlay {
             display: none;
             position: fixed;
@@ -1488,12 +1488,12 @@
         <section class="banner">
             <div class="tabs-wrapper">
                 <div class="tabs-container">
-                    <a href="/tongquan" class="tab">Tổng quan</a>
-                    <a href="/dat-phong" class="tab active">Đặt phòng</a>
-                    <a href="/ql-datphong" class="tab">Quản lý đặt phòng</a>
-                    <a href="/nhan-phong" class="tab">Nhận phòng</a>
-                    <a href="/tra-phong" class="tab">Trả phòng</a>
-                    <a href="/service" class="tab">Dịch vụ phòng</a>
+                    <a href="/tongquan" class="tab" th:classappend="${currentPage == 'tongquan' ? 'active' : ''}">Tổng quan</a>
+                    <a href="/dat-phong" class="tab" th:classappend="${currentPage == 'datphong' ? 'active' : ''}">Đặt phòng</a>
+                    <a href="/ql-datphong" class="tab" th:classappend="${currentPage == 'qldatphong' ? 'active' : ''}">Quản lý đặt phòng</a>
+                    <a href="/nhan-phong" class="tab" th:classappend="${currentPage == 'nhanphong' ? 'active' : ''}">Nhận phòng</a>
+                    <a href="/tra-phong" class="tab" th:classappend="${currentPage == 'traphong' ? 'active' : ''}">Trả phòng</a>
+                    <a href="/service" class="tab" th:classappend="${currentPage == 'dichvu' ? 'active' : ''}">Dịch vụ phòng</a>
                 </div>
 
                 <div class="search-container">
@@ -1719,7 +1719,7 @@
         <div class="modal-overlay" id="paymentMethodModal">
             <div class="payment-content" style="width: 500px; padding: 40px 30px;">
                 <button class="btn-close-modal" id="btnCloseMethodModal">x</button>
-                <h3 class="payment-title" style="margin-bottom: 40px;">HÃY CHỌN HÌNH THỨC THANH TOÁN</h3>
+                <h3 class="payment-title" style="margin-bottom: 40px;">Hãy chọn hình thức thanh toán</h3>
 
                 <div class="modal-actions" style="gap: 20px;">
                     <button class="btn-pay" id="btnPayDomestic"
@@ -1945,7 +1945,7 @@
         </div>
 
 
-        <!-- Popup xĂ¡c nháº­n Ä‘Äƒng xuáº¥t -->
+        <!-- Popup xÄ‚Â¡c nhÃ¡ÂºÂ­n Ã„â€˜Ã„Æ’ng xuÃ¡ÂºÂ¥t -->
         <div class="logout-popup" id="logoutPopup">
             <p>Bạn muốn đăng xuất?</p>
             <div class="logout-popup-actions">
@@ -1954,12 +1954,12 @@
             </div>
         </div>
 
-        <!-- Overlay ThĂ´ng tin ngÆ°á» i dĂ¹ng -->
+        <!-- Overlay ThÄ‚Â´ng tin ngÃ†Â°Ã¡Â» i dÄ‚Â¹ng -->
         <div class="user-info-overlay" id="userInfoOverlay">
             <div class="user-info-card">
                 <h2>Thông tin người dùng</h2>
                 <div class="user-info-body">
-                    <!-- Cá»™t trĂ¡i -->
+                    <!-- CÃ¡Â»â„¢t trÄ‚Â¡i -->
                     <div class="user-left">
                         <h3>Thông tin cá nhân</h3>
                         <div class="user-avatar-row">
@@ -1980,7 +1980,7 @@
                         <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
                                 class="user-field-value">Lễ tân</span></div>
                     </div>
-                    <!-- Cá»™t pháº£i -->
+                    <!-- CÃ¡Â»â„¢t phÃ¡ÂºÂ£i -->
                     <div class="user-right">
                         <h3>Cài đặt tài khoản</h3>
                         <div class="account-field-row">
@@ -1990,101 +1990,101 @@
                         <div class="account-field-row">
                             <span class="account-field-label">Mật khẩu</span>
                             <span class="account-field-value">***********</span>
-                            <button class="btn-edit-pw" title="Sá»­a máº­t kháº©u" onclick="toggleChangePassword()"><i
+                            <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
                                     class="fa-solid fa-pen"></i></button>
                         </div>
 
                         <div class="change-password-panel" id="changePasswordPanel">
-                            <h4>Đổi mật khẩu</h4>
+                            <h4>Äá»•i máº­t kháº©u</h4>
                             <div class="pw-row">
-                                <span class="pw-label">Mật khẩu hiện tại:</span>
+                                <span class="pw-label">Máº­t kháº©u hiá»‡n táº¡i:</span>
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-row">
-                                <span class="pw-label">Mật khẩu mới:</span>
+                                <span class="pw-label">Máº­t kháº©u má»›i:</span>
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-row">
-                                <span class="pw-label">Nhập lại mật khẩu mới:</span>
+                                <span class="pw-label">Nháº­p láº¡i máº­t kháº©u má»›i:</span>
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-actions">
-                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
-                                <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Há»§y</button>
+                                <button class="btn-pw-confirm" onclick="showPwSuccess()">XÃ¡c nháº­n</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="user-info-footer" id="userInfoFooter">
-                    <button class="btn-user-cancel" onclick="closeUserInfo()">Hủy</button>
-                    <button class="btn-user-save" onclick="showSaveSuccess()">Lưu</button>
+                    <button class="btn-user-cancel" onclick="closeUserInfo()">Há»§y</button>
+                    <button class="btn-user-save" onclick="showSaveSuccess()">LÆ°u</button>
                 </div>
             </div>
         </div>
 
-        <!-- Popup Lưu thành công -->
+        <!-- Popup LÆ°u thÃ nh cÃ´ng -->
         <div class="save-success-overlay" id="saveSuccessOverlay">
             <div class="save-success-card">
                 <i class="fa-solid fa-circle-check"></i>
-                <p>Thông tin đã được lưu</p>
+                <p>ThÃ´ng tin Ä‘Ã£ Ä‘Æ°á»£c lÆ°u</p>
                 <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
             </div>
         </div>
 
-        <!-- Popup Đổi mật khẩu thành công -->
+        <!-- Popup Äá»•i máº­t kháº©u thÃ nh cÃ´ng -->
         <div class="pw-success-overlay" id="pwSuccessOverlay">
             <div class="pw-success-card">
                 <i class="fa-regular fa-circle-check"></i>
-                <p>Đổi mật khẩu thành công</p>
+                <p>Äá»•i máº­t kháº©u thÃ nh cÃ´ng</p>
                 <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
             </div>
         </div>
 
-        <!-- Popup xác nhận đăng xuất -->
+        <!-- Popup xÃ¡c nháº­n Ä‘Äƒng xuáº¥t -->
         <div class="logout-popup" id="logoutPopup">
-            <p>Bạn muốn đăng xuất?</p>
+            <p>Báº¡n muá»‘n Ä‘Äƒng xuáº¥t?</p>
             <div class="logout-popup-actions">
-                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-                <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
+                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Há»§y</button>
+                <button class="btn-logout-confirm" onclick="window.location.href='/'">XÃ¡c nháº­n</button>
             </div>
         </div>
 
-        <!-- Overlay Thông tin người dùng -->
+        <!-- Overlay ThÃ´ng tin ngÆ°á»i dÃ¹ng -->
         <div class="user-info-overlay" id="userInfoOverlay">
             <div class="user-info-card">
-                <h2>Thông tin người dùng</h2>
+                <h2>ThÃ´ng tin ngÆ°á»i dÃ¹ng</h2>
                 <div class="user-info-body">
-                    <!-- Cột trái -->
+                    <!-- Cá»™t trÃ¡i -->
                     <div class="user-left">
-                        <h3>Thông tin cá nhân</h3>
+                        <h3>ThÃ´ng tin cÃ¡ nhÃ¢n</h3>
                         <div class="user-avatar-row">
                             <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
                             <div>
-                                <div class="user-avatar-name">Vương Văn Quyền</div>
+                                <div class="user-avatar-name">VÆ°Æ¡ng VÄƒn Quyá»n</div>
                                 <div class="user-avatar-email">vvquyen@gmail.com</div>
                             </div>
                         </div>
-                        <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
-                                class="user-field-value">Vương Văn Quyền</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
+                        <div class="user-field-row"><span class="user-field-label">Há» vÃ  tÃªn</span><span
+                                class="user-field-value">VÆ°Æ¡ng VÄƒn Quyá»n</span></div>
+                        <div class="user-field-row"><span class="user-field-label">NgÃ y sinh</span><span
                                 class="user-field-value">25/07/2005</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
+                        <div class="user-field-row"><span class="user-field-label">Giá»›i tÃ­nh</span><span
                                 class="user-field-value">Nam</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
+                        <div class="user-field-row"><span class="user-field-label">Sá»‘ Ä‘iá»‡n thoáº¡i</span><span
                                 class="user-field-value">09123467898</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
-                                class="user-field-value">Lễ tân</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Chá»©c vá»¥</span><span
+                                class="user-field-value">Lá»… tÃ¢n</span></div>
                     </div>
-                    <!-- Cột phải -->
+                    <!-- Cá»™t pháº£i -->
                     <div class="user-right">
-                        <h3>Cài đặt tài khoản</h3>
+                        <h3>Thông tin tài khoản</h3>
                         <div class="account-field-row">
                             <span class="account-field-label">Tên người dùng</span>
                             <span class="account-field-value">vvquyen_2507</span>
                         </div>
                         <div class="account-field-row">
                             <span class="account-field-label">Mật khẩu</span>
-                            <span class="account-field-value">••••••••••••</span>
+                            <span class="account-field-value">***********</span>
                             <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
                                     class="fa-solid fa-pen"></i></button>
                         </div>
@@ -2104,17 +2104,40 @@
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-actions">
-                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
-                                <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
+                                <button class="btn-pw-cancel" onclick="toggleChangePassword()">Há»§y</button>
+                                <button class="btn-pw-confirm" onclick="showPwSuccess()">XÃ¡c nháº­n</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="user-info-footer" id="userInfoFooter">
-                    <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
-                    <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
+                    <button class="btn-user-cancel" onclick="closeUserInfo()">Há»¦Y</button>
+                    <button class="btn-user-save" onclick="showSaveSuccess()">LÆ¯U</button>
                 </div>
-           <script>
+            </div>
+        </div>
+
+        <!-- Popup LÆ°u thÃ nh cÃ´ng -->
+        <div class="save-success-overlay" id="saveSuccessOverlay">
+            <div class="save-success-card">
+                <i class="fa-solid fa-circle-check"></i>
+                <p>Thông tin đã được lưu</p>
+                <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
+            </div>
+        </div>
+
+        <!-- Popup Ä á»•i máº­t kháº©u thÃ nh cÃ´ng -->
+        <div class="pw-success-overlay" id="pwSuccessOverlay">
+            <div class="pw-success-card">
+                <i class="fa-regular fa-circle-check"></i>
+                <p>Đổi mật khẩu thành công</p>
+                <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
+            </div>
+        </div>
+
+
+        <script src="shared.js"></script>
+        <script>
             const modal = document.getElementById('bookingModal');
             const btnBooks = document.querySelectorAll('.btn-book');
             const btnCancel = document.getElementById('btnCancelModal');
@@ -2149,8 +2172,6 @@
             const mCheckin = document.getElementById('mCheckin');
             const mCheckout = document.getElementById('mCheckout');
             const mPaymentValue = document.getElementById('mPaymentValue');
-            const mBookingCode = document.getElementById('mBookingCode');
-            const successModal = document.getElementById('successModal');
             let currentRoomPrice = 0;
 
             // Open modal when any Book button is clicked
@@ -2218,56 +2239,6 @@
             let qrTimeout;
             let visaTimeout;
 
-            function sendBookingData(onSuccess) {
-                const formData = new URLSearchParams();
-                const roomNum = mRoom.value;
-                formData.append('phong', roomNum);
-                formData.append('hoTen', document.querySelector('#bookingModal input[placeholder="Nhập họ và tên"]').value);
-                formData.append('sdt', document.querySelector('#bookingModal input[placeholder="Nhập số điện thoại"]').value);
-                formData.append('cccd', document.querySelector('#bookingModal input[placeholder="Nhập số CCCD/Hộ chiếu"]').value);
-                formData.append('ngayNhan', mCheckin.value);
-                formData.append('ngayTra', mCheckout.value);
-                formData.append('soNguoiLon', document.getElementById('mSoNguoiLon').innerText);
-                formData.append('soTreEm', document.getElementById('mSoTreEm').innerText);
-
-                const deposit = currentRoomPrice / 2;
-                formData.append('tienCoc', deposit || 0);
-                formData.append('tongThanhToan', currentRoomPrice || 0);
-                formData.append('phuongThuc', 'Thanh toán cọc');
-
-                fetch('/dat-phong/xac-nhan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        mBookingCode.innerText = data.maDatPhong;
-                        // Sync with localStorage for frontend simulation
-                        if (window.sharedData) {
-                            const rooms = window.sharedData.getSharedRooms();
-                            const r = rooms.find(x => x.id === roomNum);
-                            if (r) {
-                                r.status = 'Đã đặt';
-                                r.customer = document.querySelector('#bookingModal input[placeholder="Nhập họ và tên"]').value;
-                                r.date = mCheckin.value;
-                                r.date2 = mCheckout.value;
-                                r.maDatPhong = data.maDatPhong; 
-                                window.sharedData.saveSharedRooms(rooms);
-                            }
-                        }
-                        onSuccess();
-                    } else {
-                        alert('Lỗi: ' + data.message);
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Đã có lỗi kết nối hệ thống.');
-                });
-            }
-
             if (btnPayDomestic) {
                 btnPayDomestic.addEventListener('click', () => {
                     paymentMethodModal.style.display = 'none';
@@ -2275,9 +2246,21 @@
 
                     qrTimeout = setTimeout(() => {
                         qrModal.style.display = 'none';
-                        sendBookingData(() => {
-                            if (successModal) successModal.style.display = 'flex';
-                        });
+                        if (mRoom && mBookingCode) {
+                            const randomId = Math.floor(100000 + Math.random() * 900000);
+                            mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
+                            if (window.sharedData) {
+                                const rooms = window.sharedData.getSharedRooms();
+                                const r = rooms.find(x => x.id === mRoom.value);
+                                if (r) {
+                                    r.status = 'Đã đặt';
+                                    r.date = mCheckin ? mCheckin.value : '';
+                                    r.date2 = mCheckout ? mCheckout.value : '';
+                                    window.sharedData.saveSharedRooms(rooms);
+                                }
+                            }
+                        }
+                        if (successModal) successModal.style.display = 'flex';
                     }, 5000);
                 });
             }
@@ -2295,17 +2278,7 @@
                             visaModal.style.display = 'none';
                             document.getElementById('paymentFailModal').style.display = 'flex';
                         }
-                    }, 30000); // Reduced timeout for better UX
-                });
-            }
-
-            if (btnConfirmVisa) {
-                btnConfirmVisa.addEventListener('click', () => {
-                    clearTimeout(visaTimeout);
-                    sendBookingData(() => {
-                        visaModal.style.display = 'none';
-                        if (successModal) successModal.style.display = 'flex';
-                    });
+                    }, 60000);
                 });
             }
 
@@ -2325,25 +2298,139 @@
                 });
             }
 
+            const successModal = document.getElementById('successModal');
             const btnCloseSuccess = document.getElementById('btnCloseSuccess');
+            const mBookingCode = document.getElementById('mBookingCode');
+
+            if (btnConfirmVisa) {
+                btnConfirmVisa.addEventListener('click', () => {
+                    clearTimeout(visaTimeout);
+                    visaModal.style.display = 'none';
+                    if (mRoom && mBookingCode) {
+                        const randomId = Math.floor(100000 + Math.random() * 900000);
+                        mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
+                        if (window.sharedData) {
+                            const rooms = window.sharedData.getSharedRooms();
+                            const r = rooms.find(x => x.id === mRoom.value);
+                            if (r) {
+                                r.status = 'Đã đặt';
+                                r.date = mCheckin ? mCheckin.value : '';
+                                r.date2 = mCheckout ? mCheckout.value : '';
+                                window.sharedData.saveSharedRooms(rooms);
+                            }
+                        }
+                    }
+                    if (successModal) successModal.style.display = 'flex';
+                });
+            }
+
             if (btnCloseSuccess) {
                 btnCloseSuccess.addEventListener('click', () => {
                     successModal.style.display = 'none';
                 });
             }
+            const cancelBookingModal = document.getElementById('cancelBookingModal');
+            const btnCloseCancelBooking = document.getElementById('btnCloseCancelBooking');
+            const btnCancelAction = document.querySelector('.btn-cancel');
+
+            if (btnCancelAction) {
+                btnCancelAction.addEventListener('click', () => {
+                    cancelBookingModal.style.display = 'flex';
+                });
+            }
+
+            const confirmCancelModal = document.getElementById('confirmCancelModal');
+            const btnNoCancel = document.getElementById('btnNoCancel');
+            const btnYesCancel = document.getElementById('btnYesCancel');
+            const btnSubmitCancelCode = document.getElementById('btnSubmitCancelCode');
+            let confirmCancelTimeout;
+
+            if (btnSubmitCancelCode) {
+                btnSubmitCancelCode.addEventListener('click', () => {
+                    const code = document.querySelector('.cancel-booking-input').value.trim();
+                    cancelBookingModal.style.display = 'none';
+
+                    if (code === 'DPW101150106') {
+                        confirmCancelModal.style.display = 'flex';
+                        confirmCancelTimeout = setTimeout(() => {
+                            if (confirmCancelModal.style.display === 'flex') {
+                                confirmCancelModal.style.display = 'none';
+                                document.getElementById('refundFailModal').style.display = 'flex';
+                            }
+                        }, 5000);
+                    } else if (code === 'DPW101150105') {
+                        document.getElementById('overdueModal').style.display = 'flex';
+                    } else {
+                        document.getElementById('invalidCodeModal').style.display = 'flex';
+                    }
+                });
+            }
+
+            if (btnNoCancel) {
+                btnNoCancel.addEventListener('click', () => {
+                    clearTimeout(confirmCancelTimeout);
+                    confirmCancelModal.style.display = 'none';
+                });
+            }
+
+            if (btnYesCancel) {
+                btnYesCancel.addEventListener('click', () => {
+                    clearTimeout(confirmCancelTimeout);
+                    confirmCancelModal.style.display = 'none';
+                    document.getElementById('cancelSuccessModal').style.display = 'flex';
+                });
+            }
+
+            const btnCloseCancelSuccess = document.getElementById('btnCloseCancelSuccess');
+            const btnCloseInvalidCode = document.getElementById('btnCloseInvalidCode');
+            const btnOverdueDone = document.getElementById('btnOverdueDone');
+            const btnCloseRefundFail = document.getElementById('btnCloseRefundFail');
+            const btnClosePaymentFail = document.getElementById('btnClosePaymentFail');
+
+            if (btnCloseCancelSuccess) btnCloseCancelSuccess.addEventListener('click', () => { document.getElementById('cancelSuccessModal').style.display = 'none'; });
+            if (btnCloseInvalidCode) btnCloseInvalidCode.addEventListener('click', () => {
+                document.getElementById('invalidCodeModal').style.display = 'none';
+                if (cancelBookingModal) cancelBookingModal.style.display = 'flex';
+            });
+            if (btnOverdueDone) btnOverdueDone.addEventListener('click', () => { document.getElementById('overdueModal').style.display = 'none'; });
+            if (btnCloseRefundFail) btnCloseRefundFail.addEventListener('click', () => { document.getElementById('refundFailModal').style.display = 'none'; });
+            if (btnClosePaymentFail) btnClosePaymentFail.addEventListener('click', () => { document.getElementById('paymentFailModal').style.display = 'none'; });
+
+            if (btnCloseCancelBooking) {
+                btnCloseCancelBooking.addEventListener('click', () => {
+                    cancelBookingModal.style.display = 'none';
+                });
+            }
 
             // Close when clicking outside of modal content
             window.addEventListener('click', (e) => {
-                const modals = [modal, paymentModal, paymentMethodModal, qrModal, visaModal, successModal];
-                modals.forEach(m => {
-                    if (e.target === m) {
-                        if (m === visaModal) clearTimeout(visaTimeout);
-                        if (m === qrModal) clearTimeout(qrTimeout);
-                        m.style.display = 'none';
-                    }
-                });
-            });
-        </script>essModal');
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+                if (e.target === paymentModal) {
+                    paymentModal.style.display = 'none';
+                }
+                if (e.target === paymentMethodModal) {
+                    paymentMethodModal.style.display = 'none';
+                }
+                if (e.target === qrModal) {
+                    qrModal.style.display = 'none';
+                }
+                if (e.target === visaModal) {
+                    clearTimeout(visaTimeout);
+                    visaModal.style.display = 'none';
+                }
+                if (successModal && e.target === successModal) {
+                    successModal.style.display = 'none';
+                }
+                if (cancelBookingModal && e.target === cancelBookingModal) {
+                    cancelBookingModal.style.display = 'none';
+                }
+                if (confirmCancelModal && e.target === confirmCancelModal) {
+                    clearTimeout(confirmCancelTimeout);
+                    confirmCancelModal.style.display = 'none';
+                }
+                const cancelSuccessModal = document.getElementById('cancelSuccessModal');
                 if (cancelSuccessModal && e.target === cancelSuccessModal) cancelSuccessModal.style.display = 'none';
 
                 const invalidCodeModal = document.getElementById('invalidCodeModal');
@@ -2407,11 +2494,22 @@
 
             function closePwSuccess() {
                 document.getElementById('pwSuccessOverlay').classList.remove('show');
-                toggleChangePassword(); // Quay láº¡i view chĂ­nh
+                toggleChangePassword(); // Quay lÃ¡ÂºÂ¡i view chÄ‚Â­nh
             }
 
         </script>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const path = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-bar .tab');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === path) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

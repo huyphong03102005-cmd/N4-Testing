@@ -25,6 +25,7 @@ public class NhanPhongService {
     private final ChiTietDatPhongRepository chiTietDatPhongRepository;
     private final LuuTruRepository luuTruRepository;
     private final PhongRepository phongRepository;
+    private final NotificationService notificationService;
 
     /**
      * Lấy danh sách phiếu đặt phòng đang ở trạng thái 'Chờ check-in'
@@ -78,6 +79,7 @@ public class NhanPhongService {
                 phongRepository.save(phong);
             }
         }
+        notificationService.broadcastUpdate();
     }
 
     public Map<Integer, ChiTietDatPhong> getActiveBookingMap() {
@@ -89,5 +91,44 @@ public class NhanPhongService {
                         ct -> ct,
                         (existing, replacement) -> existing // Nếu một phòng có nhiều đặt phòng (hiếm), lấy cái đầu
                 ));
+    }
+
+    /**
+     * Đổi phòng cho một booking đang hoạt động
+     */
+    @Transactional
+    public void changeRoom(Integer currentRoomId, String targetRoomName) {
+        // 1. Tìm bản ghi đặt phòng hiện tại của phòng này
+        Map<Integer, ChiTietDatPhong> activeMap = getActiveBookingMap();
+        ChiTietDatPhong ct = activeMap.get(currentRoomId);
+        if (ct == null) {
+            throw new RuntimeException("Phòng hiện không có khách hoặc lịch đặt trước để đổi.");
+        }
+
+        // 2. Tìm phòng mới
+        Phong targetRoom = phongRepository.findByTenPhong(targetRoomName)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng " + targetRoomName));
+        
+        if (!"Trống".equals(targetRoom.getTrangThai())) {
+             throw new RuntimeException("Phòng " + targetRoomName + " hiện đang bận hoặc bảo trì.");
+        }
+
+        // 3. Hoán đổi trạng thái và cập nhật
+        Phong currentRoom = ct.getPhong();
+        String currentStatus = currentRoom.getTrangThai();
+        
+        targetRoom.setTrangThai(currentStatus);
+        currentRoom.setTrangThai("Trống");
+        
+        phongRepository.save(targetRoom);
+        phongRepository.save(currentRoom);
+
+        // 4. Cập nhật chi tiết đặt phòng trỏ sang phòng mới
+        ct.setPhong(targetRoom);
+        chiTietDatPhongRepository.save(ct);
+        
+        // 5. Đảm bảo dữ liệu được đẩy xuống DB trước khi kết thúc transaction
+        phongRepository.flush();
+        chiTietDatPhongRepository.flush();
     }
 }

@@ -24,6 +24,7 @@ public class TraPhongService {
     private final PhongRepository phongRepository;
     private final DatPhongRepository datPhongRepository;
     private final ChiTietDatPhongRepository chiTietDatPhongRepository;
+    private final NotificationService notificationService;
 
     public String getRoomNames(LuuTru luuTru) {
         if (luuTru == null || luuTru.getDatPhong() == null) return "N/A";
@@ -166,6 +167,7 @@ public class TraPhongService {
             suDungDichVuRepository.save(s);
         }
 
+        notificationService.broadcastUpdate();
         return hoaDon;
     }
 }

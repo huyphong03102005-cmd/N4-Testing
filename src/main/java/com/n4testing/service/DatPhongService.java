@@ -22,16 +22,19 @@ public class DatPhongService {
     private final DatPhongRepository datPhongRepository;
     private final ChiTietDatPhongRepository chiTietDatPhongRepository;
     private final PhongRepository phongRepository;
+    private final NotificationService notificationService;
 
     @Autowired
     public DatPhongService(KhachHangRepository khachHangRepository,
                           DatPhongRepository datPhongRepository,
                           ChiTietDatPhongRepository chiTietDatPhongRepository,
-                          PhongRepository phongRepository) {
+                          PhongRepository phongRepository,
+                          NotificationService notificationService) {
         this.khachHangRepository = khachHangRepository;
         this.datPhongRepository = datPhongRepository;
         this.chiTietDatPhongRepository = chiTietDatPhongRepository;
         this.phongRepository = phongRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -80,6 +83,7 @@ public class DatPhongService {
         chiTiet.setSoLuongPhong(1);
         chiTietDatPhongRepository.save(chiTiet);
 
+        notificationService.broadcastUpdate();
         return datPhong;
     }
 }

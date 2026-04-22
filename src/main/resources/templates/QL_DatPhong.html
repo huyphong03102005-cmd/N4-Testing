@@ -26,12 +26,12 @@
         <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
         <div class="hero-banner">
             <nav class="nav-bar">
-                <a href="/tongquan" class="nav-item">Tổng quan</a>
-                <a href="/dat-phong" class="nav-item">Đặt phòng</a>
-                <a href="/ql-datphong" class="nav-item active">Quản lý đặt phòng</a>
-                <a href="/nhan-phong" class="nav-item">Nhận phòng</a>
-                <a href="/tra-phong" class="nav-item">Trả phòng</a>
-                <a href="/service" class="nav-item">Dịch vụ phòng</a>
+                <a href="/tongquan" class="nav-item" th:classappend="${currentPage == 'tongquan' ? 'active' : ''}">Tổng quan</a>
+                <a href="/dat-phong" class="nav-item" th:classappend="${currentPage == 'datphong' ? 'active' : ''}">Đặt phòng</a>
+                <a href="/ql-datphong" class="nav-item" th:classappend="${currentPage == 'qldatphong' ? 'active' : ''}">Quản lý đặt phòng</a>
+                <a href="/nhan-phong" class="nav-item" th:classappend="${currentPage == 'nhanphong' ? 'active' : ''}">Nhận phòng</a>
+                <a href="/tra-phong" class="nav-item" th:classappend="${currentPage == 'traphong' ? 'active' : ''}">Trả phòng</a>
+                <a href="/service" class="nav-item" th:classappend="${currentPage == 'dichvu' ? 'active' : ''}">Dịch vụ phòng</a>
             </nav>
         </div>
 
@@ -583,6 +583,17 @@
             toggleChangePassword(); // Quay lại view chính
         }
 
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const path = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-bar .nav-item');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === path) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
 

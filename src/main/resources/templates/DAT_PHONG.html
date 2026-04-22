@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cafesion - Äáº·t phÃ²ng</title>
+    <title>Cafesion - Đặt phòng</title>
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -135,8 +135,8 @@
         }
 
         .tab.active {
-            background-color: #c0ab7b;
-            color: #111;
+            background-color: #c9b98a;
+            color: #222;
         }
 
         /* ----- SEARCH SECTION ----- */
@@ -1479,8 +1479,8 @@
         <!-- Top Navigation Bar -->
         <div class="top-bar">
             <div class="top-icons">
-                <i class="fa-regular fa-user" title="TÃ i khoáº£n ngÆ°á»i dÃ¹ng" onclick="openUserInfo()"></i>
-                <i class="fa-solid fa-arrow-right-from-bracket" title="ÄÄƒng xuáº¥t" onclick="toggleLogoutPopup()"></i>
+                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
+                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
             </div>
         </div>
 
@@ -1488,20 +1488,20 @@
         <section class="banner">
             <div class="tabs-wrapper">
                 <div class="tabs-container">
-                    <a href="/tongquan" class="tab">Tá»•ng quan</a>
-                    <a href="/dat-phong" class="tab active">Äáº·t phÃ²ng</a>
-                    <a href="/ql-datphong" class="tab">Quáº£n lÃ½ Ä‘áº·t phÃ²ng</a>
-                    <a href="/nhan-phong" class="tab">Nháº­n phÃ²ng</a>
-                    <a href="#" class="tab">Tráº£ phÃ²ng</a>
-                    <a href="/service" class="tab">Dá»‹ch vá»¥ phÃ²ng</a>
+                    <a href="/tongquan" class="tab" th:classappend="${currentPage == 'tongquan' ? 'active' : ''}">Tổng quan</a>
+                    <a href="/dat-phong" class="tab" th:classappend="${currentPage == 'datphong' ? 'active' : ''}">Đặt phòng</a>
+                    <a href="/ql-datphong" class="tab" th:classappend="${currentPage == 'qldatphong' ? 'active' : ''}">Quản lý đặt phòng</a>
+                    <a href="/nhan-phong" class="tab" th:classappend="${currentPage == 'nhanphong' ? 'active' : ''}">Nhận phòng</a>
+                    <a href="/tra-phong" class="tab" th:classappend="${currentPage == 'traphong' ? 'active' : ''}">Trả phòng</a>
+                    <a href="/service" class="tab" th:classappend="${currentPage == 'dichvu' ? 'active' : ''}">Dịch vụ phòng</a>
                 </div>
 
                 <div class="search-container">
                     <div class="search-bar">
                         <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" placeholder="TÃ¬m kiáº¿m phÃ²ng">
+                        <input type="text" placeholder="Tìm kiếm phòng">
                     </div>
-                    <button class="btn-cancel">Há»§y Ä‘áº·t phÃ²ng</button>
+                    <button class="btn-cancel">Hủy đặt phòng</button>
                 </div>
             </div>
         </section>
@@ -1512,23 +1512,23 @@
             <!-- === Room Card: 101 === -->
             <article class="card">
                 <!-- Uses Pictuer_1 as exact link/source based on requirements -->
-                <img src="./Picture/Pictuer_1.jpg" alt="HÃ¬nh áº£nh phÃ²ng 101" class="card-image">
-                <h2 class="card-title">PhÃ²ng 101</h2>
+                <img src="./Picture/Pictuer_1.jpg" alt="Hình ảnh phòng 101" class="card-image">
+                <h2 class="card-title">Phòng 101</h2>
 
                 <div class="info-row">
-                    <div class="info-label">Tráº¡ng thÃ¡i:</div>
-                    <div class="status-badge">PhÃ²ng trá»‘ng</div>
+                    <div class="info-label">Trạng thái:</div>
+                    <div class="status-badge">Phòng trống</div>
                 </div>
 
                 <div class="info-row">
-                    <div class="info-label">Dá»± kiáº¿n:</div>
+                    <div class="info-label">Dự kiến:</div>
                     <div class="dates-container">
                         <div class="date-input">
                             30 Th1, 14:00
                             <i class="fa-regular fa-calendar"></i>
                             <i class="fa-regular fa-clock"></i>
                         </div>
-                        <div class="date-separator">Äáº¿n</div>
+                        <div class="date-separator">Đến</div>
                         <div class="date-input">
                             15 Th2, 12:00
                             <i class="fa-regular fa-calendar"></i>
@@ -1538,7 +1538,7 @@
                 </div>
 
                 <div class="info-row">
-                    <div class="info-label">Sá»‘ lÆ°á»£ng ngÆ°á»i:</div>
+                    <div class="info-label">Số lượng người:</div>
                     <div class="capacity-badges">
                         <div class="capacity-badge">
                             2 <i class="fa-solid fa-user"></i>
@@ -1553,36 +1553,36 @@
 
                 <div class="footer-row">
                     <div class="price-section">
-                        <div class="price-label">Tiá»n phÃ²ng:</div>
+                        <div class="price-label">Tiền phòng:</div>
                         <div class="price-value-container">
                             <span class="price-value">800,000</span>
                         </div>
                     </div>
                     <button class="btn-book" data-room="101" data-checkin="30 Th1, 14:00" data-checkout="15 Th2, 12:00"
-                        data-price="800000">Äáº¶T PHÃ’NG</button>
+                        data-price="800000">ĐẶT PHÒNG</button>
                 </div>
             </article>
 
             <!-- === Room Card: 104 === -->
             <article class="card">
                 <!-- Uses Pictuer_2 as exact link/source based on requirements -->
-                <img src="./Picture/Pictuer_1.jpg" alt="HÃ¬nh áº£nh phÃ²ng 104" class="card-image">
-                <h2 class="card-title">PhÃ²ng 104</h2>
+                <img src="./Picture/Pictuer_1.jpg" alt="Hình ảnh phòng 104" class="card-image">
+                <h2 class="card-title">Phòng 104</h2>
 
                 <div class="info-row">
-                    <div class="info-label">Tráº¡ng thÃ¡i:</div>
-                    <div class="status-badge">PhÃ²ng trá»‘ng</div>
+                    <div class="info-label">Trạng thái:</div>
+                    <div class="status-badge">Phòng trống</div>
                 </div>
 
                 <div class="info-row">
-                    <div class="info-label">Dá»± kiáº¿n:</div>
+                    <div class="info-label">Dự kiến:</div>
                     <div class="dates-container">
                         <div class="date-input">
                             15 Th1, 14:00
                             <i class="fa-regular fa-calendar"></i>
                             <i class="fa-regular fa-clock"></i>
                         </div>
-                        <div class="date-separator">Äáº¿n</div>
+                        <div class="date-separator">Đến</div>
                         <div class="date-input">
                             28 Th2, 12:00
                             <i class="fa-regular fa-calendar"></i>
@@ -1592,7 +1592,7 @@
                 </div>
 
                 <div class="info-row">
-                    <div class="info-label">Sá»‘ lÆ°á»£ng ngÆ°á»i:</div>
+                    <div class="info-label">Số lượng người:</div>
                     <div class="capacity-badges">
                         <div class="capacity-badge">
                             4 <i class="fa-solid fa-user"></i>
@@ -1607,13 +1607,13 @@
 
                 <div class="footer-row">
                     <div class="price-section">
-                        <div class="price-label">Tiá»n phÃ²ng:</div>
+                        <div class="price-label">Tiền phòng:</div>
                         <div class="price-value-container">
                             <span class="price-value">2,300,000</span>
                         </div>
                     </div>
                     <button class="btn-book" data-room="104" data-checkin="15 Th1, 14:00" data-checkout="28 Th2, 12:00"
-                        data-price="2300000">Äáº¶T PHÃ’NG</button>
+                        data-price="2300000">ĐẶT PHÒNG</button>
                 </div>
             </article>
 
@@ -1622,38 +1622,38 @@
         <!-- Booking Modal -->
         <div class="modal-overlay" id="bookingModal">
             <div class="modal-content">
-                <h3 class="modal-title">THÃ”NG TIN Äáº¶T PHÃ’NG</h3>
+                <h3 class="modal-title">THÔNG TIN ĐẶT PHÒNG</h3>
                 <div class="modal-card">
                     <div class="form-row">
-                        <div class="form-label">PhÃ²ng Ä‘Ã£ chá»n:</div>
+                        <div class="form-label">Phòng đã chọn:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-bed"></i>
                             <input type="text" id="mRoom" value="101" readonly style="pointer-events: none;">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label">Há» vÃ  tÃªn:</div>
+                        <div class="form-label">Họ và tên:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-circle-user"></i>
-                            <input type="text" placeholder="Nháº­p há» vÃ  tÃªn">
+                            <input type="text" placeholder="Nhập họ và tên">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label">Sá»‘ Ä‘iá»‡n thoáº¡i:</div>
+                        <div class="form-label">Số điện thoại:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-phone"></i>
-                            <input type="text" placeholder="Nháº­p sá»‘ Ä‘iá»‡n thoáº¡i">
+                            <input type="text" placeholder="Nhập số điện thoại">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label">Sá»‘ CCCD/Há»™ chiáº¿u:</div>
+                        <div class="form-label">Số CCCD/Hộ chiếu:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-address-card"></i>
-                            <input type="text" placeholder="Nháº­p sá»‘ CCCD/Há»™ chiáº¿u">
+                            <input type="text" placeholder="Nhập số CCCD/Hộ chiếu">
                         </div>
                     </div>
                     <div class="form-row" style="margin-top: 20px;">
-                        <div class="form-label">NgÃ y nháº­n phÃ²ng:</div>
+                        <div class="form-label">Ngày nhận phòng:</div>
                         <div class="input-group bg-tan">
                             <i class="fa-regular fa-calendar"></i>
                             <i class="fa-regular fa-clock" style="margin-left: -5px;"></i>
@@ -1662,7 +1662,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label">NgÃ y tráº£ phÃ²ng:</div>
+                        <div class="form-label">Ngày trả phòng:</div>
                         <div class="input-group bg-tan">
                             <i class="fa-regular fa-calendar"></i>
                             <i class="fa-regular fa-clock" style="margin-left: -5px;"></i>
@@ -1671,7 +1671,7 @@
                         </div>
                     </div>
                     <div class="form-row" style="margin-top: 20px;">
-                        <div class="form-label">Sá»‘ ngÆ°á»i lá»›n:</div>
+                        <div class="form-label">Số người lớn:</div>
                         <div class="input-group bg-green" style="padding-right: 5px;">
                             <i class="fa-solid fa-user"></i>
                             <div class="qty-controls">
@@ -1682,7 +1682,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label">Sá»‘ tráº» em:</div>
+                        <div class="form-label">Số trẻ em:</div>
                         <div class="input-group bg-green" style="padding-right: 5px;">
                             <i class="fa-solid fa-face-smile"></i>
                             <div class="qty-controls">
@@ -1694,8 +1694,8 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-modal btn-cancel-modal" id="btnCancelModal">Há»§y</button>
-                    <button class="btn-modal btn-ok-modal" id="btnConfirmModal">XÃC NHáº¬N</button>
+                    <button class="btn-modal btn-cancel-modal" id="btnCancelModal">Hủy</button>
+                    <button class="btn-modal btn-ok-modal" id="btnConfirmModal">XÁC NHẬN</button>
                 </div>
             </div>
         </div>
@@ -1704,14 +1704,14 @@
         <div class="modal-overlay" id="paymentModal">
             <div class="payment-content">
                 <button class="btn-close-modal" id="btnClosePayment">x</button>
-                <h3 class="payment-title">Báº N Cáº¦N THANH TOÃN 50% Äá»‚ GIá»® PHÃ’NG</h3>
+                <h3 class="payment-title">BẠN CẦN THANH TOÁN 50% ĐỂ GIỮ PHÒNG</h3>
 
                 <div class="payment-info-box">
-                    <span>Sá»‘ tiá»n cáº§n thanh toÃ¡n:</span>
+                    <span>Số tiền cần thanh toán:</span>
                     <span class="payment-info-value" id="mPaymentValue">400,000</span>
                 </div>
 
-                <button class="btn-pay">THANH TOÃN</button>
+                <button class="btn-pay">THANH TOÁN</button>
             </div>
         </div>
 
@@ -1719,13 +1719,13 @@
         <div class="modal-overlay" id="paymentMethodModal">
             <div class="payment-content" style="width: 500px; padding: 40px 30px;">
                 <button class="btn-close-modal" id="btnCloseMethodModal">x</button>
-                <h3 class="payment-title" style="margin-bottom: 40px;">HÃƒY CHá»ŒN HÃŒNH THá»¨C THANH TOÃN</h3>
+                <h3 class="payment-title" style="margin-bottom: 40px;">Hãy chọn hình thức thanh toán</h3>
 
                 <div class="modal-actions" style="gap: 20px;">
                     <button class="btn-pay" id="btnPayDomestic"
-                        style="flex: 1; min-width: 0; padding: 12px; font-size: 13px;">THANH TOÃN Ná»˜I Äá»ŠA</button>
+                        style="flex: 1; min-width: 0; padding: 12px; font-size: 13px;">THANH TOÁN NỘI ĐỊA</button>
                     <button class="btn-pay" id="btnPayVisa"
-                        style="flex: 1; min-width: 0; padding: 12px; font-size: 13px;">THANH TOÃN VISA</button>
+                        style="flex: 1; min-width: 0; padding: 12px; font-size: 13px;">THANH TOÁN VISA</button>
                 </div>
             </div>
         </div>
@@ -1734,7 +1734,7 @@
         <div class="modal-overlay" id="qrModal">
             <div class="payment-content" style="width: 400px; text-align: center; padding: 40px;">
                 <button class="btn-close-modal" id="btnCloseQr">x</button>
-                <h3 class="payment-title" style="margin-bottom: 30px;">QUÃ‰T MÃƒ Äá»‚ THANH TOÃN</h3>
+                <h3 class="payment-title" style="margin-bottom: 30px;">QUÉT MÃ ĐỂ THANH TOÁN</h3>
                 <img src="./Picture/QR_CODE.png" alt="QR Code"
                     style="width: 250px; height: 250px; object-fit: cover; display: block; margin: 0 auto; background: #fff; padding: 10px; border-radius: 10px;">
             </div>
@@ -1743,24 +1743,24 @@
         <!-- Visa Modal -->
         <div class="modal-overlay" id="visaModal">
             <div class="modal-content" style="width: 550px;">
-                <h3 class="modal-title">HÃ“A ÄÆ N THANH TOÃN</h3>
+                <h3 class="modal-title">HÓA ĐƠN THANH TOÁN</h3>
                 <div class="modal-card">
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">Sá»‘ tiá»n thanh toÃ¡n:</div>
+                        <div class="form-label" style="width: 170px;">Số tiền thanh toán:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-money-bill-wave"></i>
                             <input type="text" id="mVisaAmount" value="400,000" readonly style="pointer-events: none;">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">Sá»‘ tháº»:</div>
+                        <div class="form-label" style="width: 170px;">Số thẻ:</div>
                         <div class="input-group bg-green">
                             <i class="fa-brands fa-cc-visa"></i>
-                            <input type="text" placeholder="Nháº­p sá»‘ tháº»">
+                            <input type="text" placeholder="Nhập số thẻ">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">NgÃ y háº¿t háº¡n:</div>
+                        <div class="form-label" style="width: 170px;">Ngày hết hạn:</div>
                         <div class="input-group bg-green">
                             <i class="fa-regular fa-calendar"></i>
                             <input type="text" placeholder="mm/dd/yyyy">
@@ -1770,48 +1770,48 @@
                         <div class="form-label" style="width: 170px;">CVC/CVV:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-lock"></i>
-                            <input type="text" placeholder="Nháº­p CVC/CVV">
+                            <input type="text" placeholder="Nhập CVC/CVV">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">TÃªn chá»§ tháº»:</div>
+                        <div class="form-label" style="width: 170px;">Tên chủ thẻ:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-circle-user"></i>
-                            <input type="text" placeholder="Nháº­p há» tÃªn">
+                            <input type="text" placeholder="Nhập họ tên">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-label" style="width: 170px;">Email:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-envelope"></i>
-                            <input type="text" placeholder="Nháº­p email">
+                            <input type="text" placeholder="Nhập email">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">Quá»‘c gia:</div>
+                        <div class="form-label" style="width: 170px;">Quốc gia:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-circle-chevron-down"></i>
-                            <input type="text" value="Vietnam" placeholder="Quá»‘c gia">
+                            <input type="text" value="Vietnam" placeholder="Quốc gia">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">Tá»‰nh/ThÃ nh phá»‘:</div>
+                        <div class="form-label" style="width: 170px;">Tỉnh/Thành phố:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-circle-chevron-down"></i>
-                            <input type="text" value="Da Nang" placeholder="Tá»‰nh/ThÃ nh phá»‘">
+                            <input type="text" value="Da Nang" placeholder="Tỉnh/Thành phố">
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-label" style="width: 170px;">Äá»‹a chá»‰:</div>
+                        <div class="form-label" style="width: 170px;">Địa chỉ:</div>
                         <div class="input-group bg-green">
                             <i class="fa-solid fa-location-dot"></i>
-                            <input type="text" placeholder="Nháº­p Ä‘á»‹a chá»‰ cá»¥ thá»ƒ">
+                            <input type="text" placeholder="Nhập địa chỉ cụ thể">
                         </div>
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-modal btn-cancel-modal" id="btnCancelVisa">Há»¦Y</button>
-                    <button class="btn-modal btn-ok-modal" id="btnConfirmVisa">XÃC NHáº¬N</button>
+                    <button class="btn-modal btn-cancel-modal" id="btnCancelVisa">HỦY</button>
+                    <button class="btn-modal btn-ok-modal" id="btnConfirmVisa">XÁC NHẬN</button>
                 </div>
             </div>
         </div>
@@ -1825,11 +1825,11 @@
                 <div style="font-size: 55px; color: #28a745; margin-bottom: 20px;">
                     <i class="fa-regular fa-circle-check"></i>
                 </div>
-                <h3 class="payment-title" style="margin-bottom: 30px; font-size: 22px;">ÄÃƒ Äáº¶T PHÃ’NG</h3>
+                <h3 class="payment-title" style="margin-bottom: 30px; font-size: 22px;">ĐÃ ĐẶT PHÒNG</h3>
 
                 <div class="payment-info-box"
                     style="margin-bottom: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1); justify-content: space-between;">
-                    <span>MÃ£ Ä‘áº·t phÃ²ng:</span>
+                    <span>Mã đặt phòng:</span>
                     <span class="payment-info-value" id="mBookingCode">DPW101150106</span>
                 </div>
             </div>
@@ -1838,11 +1838,11 @@
         <!-- Confirm Cancel Modal -->
         <div class="modal-overlay" id="confirmCancelModal">
             <div class="payment-content" style="width: 500px; text-align: center; padding: 50px 30px;">
-                <h3 class="payment-title" style="margin-bottom: 40px; font-weight: bold;">Báº N CÃ“ CHáº®C Há»¦Y Äáº¶T
-                    PHÃ’NG NÃ€Y</h3>
+                <h3 class="payment-title" style="margin-bottom: 40px; font-weight: bold;">BẠN CÓ CHẮC HỦY ĐẶT
+                    PHÒNG NÀY</h3>
                 <div class="modal-actions" style="gap: 30px;">
-                    <button class="btn-modal btn-cancel-modal" id="btnNoCancel">Há»¦Y</button>
-                    <button class="btn-modal btn-ok-modal" id="btnYesCancel">XÃC NHáº¬N</button>
+                    <button class="btn-modal btn-cancel-modal" id="btnNoCancel">HỦY</button>
+                    <button class="btn-modal btn-ok-modal" id="btnYesCancel">XÁC NHẬN</button>
                 </div>
             </div>
         </div>
@@ -1851,13 +1851,13 @@
         <div class="modal-overlay" id="cancelBookingModal">
             <div class="payment-content" style="width: 450px; text-align: center; padding: 40px;">
                 <button class="btn-close-modal" id="btnCloseCancelBooking">x</button>
-                <h3 class="payment-title" style="margin-bottom: 30px; font-weight: bold;">Nháº­p mÃ£ Ä‘áº·t phÃ²ng táº¡i
-                    Ä‘Ã¢y</h3>
+                <h3 class="payment-title" style="margin-bottom: 30px; font-weight: bold;">Nhập mã đặt phòng tại
+                    đây</h3>
 
                 <input type="text" class="cancel-booking-input" placeholder="DPW101150106"
                     style="width: 80%; padding: 12px 20px; border-radius: 8px; border: none; background-color: #dfceb3; color: #555; text-align: center; font-size: 16px; font-family: 'Lora', serif; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <button class="btn-modal btn-ok-modal" id="btnSubmitCancelCode" style="margin-top: 30px;">XÃC
-                    NHáº¬N</button>
+                <button class="btn-modal btn-ok-modal" id="btnSubmitCancelCode" style="margin-top: 30px;">XÁC
+                    NHẬN</button>
             </div>
         </div>
 
@@ -1870,9 +1870,9 @@
                 <div style="font-size: 55px; color: #28a745; margin-bottom: 20px;">
                     <i class="fa-regular fa-circle-check" style="stroke-width: 2px;"></i>
                 </div>
-                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px; line-height: 1.4;">Há»§y
-                    Ä‘áº·t
-                    phÃ²ng vÃ  hoÃ n tiá»n<br>thÃ nh cÃ´ng</h3>
+                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px; line-height: 1.4;">Hủy
+                    đặt
+                    phòng và hoàn tiền<br>thành công</h3>
             </div>
         </div>
 
@@ -1885,8 +1885,8 @@
                 <div style="font-size: 55px; color: #d9534f; margin-bottom: 20px;">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px;">MÃ£ Ä‘áº·t phÃ²ng khÃ´ng
-                    há»£p lá»‡
+                <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px;">Mã đặt phòng không
+                    hợp lệ
                 </h3>
             </div>
         </div>
@@ -1899,8 +1899,8 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <h3 style="font-size: 22px; color: #111; font-weight: bold; margin-top: 10px; margin-bottom: 30px;">
-                    Báº¡n Ä‘Ã£
-                    quÃ¡ háº¡n Ä‘á»ƒ há»§y Ä‘áº·t phÃ²ng</h3>
+                    Bạn đã
+                    quá hạn để hủy đặt phòng</h3>
                 <button class="btn-modal" id="btnOverdueDone"
                     style="background-color: #d9534f; color: white; border: none; border-radius: 6px; padding: 12px 40px; font-size: 16px; font-weight: bold; cursor: pointer;">Xong</button>
             </div>
@@ -1916,8 +1916,8 @@
                     <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <h3 style="font-size: 20px; color: #111; font-weight: bold; margin-bottom: 30px; line-height: 1.4;">
-                    HoÃ n
-                    tiá»n khÃ´ng thÃ nh cÃ´ng,<br>vui lÃ²ng liÃªn há»‡ há»— trá»£</h3>
+                    Hoàn
+                    tiền không thành công,<br>vui lòng liên hệ hỗ trợ</h3>
                 <button class="btn-modal"
                     style="background-color: #d6bd96; color: #111; border: none; border-radius: 6px; padding: 12px 30px; font-size: 15px; font-weight: bold; cursor: default; display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
                     <i class="fa-solid fa-phone" style="font-size: 18px;"></i> (+84) 822422400
@@ -1936,7 +1936,7 @@
                 </div>
                 <h3 style="font-size: 20px; color: #111; font-weight: bold; margin-bottom: 30px; line-height: 1.4;">
                     Thanh
-                    toÃ¡n khÃ´ng thÃ nh cÃ´ng,<br>vui lÃ²ng liÃªn há»‡ há»— trá»£</h3>
+                    toán không thành công,<br>vui lòng liên hệ hỗ trợ</h3>
                 <button class="btn-modal"
                     style="background-color: #d6bd96; color: #111; border: none; border-radius: 6px; padding: 12px 30px; font-size: 15px; font-weight: bold; cursor: default; display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
                     <i class="fa-solid fa-phone" style="font-size: 18px;"></i> (+84) 822422400
@@ -1947,50 +1947,50 @@
 
         <!-- Popup xÄ‚Â¡c nhÃ¡ÂºÂ­n Ã„â€˜Ã„Æ’ng xuÃ¡ÂºÂ¥t -->
         <div class="logout-popup" id="logoutPopup">
-            <p>Báº¡n muá»‘n Ä‘Äƒng xuáº¥t?</p>
+            <p>Bạn muốn đăng xuất?</p>
             <div class="logout-popup-actions">
-                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Há»§y</button>
-                <button class="btn-logout-confirm" onclick="window.location.href='/'">XÃ¡c nháº­n</button>
+                <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
+                <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
             </div>
         </div>
 
         <!-- Overlay ThÄ‚Â´ng tin ngÃ†Â°Ã¡Â» i dÄ‚Â¹ng -->
         <div class="user-info-overlay" id="userInfoOverlay">
             <div class="user-info-card">
-                <h2>ThÃ´ng tin ngÆ°á»i dÃ¹ng</h2>
+                <h2>Thông tin người dùng</h2>
                 <div class="user-info-body">
                     <!-- CÃ¡Â»â„¢t trÄ‚Â¡i -->
                     <div class="user-left">
-                        <h3>ThÃ´ng tin cÃ¡ nhÃ¢n</h3>
+                        <h3>Thông tin cá nhân</h3>
                         <div class="user-avatar-row">
                             <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
                             <div>
-                                <div class="user-avatar-name">VÆ°Æ¡ng VÄƒn Quyá»n</div>
+                                <div class="user-avatar-name">Vương Văn Quyền</div>
                                 <div class="user-avatar-email">vvquyen@gmail.com</div>
                             </div>
                         </div>
-                        <div class="user-field-row"><span class="user-field-label">Há» vÃ  tÃªn</span><span
-                                class="user-field-value">VÆ°Æ¡ng VÄƒn Quyá»n</span></div>
-                        <div class="user-field-row"><span class="user-field-label">NgÃ y sinh</span><span
+                        <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
+                                class="user-field-value">Vương Văn Quyền</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
                                 class="user-field-value">25/07/2005</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Giá»›i tÃ­nh</span><span
+                        <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
                                 class="user-field-value">Nam</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Sá»‘ Ä‘iá»‡n thoáº¡i</span><span
+                        <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
                                 class="user-field-value">09123467898</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Chá»©c vá»¥</span><span
-                                class="user-field-value">Lá»… tÃ¢n</span></div>
+                        <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
+                                class="user-field-value">Lễ tân</span></div>
                     </div>
                     <!-- CÃ¡Â»â„¢t phÃ¡ÂºÂ£i -->
                     <div class="user-right">
-                        <h3>CÃ i Ä‘áº·t tÃ i khoáº£n</h3>
+                        <h3>Cài đặt tài khoản</h3>
                         <div class="account-field-row">
-                            <span class="account-field-label">TÃªn ngÆ°á»i dÃ¹ng</span>
+                            <span class="account-field-label">Tên người dùng</span>
                             <span class="account-field-value">vvquyen_2507</span>
                         </div>
                         <div class="account-field-row">
-                            <span class="account-field-label">Máº­t kháº©u</span>
+                            <span class="account-field-label">Mật khẩu</span>
                             <span class="account-field-value">***********</span>
-                            <button class="btn-edit-pw" title="SÃ¡Â»Â­a mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u" onclick="toggleChangePassword()"><i
+                            <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
                                     class="fa-solid fa-pen"></i></button>
                         </div>
 
@@ -2077,30 +2077,30 @@
                     </div>
                     <!-- Cá»™t pháº£i -->
                     <div class="user-right">
-                        <h3>CÃ i Ä‘áº·t tÃ i khoáº£n</h3>
+                        <h3>Thông tin tài khoản</h3>
                         <div class="account-field-row">
-                            <span class="account-field-label">TÃªn ngÆ°á»i dÃ¹ng</span>
+                            <span class="account-field-label">Tên người dùng</span>
                             <span class="account-field-value">vvquyen_2507</span>
                         </div>
                         <div class="account-field-row">
-                            <span class="account-field-label">Máº­t kháº©u</span>
-                            <span class="account-field-value">â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢</span>
-                            <button class="btn-edit-pw" title="Sá»­a máº­t kháº©u" onclick="toggleChangePassword()"><i
+                            <span class="account-field-label">Mật khẩu</span>
+                            <span class="account-field-value">***********</span>
+                            <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
                                     class="fa-solid fa-pen"></i></button>
                         </div>
 
                         <div class="change-password-panel" id="changePasswordPanel">
-                            <h4>Äá»•i máº­t kháº©u</h4>
+                            <h4>Đổi mật khẩu</h4>
                             <div class="pw-row">
-                                <span class="pw-label">Máº­t kháº©u hiá»‡n táº¡i:</span>
+                                <span class="pw-label">Mật khẩu hiện tại:</span>
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-row">
-                                <span class="pw-label">Máº­t kháº©u má»›i:</span>
+                                <span class="pw-label">Mật khẩu mới:</span>
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-row">
-                                <span class="pw-label">Nháº­p láº¡i máº­t kháº©u má»›i:</span>
+                                <span class="pw-label">Nhập lại mật khẩu mới:</span>
                                 <input type="password" class="pw-input">
                             </div>
                             <div class="pw-actions">
@@ -2121,16 +2121,16 @@
         <div class="save-success-overlay" id="saveSuccessOverlay">
             <div class="save-success-card">
                 <i class="fa-solid fa-circle-check"></i>
-                <p>ThÃ´ng tin Ä‘Ã£ Ä‘Æ°á»£c lÆ°u</p>
+                <p>Thông tin đã được lưu</p>
                 <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
             </div>
         </div>
 
-        <!-- Popup Äá»•i máº­t kháº©u thÃ nh cÃ´ng -->
+        <!-- Popup Ä á»•i máº­t kháº©u thÃ nh cÃ´ng -->
         <div class="pw-success-overlay" id="pwSuccessOverlay">
             <div class="pw-success-card">
                 <i class="fa-regular fa-circle-check"></i>
-                <p>Äá»•i máº­t kháº©u thÃ nh cÃ´ng</p>
+                <p>Đổi mật khẩu thành công</p>
                 <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
             </div>
         </div>
@@ -2499,6 +2499,17 @@
 
         </script>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const path = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-bar .tab');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === path) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
