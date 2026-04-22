@@ -105,11 +105,9 @@ function syncTongquan() {
     if (typeof updateSummaryCards === 'function') updateSummaryCards();
 }
 
-// 4. Sync Logic for Service.html
+// 4. Sync Logic for Service.html - Handled by API now
 function overrideServiceData() {
-    if (window.roomsData) {
-        window.roomsData = getSharedRooms();
-    }
+    // roomsData is now handled dynamically in Service.html
 }
 
 document.addEventListener('DOMContentLoaded', () => {
