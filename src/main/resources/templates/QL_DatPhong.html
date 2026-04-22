@@ -284,19 +284,20 @@
             const rooms = window.sharedData.getSharedRooms();
             bookingsChoCheckin = [];
             bookingsDaCheckin = [];
+            bookingsDaHuy = [];
 
             rooms.forEach((r) => {
-                if (r.status === 'Đã đặt' || r.status === 'Đang sử dụng') {
+                if (r.status === 'Đã đặt' || r.status === 'Đang sử dụng' || r.status === 'Đã hủy') {
                     const b = {
                         id: r.id,
                         guestName: r.customer || "Khách hàng",
                         roomName: "Phòng " + r.name,
-                        phone: "0123456789",
-                        email: "khachhang@gmail.com",
+                        phone: "0188624523",
+                        email: "nynguyen05@gmail.com",
                         checkIn: r.date || formatDate(yesterday),
                         checkOut: r.date2 || formatDate(tomorrow),
                         guests: "2 người - 1 đêm",
-                        bookingDate: formatDate(yesterday),
+                        bookingDate: "2026-04-20",
                         price: (r.basePrice || 1500000).toLocaleString('vi-VN') + ' ₫',
                         code: r.maDatPhong || ("DP" + r.id),
                         checkInTime: "14h - " + (r.date || formatDate(yesterday)),
@@ -305,13 +306,23 @@
                         note: "Dữ liệu được đồng bộ từ Quản lý phòng."
                     };
                     if (r.status === 'Đã đặt') bookingsChoCheckin.push(b);
-                    else bookingsDaCheckin.push(b);
+                    else if (r.status === 'Đang sử dụng') bookingsDaCheckin.push(b);
+                    else if (r.status === 'Đã hủy') bookingsDaHuy.push(b);
                 }
             });
         }
 
         function checkCancelEnabled(checkInDateStr) {
-            const checkInDate = new Date(`${checkInDateStr}T16:00:00`);
+            if (!checkInDateStr) return false;
+            // Parse DD/MM/YYYY or YYYY-MM-DD
+            let parts = checkInDateStr.split('/');
+            let normalizedDate;
+            if (parts.length === 3) {
+                normalizedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            } else {
+                normalizedDate = checkInDateStr;
+            }
+            const checkInDate = new Date(`${normalizedDate}T16:00:00`);
             const now = new Date();
             return now >= checkInDate;
         }
@@ -353,7 +364,7 @@
                             </div>
                             <div class="price-section">
                                 <div class="price">${booking.price}</div>
-                                <button class="btn-cancel" ${!canCancel ? 'disabled' : ''} onclick="openCancelModal(event, ${booking.id})">
+                                <button class="btn-cancel ${canCancel ? 'btn-cancel-active' : ''}" ${!canCancel ? 'disabled' : ''} onclick="openCancelModal(event, ${booking.id})">
                                     <i class="fa-regular fa-circle-xmark"></i> Hủy phòng
                                 </button>
                             </div>
@@ -486,19 +497,15 @@
             if (cancelTargetId !== null) {
                 const targetBooking = bookingsChoCheckin.find(b => b.id === cancelTargetId);
                 if (targetBooking) {
-                    bookingsDaHuy.push(targetBooking);
                     if (window.sharedData) {
                         const rooms = window.sharedData.getSharedRooms();
-                        const r = rooms.find(x => x.id === cancelTargetId);
+                        const r = rooms.find(x => x.id === cancelTargetId.toString());
                         if (r) {
-                            r.status = 'Trống';
-                            r.customer = '';
-                            r.date = '';
-                            r.date2 = '';
+                            r.status = 'Đã hủy';
                             window.sharedData.saveSharedRooms(rooms);
                         }
                     }
-                    bookingsChoCheckin = bookingsChoCheckin.filter(b => b.id !== cancelTargetId);
+                    loadFromShared(); // Re-load everything from shared data
                 }
                 cancelTargetId = null;
 
