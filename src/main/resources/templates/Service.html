@@ -1071,6 +1071,20 @@
             }
 
             renderMap();
+
+            // Handle query parameters for automatic room/tab selection
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const pRoomId = urlParams.get('roomId');
+                const pTab = urlParams.get('tab');
+
+                if (pTab && (pTab === 'service' || pTab === 'compensation')) {
+                    switchTab(pTab);
+                }
+                if (pRoomId) {
+                    selectRoom(pRoomId);
+                }
+            });
         </script>
     </div>
 </body>

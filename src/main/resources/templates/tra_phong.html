@@ -501,9 +501,13 @@
                     const row = `
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; font-size:15px; padding-left:15px;">
                             <span style="flex:1;">${item.type === 'service' ? svIdx : cpIdx}. ${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</span>
-                            <div style="background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px;">- 0${item.qty} +</div>
+                            <div style="background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px; user-select:none;">
+                                <span style="cursor:pointer; padding: 0 5px; font-weight:bold;" onclick="changeCheckoutItemQty('${item.name}', '${item.type}', -1)">-</span>
+                                0${item.qty}
+                                <span style="cursor:pointer; padding: 0 5px; font-weight:bold;" onclick="changeCheckoutItemQty('${item.name}', '${item.type}', 1)">+</span>
+                            </div>
                             <div style="width:100px; text-align:right;">${formatMoney(total)}</div>
-                            <i class="fa-regular fa-trash-can" style="color:#aaa; margin-left:15px; cursor:pointer;" title="Tính năng xóa bị khóa ở mục checkout"></i>
+                            <i class="fa-regular fa-trash-can" style="color:#aaa; margin-left:15px; cursor:pointer;" title="Xóa mục này" onclick="deleteCheckoutItem('${item.name}', '${item.type}')"></i>
                         </div>`;
                     if (item.type === 'service') { svHtml += row; svIdx++; }
                     else { cpHtml += row; cpIdx++; }
@@ -525,12 +529,12 @@
                     <div class="room-info-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                             <span style="font-size:18px; font-weight:bold;">A. Dịch vụ phòng</span>
-                            <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="window.location.href='/service'">+ Thêm dịch vụ</button>
+                            <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="goToServicePage('service')">+ Thêm dịch vụ</button>
                         </div>
                         ${svHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có dịch vụ phát sinh</i>'}
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:35px;">
                             <span style="font-size:18px; font-weight:bold;">B. Bồi thường thiệt hại</span>
-                            <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="window.location.href='/service'">+ Thêm tài sản</button>
+                            <button style="background:#dcd1c6; border:none; border-radius:12px; padding:6px 15px; font-weight:600; cursor:pointer;" onclick="goToServicePage('compensation')">+ Thêm tài sản</button>
                         </div>
                         ${cpHtml || '<i style="color:#999; font-size:14px; padding-left:15px;">Không có bồi thường</i>'}
                     </div>
@@ -627,6 +631,36 @@
                     if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
                 }
                 selectCheckoutRoom(null);
+            }
+
+            function changeCheckoutItemQty(name, type, delta) {
+                const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+                if (!room) return;
+                const item = room.items.find(i => i.name === name && i.type === type);
+                if (item) {
+                    item.qty += delta;
+                    if (item.qty < 1) item.qty = 1;
+                    if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
+                    renderCheckoutParams();
+                }
+            }
+
+            function deleteCheckoutItem(name, type) {
+                const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
+                if (!room) return;
+                if (confirm(`Bạn có chắc chắn muốn xóa "${name}"?`)) {
+                    room.items = room.items.filter(i => !(i.name === name && i.type === type));
+                    if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
+                    renderCheckoutParams();
+                }
+            }
+
+            function goToServicePage(tab) {
+                if (selectedCheckoutRoomId) {
+                    window.location.href = `/service?roomId=${selectedCheckoutRoomId}&tab=${tab}`;
+                } else {
+                    window.location.href = `/service?tab=${tab}`;
+                }
             }
         </script>
     </div>

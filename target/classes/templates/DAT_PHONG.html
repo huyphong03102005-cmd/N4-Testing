@@ -2121,7 +2121,6 @@
                     <button class="btn-user-cancel" onclick="closeUserInfo()">Há»¦Y</button>
                     <button class="btn-user-save" onclick="showSaveSuccess()">LÆ¯U</button>
                 </div>
-<<<<<<< Updated upstream
             </div>
         </div>
 
@@ -2146,10 +2145,7 @@
 
         <script src="shared.js"></script>
         <script>
-=======
-        <script>
             // --- Booking & Payment Modal Logic ---
->>>>>>> Stashed changes
             const modal = document.getElementById('bookingModal');
             const btnBooks = document.querySelectorAll('.btn-book');
             const btnCancel = document.getElementById('btnCancelModal');
@@ -2215,15 +2211,11 @@
                 });
             });
 
-<<<<<<< Updated upstream
             const mRoom = document.getElementById('mRoom');
             const mCheckin = document.getElementById('mCheckin');
             const mCheckout = document.getElementById('mCheckout');
             const mPaymentValue = document.getElementById('mPaymentValue');
             let currentRoomPrice = 0;
-
-=======
->>>>>>> Stashed changes
             // Open modal when any Book button is clicked
             btnBooks.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2288,7 +2280,6 @@
                 });
             }
 
-<<<<<<< Updated upstream
             const qrModal = document.getElementById('qrModal');
             const btnCloseQr = document.getElementById('btnCloseQr');
             const visaModal = document.getElementById('visaModal');
@@ -2297,10 +2288,13 @@
             const btnPayDomestic = document.getElementById('btnPayDomestic');
             const btnPayVisa = document.getElementById('btnPayVisa');
             const mVisaAmount = document.getElementById('mVisaAmount');
+            const successModal = document.getElementById('successModal');
+            const btnCloseSuccess = document.getElementById('btnCloseSuccess');
+            const mBookingCode = document.getElementById('mBookingCode');
 
             let qrTimeout;
             let visaTimeout;
-=======
+
             // Payment Logic
             function sendBookingData(onSuccess) {
                 const formData = new URLSearchParams();
@@ -2347,34 +2341,11 @@
                     if (btnConfirmVisa) btnConfirmVisa.disabled = false;
                 });
             }
->>>>>>> Stashed changes
 
             if (btnPayDomestic) {
                 btnPayDomestic.addEventListener('click', () => {
                     paymentMethodModal.style.display = 'none';
                     qrModal.style.display = 'flex';
-<<<<<<< Updated upstream
-
-                    qrTimeout = setTimeout(() => {
-                        qrModal.style.display = 'none';
-                        if (mRoom && mBookingCode) {
-                            const randomId = Math.floor(100000 + Math.random() * 900000);
-                            mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
-                            if (window.sharedData) {
-                                const rooms = window.sharedData.getSharedRooms();
-                                const r = rooms.find(x => x.id === mRoom.value);
-                                if (r) {
-                                    r.status = 'Đã đặt';
-                                    r.date = mCheckin ? mCheckin.value : '';
-                                    r.date2 = mCheckout ? mCheckout.value : '';
-                                    window.sharedData.saveSharedRooms(rooms);
-                                }
-                            }
-                        }
-                        if (successModal) successModal.style.display = 'flex';
-                    }, 5000);
-=======
->>>>>>> Stashed changes
                 });
             }
 
@@ -2443,27 +2414,7 @@
             const btnCloseSuccess = document.getElementById('btnCloseSuccess');
             const mBookingCode = document.getElementById('mBookingCode');
 
-            if (btnConfirmVisa) {
-                btnConfirmVisa.addEventListener('click', () => {
-                    clearTimeout(visaTimeout);
-                    visaModal.style.display = 'none';
-                    if (mRoom && mBookingCode) {
-                        const randomId = Math.floor(100000 + Math.random() * 900000);
-                        mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
-                        if (window.sharedData) {
-                            const rooms = window.sharedData.getSharedRooms();
-                            const r = rooms.find(x => x.id === mRoom.value);
-                            if (r) {
-                                r.status = 'Đã đặt';
-                                r.date = mCheckin ? mCheckin.value : '';
-                                r.date2 = mCheckout ? mCheckout.value : '';
-                                window.sharedData.saveSharedRooms(rooms);
-                            }
-                        }
-                    }
-                    if (successModal) successModal.style.display = 'flex';
-                });
-            }
+
 
             if (btnCloseSuccess) {
                 btnCloseSuccess.addEventListener('click', () => {
@@ -2545,52 +2496,6 @@
 
             // Close on click outside
             window.addEventListener('click', (e) => {
-<<<<<<< Updated upstream
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-                if (e.target === paymentModal) {
-                    paymentModal.style.display = 'none';
-                }
-                if (e.target === paymentMethodModal) {
-                    paymentMethodModal.style.display = 'none';
-                }
-                if (e.target === qrModal) {
-                    qrModal.style.display = 'none';
-                }
-                if (e.target === visaModal) {
-                    clearTimeout(visaTimeout);
-                    visaModal.style.display = 'none';
-                }
-                if (successModal && e.target === successModal) {
-                    successModal.style.display = 'none';
-                }
-                if (cancelBookingModal && e.target === cancelBookingModal) {
-                    cancelBookingModal.style.display = 'none';
-                }
-                if (confirmCancelModal && e.target === confirmCancelModal) {
-                    clearTimeout(confirmCancelTimeout);
-                    confirmCancelModal.style.display = 'none';
-                }
-                const cancelSuccessModal = document.getElementById('cancelSuccessModal');
-                if (cancelSuccessModal && e.target === cancelSuccessModal) cancelSuccessModal.style.display = 'none';
-
-                const invalidCodeModal = document.getElementById('invalidCodeModal');
-                if (invalidCodeModal && e.target === invalidCodeModal) invalidCodeModal.style.display = 'none';
-
-                const overdueModal = document.getElementById('overdueModal');
-                if (overdueModal && e.target === overdueModal) overdueModal.style.display = 'none';
-
-                const refundFailModal = document.getElementById('refundFailModal');
-                if (refundFailModal && e.target === refundFailModal) refundFailModal.style.display = 'none';
-
-                const paymentFailModal = document.getElementById('paymentFailModal');
-                if (paymentFailModal && e.target === paymentFailModal) paymentFailModal.style.display = 'none';
-            });
-        </script>
-
-        <script>
-=======
                 const modals = [modal, paymentModal, paymentMethodModal, qrModal, visaModal, successModal];
                 modals.forEach(m => {
                     if (e.target === m) {
@@ -2607,7 +2512,6 @@
                     if (m && e.target === m) m.style.display = 'none';
                 });
             });
->>>>>>> Stashed changes
 
             // --- User Info & Logout Logic ---
             function toggleLogoutPopup() {
@@ -2651,11 +2555,8 @@
 
             function closePwSuccess() {
                 document.getElementById('pwSuccessOverlay').classList.remove('show');
-<<<<<<< Updated upstream
-                toggleChangePassword(); // Quay lÃ¡ÂºÂ¡i view chÄ‚Â­nh
-=======
                 toggleChangePassword();
->>>>>>> Stashed changes
+            }
             }
         </script>
     </div>
