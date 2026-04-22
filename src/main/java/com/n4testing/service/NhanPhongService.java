@@ -55,7 +55,7 @@ public class NhanPhongService {
      * Thực hiện quy trình nhận phòng
      */
     @Transactional
-    public void thucHienNhanPhong(Integer maDatPhong) {
+    public void thucHienNhanPhong(String maDatPhong) {
         DatPhong datPhong = datPhongRepository.findById(maDatPhong)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin đặt phòng"));
 

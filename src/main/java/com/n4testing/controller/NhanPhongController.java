@@ -54,7 +54,7 @@ public class NhanPhongController {
     }
 
     @PostMapping("/checkin/{id}")
-    public String processCheckin(@PathVariable("id") Integer maDatPhong, RedirectAttributes redirectAttributes) {
+    public String processCheckin(@PathVariable("id") String maDatPhong, RedirectAttributes redirectAttributes) {
         try {
             nhanPhongService.thucHienNhanPhong(maDatPhong);
             redirectAttributes.addFlashAttribute("successMessage", "Mở phòng thành công!");

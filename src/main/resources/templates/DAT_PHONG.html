@@ -1559,7 +1559,8 @@
                         </div>
                     </div>
                     <button class="btn-book" data-room="101" data-checkin="30 Th1, 14:00" data-checkout="15 Th2, 12:00"
-                        data-price="800000">ĐẶT PHÒNG</button>
+                        data-checkin-iso="2026-01-30T14:00:00" data-checkout-iso="2026-02-15T12:00:00"
+                        data-price="800000" data-max-adults="2" data-max-children="1">ĐẶT PHÒNG</button>
                 </div>
             </article>
 
@@ -1613,7 +1614,8 @@
                         </div>
                     </div>
                     <button class="btn-book" data-room="104" data-checkin="15 Th1, 14:00" data-checkout="28 Th2, 12:00"
-                        data-price="2300000">ĐẶT PHÒNG</button>
+                        data-checkin-iso="2026-01-15T14:00:00" data-checkout-iso="2026-02-28T12:00:00"
+                        data-price="2300000" data-max-adults="4" data-max-children="2">ĐẶT PHÒNG</button>
                 </div>
             </article>
 
@@ -1676,7 +1678,7 @@
                             <i class="fa-solid fa-user"></i>
                             <div class="qty-controls">
                                 <i class="fa-solid fa-circle-minus"></i>
-                                <span>0</span>
+                                <span id="mSoNguoiLon">0</span>
                                 <i class="fa-solid fa-circle-plus"></i>
                             </div>
                         </div>
@@ -1687,7 +1689,7 @@
                             <i class="fa-solid fa-face-smile"></i>
                             <div class="qty-controls">
                                 <i class="fa-solid fa-circle-minus"></i>
-                                <span>0</span>
+                                <span id="mSoTreEm">0</span>
                                 <i class="fa-solid fa-circle-plus"></i>
                             </div>
                         </div>
@@ -1734,9 +1736,14 @@
         <div class="modal-overlay" id="qrModal">
             <div class="payment-content" style="width: 400px; text-align: center; padding: 40px;">
                 <button class="btn-close-modal" id="btnCloseQr">x</button>
-                <h3 class="payment-title" style="margin-bottom: 30px;">QUÉT MÃ ĐỂ THANH TOÁN</h3>
+                <h3 class="payment-title" style="margin-bottom: 25px;">QUÉT MÃ ĐỂ THANH TOÁN</h3>
                 <img src="./Picture/QR_CODE.png" alt="QR Code"
-                    style="width: 250px; height: 250px; object-fit: cover; display: block; margin: 0 auto; background: #fff; padding: 10px; border-radius: 10px;">
+                    style="width: 250px; height: 250px; object-fit: cover; display: block; margin: 0 auto 30px; background: #fff; padding: 10px; border-radius: 10px;">
+                
+                <div class="modal-actions" style="gap: 15px;">
+                    <button class="btn-modal btn-cancel-modal" id="btnCancelQr" style="flex: 1;">HỦY</button>
+                    <button class="btn-modal btn-ok-modal" id="btnConfirmQr" style="flex: 1;">XÁC NHẬN</button>
+                </div>
             </div>
         </div>
 
@@ -2138,6 +2145,7 @@
 
         <script src="shared.js"></script>
         <script>
+            // --- Booking & Payment Modal Logic ---
             const modal = document.getElementById('bookingModal');
             const btnBooks = document.querySelectorAll('.btn-book');
             const btnCancel = document.getElementById('btnCancelModal');
@@ -2145,6 +2153,34 @@
 
             const paymentModal = document.getElementById('paymentModal');
             const btnClosePayment = document.getElementById('btnClosePayment');
+            const paymentMethodModal = document.getElementById('paymentMethodModal');
+            const btnCloseMethodModal = document.getElementById('btnCloseMethodModal');
+            const btnOpenMethodModal = document.querySelector('#paymentModal .btn-pay');
+
+            const qrModal = document.getElementById('qrModal');
+            const btnCloseQr = document.getElementById('btnCloseQr');
+            const visaModal = document.getElementById('visaModal');
+            const btnCancelVisa = document.getElementById('btnCancelVisa');
+            const btnConfirmVisa = document.getElementById('btnConfirmVisa');
+            const btnPayDomestic = document.getElementById('btnPayDomestic');
+            const btnPayVisa = document.getElementById('btnPayVisa');
+            const btnConfirmQr = document.getElementById('btnConfirmQr');
+            const btnCancelQr = document.getElementById('btnCancelQr');
+
+            const mRoom = document.getElementById('mRoom');
+            const mCheckin = document.getElementById('mCheckin');
+            const mCheckout = document.getElementById('mCheckout');
+            const mPaymentValue = document.getElementById('mPaymentValue');
+            const mBookingCode = document.getElementById('mBookingCode');
+            const successModal = document.getElementById('successModal');
+            const mVisaAmount = document.getElementById('mVisaAmount');
+
+            let currentRoomPrice = 0;
+            let maxAdults = 0;
+            let maxChildren = 0;
+            let currentCheckinISO = '';
+            let currentCheckoutISO = '';
+            let qrTimeout, visaTimeout;
 
             // Quantity controls logic (+/-)
             const minusBtns = document.querySelectorAll('.fa-circle-minus');
@@ -2152,7 +2188,7 @@
 
             minusBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const span = e.target.nextElementSibling;
+                    const span = e.target.closest('.qty-controls').querySelector('span');
                     let val = parseInt(span.innerText);
                     if (val > 0) {
                         span.innerText = val - 1;
@@ -2162,9 +2198,16 @@
 
             plusBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const span = e.target.previousElementSibling;
+                    const span = e.target.closest('.qty-controls').querySelector('span');
                     let val = parseInt(span.innerText);
-                    span.innerText = val + 1;
+                    
+                    if (span.id === 'mSoNguoiLon') {
+                        if (val < maxAdults) span.innerText = val + 1;
+                    } else if (span.id === 'mSoTreEm') {
+                        if (val < maxChildren) span.innerText = val + 1;
+                    } else {
+                        span.innerText = val + 1;
+                    }
                 });
             });
 
@@ -2173,18 +2216,25 @@
             const mCheckout = document.getElementById('mCheckout');
             const mPaymentValue = document.getElementById('mPaymentValue');
             let currentRoomPrice = 0;
-
             // Open modal when any Book button is clicked
             btnBooks.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const room = btn.getAttribute('data-room');
                     const checkin = btn.getAttribute('data-checkin');
                     const checkout = btn.getAttribute('data-checkout');
+                    currentCheckinISO = btn.getAttribute('data-checkin-iso');
+                    currentCheckoutISO = btn.getAttribute('data-checkout-iso');
                     currentRoomPrice = parseInt(btn.getAttribute('data-price'));
+                    maxAdults = parseInt(btn.getAttribute('data-max-adults') || 0);
+                    maxChildren = parseInt(btn.getAttribute('data-max-children') || 0);
 
                     if (mRoom) mRoom.value = room;
                     if (mCheckin) mCheckin.value = checkin;
                     if (mCheckout) mCheckout.value = checkout;
+
+                    // Reset values to 0 when opening new room
+                    document.getElementById('mSoNguoiLon').innerText = "0";
+                    document.getElementById('mSoTreEm').innerText = "0";
 
                     // Format 50% deposit
                     const deposit = currentRoomPrice / 2;
@@ -2195,25 +2245,28 @@
             });
 
             // Close initial modal on Cancel
-            btnCancel.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
+            if (btnCancel) {
+                btnCancel.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+            }
 
-            // Close initial modal and open Payment modal on Confirm
-            btnConfirm.addEventListener('click', () => {
-                modal.style.display = 'none';
-                paymentModal.style.display = 'flex';
-            });
+            // Confirm booking -> open Payment modal
+            if (btnConfirm) {
+                btnConfirm.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    paymentModal.style.display = 'flex';
+                });
+            }
 
-            // Close payment modal on 'x'
-            btnClosePayment.addEventListener('click', () => {
-                paymentModal.style.display = 'none';
-            });
+            // Close payment modal
+            if (btnClosePayment) {
+                btnClosePayment.addEventListener('click', () => {
+                    paymentModal.style.display = 'none';
+                });
+            }
 
-            const paymentMethodModal = document.getElementById('paymentMethodModal');
-            const btnCloseMethodModal = document.getElementById('btnCloseMethodModal');
-            const btnOpenMethodModal = document.querySelector('#paymentModal .btn-pay');
-
+            // Open Payment Method Modal
             if (btnOpenMethodModal) {
                 btnOpenMethodModal.addEventListener('click', () => {
                     paymentModal.style.display = 'none';
@@ -2235,33 +2288,64 @@
             const btnPayDomestic = document.getElementById('btnPayDomestic');
             const btnPayVisa = document.getElementById('btnPayVisa');
             const mVisaAmount = document.getElementById('mVisaAmount');
+            const successModal = document.getElementById('successModal');
+            const btnCloseSuccess = document.getElementById('btnCloseSuccess');
+            const mBookingCode = document.getElementById('mBookingCode');
 
             let qrTimeout;
             let visaTimeout;
+
+            // Payment Logic
+            function sendBookingData(onSuccess) {
+                const formData = new URLSearchParams();
+                const roomNum = mRoom.value;
+                formData.append('phong', roomNum);
+                formData.append('hoTen', document.querySelector('#bookingModal input[placeholder="Nhập họ và tên"]').value);
+                formData.append('sdt', document.querySelector('#bookingModal input[placeholder="Nhập số điện thoại"]').value);
+                formData.append('cccd', document.querySelector('#bookingModal input[placeholder="Nhập số CCCD/Hộ chiếu"]').value);
+                formData.append('ngayNhan', currentCheckinISO);
+                formData.append('ngayTra', currentCheckoutISO);
+                formData.append('soNguoiLon', document.getElementById('mSoNguoiLon').innerText);
+                formData.append('soTreEm', document.getElementById('mSoTreEm').innerText);
+
+                const deposit = currentRoomPrice / 2;
+                formData.append('tienCoc', deposit || 0);
+                formData.append('tongThanhToan', currentRoomPrice || 0);
+                formData.append('phuongThuc', 'Thanh toán cọc');
+
+                // Disable buttons to prevent double click
+                if (btnPayDomestic) btnPayDomestic.disabled = true;
+                if (btnConfirmVisa) btnConfirmVisa.disabled = true;
+
+                fetch('/dat-phong/xac-nhan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        mBookingCode.innerText = data.maDatPhong;
+                        onSuccess();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                        // Re-enable on error
+                        if (btnPayDomestic) btnPayDomestic.disabled = false;
+                        if (btnConfirmVisa) btnConfirmVisa.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Đã có lỗi kết nối hệ thống.');
+                    if (btnPayDomestic) btnPayDomestic.disabled = false;
+                    if (btnConfirmVisa) btnConfirmVisa.disabled = false;
+                });
+            }
 
             if (btnPayDomestic) {
                 btnPayDomestic.addEventListener('click', () => {
                     paymentMethodModal.style.display = 'none';
                     qrModal.style.display = 'flex';
-
-                    qrTimeout = setTimeout(() => {
-                        qrModal.style.display = 'none';
-                        if (mRoom && mBookingCode) {
-                            const randomId = Math.floor(100000 + Math.random() * 900000);
-                            mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
-                            if (window.sharedData) {
-                                const rooms = window.sharedData.getSharedRooms();
-                                const r = rooms.find(x => x.id === mRoom.value);
-                                if (r) {
-                                    r.status = 'Đã đặt';
-                                    r.date = mCheckin ? mCheckin.value : '';
-                                    r.date2 = mCheckout ? mCheckout.value : '';
-                                    window.sharedData.saveSharedRooms(rooms);
-                                }
-                            }
-                        }
-                        if (successModal) successModal.style.display = 'flex';
-                    }, 5000);
                 });
             }
 
@@ -2272,6 +2356,7 @@
                         mVisaAmount.value = mPaymentValue.innerText;
                     }
                     visaModal.style.display = 'flex';
+<<<<<<< Updated upstream
 
                     visaTimeout = setTimeout(() => {
                         if (visaModal.style.display === 'flex') {
@@ -2279,22 +2364,49 @@
                             document.getElementById('paymentFailModal').style.display = 'flex';
                         }
                     }, 60000);
+=======
+                });
+            }
+
+            if (btnConfirmVisa) {
+                btnConfirmVisa.addEventListener('click', () => {
+                    sendBookingData(() => {
+                        visaModal.style.display = 'none';
+                        setTimeout(() => {
+                            if (successModal) successModal.style.display = 'flex';
+                        }, 200);
+                    });
+>>>>>>> Stashed changes
                 });
             }
 
             if (btnCloseQr) {
                 btnCloseQr.addEventListener('click', () => {
-                    clearTimeout(qrTimeout);
                     qrModal.style.display = 'none';
-                    if (paymentMethodModal) paymentMethodModal.style.display = 'flex';
+                });
+            }
+
+            if (btnConfirmQr) {
+                btnConfirmQr.addEventListener('click', () => {
+                    sendBookingData(() => {
+                        qrModal.style.display = 'none';
+                        setTimeout(() => {
+                            if (successModal) successModal.style.display = 'flex';
+                        }, 200);
+                    });
+                });
+            }
+
+            if (btnCancelQr) {
+                btnCancelQr.addEventListener('click', () => {
+                    qrModal.style.display = 'none';
+                    paymentMethodModal.style.display = 'flex';
                 });
             }
 
             if (btnCancelVisa) {
                 btnCancelVisa.addEventListener('click', () => {
-                    clearTimeout(visaTimeout);
                     visaModal.style.display = 'none';
-                    if (paymentMethodModal) paymentMethodModal.style.display = 'flex';
                 });
             }
 
@@ -2302,27 +2414,7 @@
             const btnCloseSuccess = document.getElementById('btnCloseSuccess');
             const mBookingCode = document.getElementById('mBookingCode');
 
-            if (btnConfirmVisa) {
-                btnConfirmVisa.addEventListener('click', () => {
-                    clearTimeout(visaTimeout);
-                    visaModal.style.display = 'none';
-                    if (mRoom && mBookingCode) {
-                        const randomId = Math.floor(100000 + Math.random() * 900000);
-                        mBookingCode.innerText = 'DPW' + mRoom.value + randomId;
-                        if (window.sharedData) {
-                            const rooms = window.sharedData.getSharedRooms();
-                            const r = rooms.find(x => x.id === mRoom.value);
-                            if (r) {
-                                r.status = 'Đã đặt';
-                                r.date = mCheckin ? mCheckin.value : '';
-                                r.date2 = mCheckout ? mCheckout.value : '';
-                                window.sharedData.saveSharedRooms(rooms);
-                            }
-                        }
-                    }
-                    if (successModal) successModal.style.display = 'flex';
-                });
-            }
+
 
             if (btnCloseSuccess) {
                 btnCloseSuccess.addEventListener('click', () => {
@@ -2402,101 +2494,70 @@
                 });
             }
 
-            // Close when clicking outside of modal content
+            // Close on click outside
             window.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-                if (e.target === paymentModal) {
-                    paymentModal.style.display = 'none';
-                }
-                if (e.target === paymentMethodModal) {
-                    paymentMethodModal.style.display = 'none';
-                }
-                if (e.target === qrModal) {
-                    qrModal.style.display = 'none';
-                }
-                if (e.target === visaModal) {
-                    clearTimeout(visaTimeout);
-                    visaModal.style.display = 'none';
-                }
-                if (successModal && e.target === successModal) {
-                    successModal.style.display = 'none';
-                }
-                if (cancelBookingModal && e.target === cancelBookingModal) {
-                    cancelBookingModal.style.display = 'none';
-                }
-                if (confirmCancelModal && e.target === confirmCancelModal) {
-                    clearTimeout(confirmCancelTimeout);
-                    confirmCancelModal.style.display = 'none';
-                }
-                const cancelSuccessModal = document.getElementById('cancelSuccessModal');
-                if (cancelSuccessModal && e.target === cancelSuccessModal) cancelSuccessModal.style.display = 'none';
-
-                const invalidCodeModal = document.getElementById('invalidCodeModal');
-                if (invalidCodeModal && e.target === invalidCodeModal) invalidCodeModal.style.display = 'none';
-
-                const overdueModal = document.getElementById('overdueModal');
-                if (overdueModal && e.target === overdueModal) overdueModal.style.display = 'none';
-
-                const refundFailModal = document.getElementById('refundFailModal');
-                if (refundFailModal && e.target === refundFailModal) refundFailModal.style.display = 'none';
-
-                const paymentFailModal = document.getElementById('paymentFailModal');
-                if (paymentFailModal && e.target === paymentFailModal) paymentFailModal.style.display = 'none';
+                const modals = [modal, paymentModal, paymentMethodModal, qrModal, visaModal, successModal];
+                modals.forEach(m => {
+                    if (e.target === m) {
+                        if (m === visaModal) clearTimeout(visaTimeout);
+                        if (m === qrModal) clearTimeout(qrTimeout);
+                        m.style.display = 'none';
+                    }
+                });
+                
+                // Add logic for other modals if needed
+                const otherModals = ['confirmCancelModal', 'cancelBookingModal', 'cancelSuccessModal', 'invalidCodeModal', 'overdueModal', 'refundFailModal', 'paymentFailModal'];
+                otherModals.forEach(id => {
+                    const m = document.getElementById(id);
+                    if (m && e.target === m) m.style.display = 'none';
+                });
             });
-        </script>
 
-        <script>
-
+            // --- User Info & Logout Logic ---
             function toggleLogoutPopup() {
-                var popups = document.querySelectorAll('.logout-popup');
-                popups.forEach(function (p) { p.classList.toggle('show'); });
+                const popup = document.getElementById('logoutPopup');
+                if (popup) popup.classList.toggle('show');
             }
-            document.addEventListener('click', function (e) {
-                const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
-                if (!isIcon) {
-                    document.querySelectorAll('.logout-popup').forEach(function (p) {
-                        if (!p.contains(e.target)) {
-                            p.classList.remove('show');
-                        }
-                    });
-                }
-            });
+
             function openUserInfo() {
-                document.getElementById('userInfoOverlay').classList.add('show');
+                const overlay = document.getElementById('userInfoOverlay');
+                if (overlay) overlay.classList.add('show');
             }
+
             function closeUserInfo() {
-                document.getElementById('userInfoOverlay').classList.remove('show');
+                const overlay = document.getElementById('userInfoOverlay');
+                if (overlay) overlay.classList.remove('show');
             }
+
             function showSaveSuccess() {
-                document.getElementById('saveSuccessOverlay').classList.add('show');
+                const overlay = document.getElementById('saveSuccessOverlay');
+                if (overlay) overlay.classList.add('show');
             }
+
             function closeSaveSuccess() {
                 document.getElementById('saveSuccessOverlay').classList.remove('show');
-                document.getElementById('userInfoOverlay').classList.remove('show');
+                closeUserInfo();
             }
 
             function toggleChangePassword() {
                 const panel = document.getElementById('changePasswordPanel');
                 const footer = document.getElementById('userInfoFooter');
-                panel.classList.toggle('show');
-                if (panel.classList.contains('show')) {
-                    footer.style.display = 'none';
-                } else {
-                    footer.style.display = 'flex';
+                if (panel) panel.classList.toggle('show');
+                if (footer) {
+                    footer.style.display = panel.classList.contains('show') ? 'none' : 'flex';
                 }
             }
 
             function showPwSuccess() {
-                document.getElementById('pwSuccessOverlay').classList.add('show');
+                const overlay = document.getElementById('pwSuccessOverlay');
+                if (overlay) overlay.classList.add('show');
             }
 
             function closePwSuccess() {
                 document.getElementById('pwSuccessOverlay').classList.remove('show');
-                toggleChangePassword(); // Quay lÃ¡ÂºÂ¡i view chÄ‚Â­nh
+                toggleChangePassword();
             }
-
+            }
         </script>
     </div>
     <script>
@@ -2511,5 +2572,4 @@
         });
     </script>
 </body>
-
 </html>

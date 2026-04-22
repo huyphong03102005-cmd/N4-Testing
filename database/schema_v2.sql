@@ -41,7 +41,7 @@ CREATE TABLE khach_hang (
 
 -- 4. DatPhong (Booking)
 CREATE TABLE dat_phong (
-    ma_dat_phong SERIAL PRIMARY KEY,
+    ma_dat_phong VARCHAR(50) PRIMARY KEY,
     ngay_nhan TIMESTAMP NOT NULL,          -- Expected Check-in
     ngay_tra TIMESTAMP NOT NULL,           -- Expected Check-out
     so_nguoi_lon INTEGER DEFAULT 1,
@@ -62,14 +62,14 @@ CREATE TABLE dat_phong (
 CREATE TABLE chi_tiet_dat_phong (
     id_ct_dat_phong SERIAL PRIMARY KEY,
     id_phong INTEGER REFERENCES phong(id_phong),
-    ma_dat_phong INTEGER REFERENCES dat_phong(ma_dat_phong),
+    ma_dat_phong VARCHAR(50) REFERENCES dat_phong(ma_dat_phong),
     so_luong_phong INTEGER DEFAULT 1
 );
 
 -- 6. LuuTru (Stay Records / Actual Check-in/out)
 CREATE TABLE luu_tru (
     id_luutru SERIAL PRIMARY KEY,
-    ma_dat_phong INTEGER REFERENCES dat_phong(ma_dat_phong),
+    ma_dat_phong VARCHAR(50) REFERENCES dat_phong(ma_dat_phong),
     thoi_gian_checkin_thuc_te TIMESTAMP,
     thoi_gian_checkout_thuc_te TIMESTAMP,
     so_nguoi_thuc_te INTEGER

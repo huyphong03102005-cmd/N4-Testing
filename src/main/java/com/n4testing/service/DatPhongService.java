@@ -43,15 +43,24 @@ public class DatPhongService {
                              Integer soNguoiLon, Integer soTreEm,
                              BigDecimal tienCoc, BigDecimal tongThanhToan, String phuongThuc) {
         
-        // 1. Tìm hoặc tạo khách hàng
-        KhachHang khachHang = khachHangRepository.findByCccd(cccd)
-                .orElse(khachHangRepository.findBySdt(sdt).orElse(null));
+        // 1. Tìm hoặc tạo khách hàng (Trim whitespace để tìm chính xác hơn)
+        String trimmedCccd = (cccd != null) ? cccd.trim() : "";
+        String trimmedSdt = (sdt != null) ? sdt.trim() : "";
+        
+        KhachHang khachHang = null;
+        if (!trimmedCccd.isEmpty()) {
+            khachHang = khachHangRepository.findByCccd(trimmedCccd).orElse(null);
+        }
+        
+        if (khachHang == null && !trimmedSdt.isEmpty()) {
+            khachHang = khachHangRepository.findBySdt(trimmedSdt).orElse(null);
+        }
         
         if (khachHang == null) {
             khachHang = new KhachHang();
-            khachHang.setHoTen(hoTen);
-            khachHang.setSdt(sdt);
-            khachHang.setCccd(cccd);
+            khachHang.setHoTen(hoTen != null ? hoTen.trim() : "");
+            khachHang.setSdt(trimmedSdt);
+            khachHang.setCccd(trimmedCccd);
             khachHang = khachHangRepository.save(khachHang);
         }
 
@@ -61,6 +70,8 @@ public class DatPhongService {
 
         // 3. Tạo phiếu đặt phòng
         DatPhong datPhong = new DatPhong();
+        String maDP = "DPW" + System.currentTimeMillis() + (int)(Math.random() * 900 + 100);
+        datPhong.setMaDatPhong(maDP);
         datPhong.setKhachHang(khachHang);
         datPhong.setTenNguoiDat(hoTen);
         datPhong.setSdtNguoiDat(sdt);

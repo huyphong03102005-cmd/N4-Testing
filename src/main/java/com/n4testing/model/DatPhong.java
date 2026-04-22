@@ -17,9 +17,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class DatPhong {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ma_dat_phong")
-    private Integer maDatPhong;
+    private String maDatPhong;
 
     @Column(name = "ngay_nhan", nullable = false)
     private LocalDateTime ngayNhan;
