@@ -25,20 +25,18 @@ public class TraPhongController {
     @GetMapping("/active-stays")
     public ResponseEntity<?> getActiveStays() {
         List<LuuTru> stays = luuTruRepository.findByThoiGianCheckoutThucTeIsNull();
-        List<Map<String, Object>> result = stays.stream().map(s -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("idLuutru", s.getIdLuutru());
-            map.put("datPhong", s.getDatPhong());
-            map.put("thoiGianCheckinThucTe", s.getThoiGianCheckinThucTe());
-            map.put("thoiGianCheckoutThucTe", s.getThoiGianCheckoutThucTe());
-            map.put("soNguoiThucTe", s.getSoNguoiThucTe());
-            map.put("suDungDichVuList", s.getSuDungDichVuList());
-            map.put("thietHaiList", s.getThietHaiList());
-            map.put("calculatedBasePrice", traPhongService.calculateTienPhong(s));
-            map.put("actualRoomName", traPhongService.getRoomNames(s));
-            return map;
-        }).collect(Collectors.toList());
+        List<Map<String, Object>> result = stays.stream().map(s -> traPhongService.getStayDetailDto(s.getIdLuutru()))
+                .collect(Collectors.toList());
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/stay-details/{idLuutru}")
+    public ResponseEntity<?> getStayDetails(@PathVariable Integer idLuutru) {
+        try {
+            return ResponseEntity.ok(traPhongService.getStayDetailDto(idLuutru));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/checkout-info/{idLuutru}")

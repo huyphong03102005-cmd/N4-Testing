@@ -1,5 +1,6 @@
 package com.n4testing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class DatPhong {
     private String soPhong;
 
     @OneToMany(mappedBy = "datPhong", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("datPhong")
     private List<ChiTietDatPhong> chiTietDatPhongs;
 
     public String getDisplaySoPhong() {

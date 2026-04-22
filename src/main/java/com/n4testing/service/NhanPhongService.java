@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.n4testing.dto.RoomInfoDTO;
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class NhanPhongService {
@@ -26,6 +29,66 @@ public class NhanPhongService {
     private final LuuTruRepository luuTruRepository;
     private final PhongRepository phongRepository;
     private final NotificationService notificationService;
+
+    /**
+     * Lấy danh sách các phòng đang 'Bận' kèm thông tin khách hàng và ngày
+     * check-in/out
+     * Optimized to avoid N+1 query problem.
+     */
+    public List<RoomInfoDTO> getOccupiedRoomsDetail() {
+        // 1. Fetch all occupied rooms - Query 1
+        List<Phong> occupiedRooms = phongRepository.findByTrangThai("Bận");
+
+        // 2. Fetch all active stays with their related booking and room details - Query
+        // 2
+        List<LuuTru> activeStays = luuTruRepository.findActiveStaysWithDetails();
+
+        // 3. Create a map of Room ID to Stay for O(1) lookup
+        Map<Integer, LuuTru> roomStayMap = new java.util.HashMap<>();
+        for (LuuTru stay : activeStays) {
+            DatPhong dp = stay.getDatPhong();
+            if (dp != null && dp.getChiTietDatPhongs() != null) {
+                for (ChiTietDatPhong detail : dp.getChiTietDatPhongs()) {
+                    if (detail.getPhong() != null) {
+                        roomStayMap.put(detail.getPhong().getIdPhong(), stay);
+                    }
+                }
+            }
+        }
+
+        // 4. Build DTOs efficiently
+        List<RoomInfoDTO> dtos = new ArrayList<>();
+        for (Phong p : occupiedRooms) {
+            RoomInfoDTO dto = RoomInfoDTO.builder()
+                    .idPhong(p.getIdPhong())
+                    .tenPhong(p.getTenPhong())
+                    .loaiPhong(p.getLoaiPhong())
+                    .trangThai(p.getTrangThai())
+                    .giaPhong(p.getGiaPhong())
+                    .floor(deriveFloor(p.getTenPhong()))
+                    .build();
+
+            LuuTru s = roomStayMap.get(p.getIdPhong());
+            if (s != null) {
+                dto.setIdLuutru(s.getIdLuutru());
+                dto.setTenKhachHang(s.getDatPhong().getTenNguoiDat());
+                dto.setCheckInTime(s.getThoiGianCheckinThucTe());
+                dto.setExpectedCheckOutTime(s.getDatPhong().getNgayTra());
+            }
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    private Integer deriveFloor(String roomName) {
+        if (roomName == null || roomName.isEmpty())
+            return 1;
+        try {
+            return Integer.parseInt(roomName.substring(0, 1));
+        } catch (Exception e) {
+            return 1;
+        }
+    }
 
     /**
      * Lấy danh sách phiếu đặt phòng đang ở trạng thái 'Chờ check-in'
@@ -108,25 +171,25 @@ public class NhanPhongService {
         // 2. Tìm phòng mới
         Phong targetRoom = phongRepository.findByTenPhong(targetRoomName)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng " + targetRoomName));
-        
+
         if (!"Trống".equals(targetRoom.getTrangThai())) {
-             throw new RuntimeException("Phòng " + targetRoomName + " hiện đang bận hoặc bảo trì.");
+            throw new RuntimeException("Phòng " + targetRoomName + " hiện đang bận hoặc bảo trì.");
         }
 
         // 3. Hoán đổi trạng thái và cập nhật
         Phong currentRoom = ct.getPhong();
         String currentStatus = currentRoom.getTrangThai();
-        
+
         targetRoom.setTrangThai(currentStatus);
         currentRoom.setTrangThai("Trống");
-        
+
         phongRepository.save(targetRoom);
         phongRepository.save(currentRoom);
 
         // 4. Cập nhật chi tiết đặt phòng trỏ sang phòng mới
         ct.setPhong(targetRoom);
         chiTietDatPhongRepository.save(ct);
-        
+
         // 5. Đảm bảo dữ liệu được đẩy xuống DB trước khi kết thúc transaction
         phongRepository.flush();
         chiTietDatPhongRepository.flush();

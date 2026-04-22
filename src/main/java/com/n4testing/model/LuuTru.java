@@ -33,11 +33,11 @@ public class LuuTru {
     @Column(name = "so_nguoi_thuc_te")
     private Integer soNguoiThucTe;
 
-    @OneToMany(mappedBy = "luuTru", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "luuTru", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("luuTru")
     private List<SuDungDichVu> suDungDichVuList;
 
-    @OneToMany(mappedBy = "luuTru", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "luuTru", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("luuTru")
     private List<ThietHai> thietHaiList;
 }

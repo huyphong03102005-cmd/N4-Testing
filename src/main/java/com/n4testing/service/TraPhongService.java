@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +29,8 @@ public class TraPhongService {
     private final NotificationService notificationService;
 
     public String getRoomNames(LuuTru luuTru) {
-        if (luuTru == null || luuTru.getDatPhong() == null) return "N/A";
+        if (luuTru == null || luuTru.getDatPhong() == null)
+            return "N/A";
         List<ChiTietDatPhong> details = chiTietDatPhongRepository.findByDatPhong(luuTru.getDatPhong());
         if (details == null || details.isEmpty()) {
             return luuTru.getDatPhong().getSoPhong(); // Fallback to reference
@@ -40,7 +43,8 @@ public class TraPhongService {
 
     public BigDecimal calculateTienPhong(LuuTru luuTru) {
         DatPhong datPhong = luuTru.getDatPhong();
-        if (datPhong == null) return BigDecimal.ZERO;
+        if (datPhong == null)
+            return BigDecimal.ZERO;
 
         // 1. Try to get price from ChiTietDatPhong (Recommended)
         List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
@@ -63,32 +67,35 @@ public class TraPhongService {
             return basePrice;
         }
 
-        // 3. Last Fallback: String matching (for legacy or manual entries)
-        String roomName = datPhong.getSoPhong();
-        if (roomName != null) {
-            String cleanName = roomName.toLowerCase()
-                    .replace("phòng", "")
-                    .replace("room", "")
-                    .replace("p", "")
-                    .trim();
-            
-            java.util.Optional<Phong> phongOpt = phongRepository.findAll().stream()
-                    .filter(p -> {
-                        if (p.getTenPhong() == null) return false;
-                        String pName = p.getTenPhong().toLowerCase()
-                                .replace("phòng", "")
-                                .replace("room", "")
-                                .replace("p", "")
-                                .trim();
-                        return pName.equals(cleanName);
-                    })
-                    .findFirst();
-            if (phongOpt.isPresent()) {
+        // 3. Last Fallback: Use soPhong directly if possible
+        if (datPhong.getSoPhong() != null) {
+            Optional<Phong> phongOpt = phongRepository.findByTenPhong(datPhong.getSoPhong());
+            if (phongOpt.isPresent())
                 return phongOpt.get().getGiaPhong();
-            }
         }
-        
+
         return BigDecimal.ZERO;
+    }
+
+    /**
+     * Lấy chi tiết một bản ghi lưu trú cho frontend rendering
+     */
+    public Map<String, Object> getStayDetailDto(Integer idLuutru) {
+        LuuTru s = luuTruRepository.findById(idLuutru)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin lưu trú"));
+
+        Map<String, Object> map = new java.util.HashMap<>();
+        map.put("idLuutru", s.getIdLuutru());
+        map.put("datPhong", s.getDatPhong());
+        map.put("thoiGianCheckinThucTe", s.getThoiGianCheckinThucTe());
+        map.put("thoiGianCheckoutThucTe", s.getThoiGianCheckoutThucTe());
+        map.put("soNguoiThucTe", s.getSoNguoiThucTe());
+        map.put("suDungDichVuList", s.getSuDungDichVuList());
+        map.put("thietHaiList", s.getThietHaiList());
+        map.put("calculatedBasePrice", calculateTienPhong(s));
+        map.put("actualRoomName", getRoomNames(s));
+
+        return map;
     }
 
     /**

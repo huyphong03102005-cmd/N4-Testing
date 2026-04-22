@@ -420,15 +420,34 @@
         </div>
 
         <script src="shared.js"></script>
-        <script>
+        <script th:inline="javascript">
             const formatMoney = (amount) => amount.toLocaleString('vi-VN');
+
+            // Lấy dữ liệu từ Thymeleaf
+            let floorsMapped = [[${ floors }]];
             let roomsData = [];
+
+            // Flatten floorsMapped into roomsData for easy search
+            Object.values(floorsMapped).forEach(floorRooms => {
+                floorRooms.forEach(room => {
+                    roomsData.push({
+                        id: room.idPhong,
+                        name: room.tenPhong,
+                        floor: room.floor,
+                        status: room.trangThai,
+                        customer: room.tenKhachHang,
+                        idLuutru: room.idLuutru,
+                        date: room.checkInTime ? new Date(room.checkInTime).toLocaleString('vi-VN') : '',
+                        date2: room.expectedCheckOutTime ? new Date(room.expectedCheckOutTime).toLocaleString('vi-VN') : '',
+                        basePrice: room.giaPhong || 0,
+                        items: [] // Will fetch from API when selected
+                    });
+                });
+            });
+
             let selectedCheckoutRoomId = null;
 
             document.addEventListener('DOMContentLoaded', () => {
-                if (window.sharedData) {
-                    roomsData = window.sharedData.getSharedRooms();
-                }
                 renderCheckoutMap();
             });
 
@@ -450,17 +469,20 @@
             function renderCheckoutMap() {
                 const container = document.getElementById('coMapContainer');
                 let html = '';
-                const floors = [1, 2, 3, 4, 5];
+
+                // Group roomsData by floor if not already
+                const floors = [...new Set(roomsData.map(r => r.floor))].sort();
+
                 floors.forEach(floor => {
-                    const floorRooms = roomsData.filter(r => r.floor === floor && r.status === 'Đang sử dụng');
+                    const floorRooms = roomsData.filter(r => r.floor === floor);
                     if (floorRooms.length > 0) {
                         html += `<div class="floor-group"><div class="floor-title">Tầng ${floor}</div><div class="floor-grid">`;
                         floorRooms.forEach(room => {
                             html += `
-                                <div class="map-room-card bg-sudung" onclick="selectCheckoutRoom('${room.id}')">
+                                <div class="map-room-card bg-sudung" onclick="selectCheckoutRoom(${room.id})">
                                     <div class="map-room-name">${room.name}</div>
                                     <div class="map-room-status">${room.status}</div>
-                                    <div class="map-room-customer">${room.customer}</div>
+                                    <div class="map-room-customer">${room.customer || 'N/A'}</div>
                                     <div class="map-room-date">→ ${room.date ? room.date.split(',')[0] : ''}</div>
                                 </div>`;
                         });
@@ -471,13 +493,51 @@
                 document.getElementById('coSearchInput').value = '';
             }
 
-            function selectCheckoutRoom(id) {
+            async function selectCheckoutRoom(id) {
                 selectedCheckoutRoomId = id;
                 if (!id) {
                     document.getElementById('coMapSection').style.display = 'flex';
                     document.getElementById('coDetailSection').style.display = 'none';
                     renderCheckoutMap();
                 } else {
+                    const room = roomsData.find(r => r.id == id);
+                    if (room && room.idLuutru) {
+                        try {
+                            // Fetch detailed stay info
+                            const resp = await fetch('/api/tra-phong/active-stays');
+                            const stays = await resp.json();
+                            const stay = stays.find(s => s.idLuutru === room.idLuutru);
+
+                            if (stay) {
+                                // Map items from API
+                                room.items = [];
+                                stay.suDungDichVuList.forEach(sd => {
+                                    room.items.push({
+                                        name: sd.dichVu.tenDichVu,
+                                        price: sd.dichVu.donGia,
+                                        qty: sd.soluong,
+                                        type: 'service',
+                                        id: sd.idSudungDv
+                                    });
+                                });
+                                stay.thietHaiList.forEach(th => {
+                                    room.items.push({
+                                        name: th.taiSan.tenTaiSan,
+                                        price: th.soTienBoiThuong,
+                                        qty: 1,
+                                        type: 'compensation',
+                                        id: th.idThieThai
+                                    });
+                                });
+                                room.basePrice = stay.calculatedBasePrice;
+                                room.customer = stay.datPhong.tenNguoiDat;
+                                room.date = new Date(stay.thoiGianCheckinThucTe).toLocaleString('vi-VN');
+                            }
+                        } catch (err) {
+                            console.error("Lỗi khi tải thông tin chi tiết:", err);
+                        }
+                    }
+
                     document.getElementById('coMapSection').style.display = 'none';
                     document.getElementById('coDetailSection').style.display = 'flex';
                     renderCheckoutParams();
@@ -503,7 +563,7 @@
                             <span style="flex:1;">${item.type === 'service' ? svIdx : cpIdx}. ${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</span>
                             <div style="background:#f0f0f0; padding:2px 10px; border-radius:12px; font-size:13px; color:#555; margin-right:20px; user-select:none;">
                                 <span style="cursor:pointer; padding: 0 5px; font-weight:bold;" onclick="changeCheckoutItemQty('${item.name}', '${item.type}', -1)">-</span>
-                                0${item.qty}
+                                ${item.qty < 10 ? '0' + item.qty : item.qty}
                                 <span style="cursor:pointer; padding: 0 5px; font-weight:bold;" onclick="changeCheckoutItemQty('${item.name}', '${item.type}', 1)">+</span>
                             </div>
                             <div style="width:100px; text-align:right;">${formatMoney(total)}</div>
@@ -596,7 +656,7 @@
                     svTotal += total;
                     tbody += `<tr>
                         <td style="padding:10px 0; border-bottom: 1px solid #eee; word-wrap: break-word; font-weight: 500; color: #111;">${item.type === 'compensation' ? 'Tài sản bồi thường: ' : ''}${item.name}</td>
-                        <td style="text-align:center; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">0${item.qty}</td>
+                        <td style="text-align:center; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">${item.qty < 10 ? '0' + item.qty : item.qty}</td>
                         <td style="text-align:right; padding:10px 0; border-bottom: 1px solid #eee; font-weight: 600; color: #111;">${formatMoney(total)}</td>
                     </tr>`;
                 });
@@ -610,27 +670,37 @@
 
             function closeInvoice() { document.getElementById('invoicePopup').style.display = 'none'; }
 
-            function printInvoice() {
-                document.getElementById('invoicePopup').style.display = 'none';
-                document.getElementById('printSuccessPopup').style.display = 'flex';
+            async function printInvoice() {
+                const room = roomsData.find(r => r.id == selectedCheckoutRoomId);
+                const cbCash = document.getElementById('cbCash').checked;
+                const paymentMethod = cbCash ? 'Tiền mặt' : 'Chuyển khoản';
+
+                try {
+                    const resp = await fetch('/api/tra-phong/finalize', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            idLuutru: room.idLuutru,
+                            paymentMethod: paymentMethod
+                        })
+                    });
+
+                    if (resp.ok) {
+                        document.getElementById('invoicePopup').style.display = 'none';
+                        document.getElementById('printSuccessPopup').style.display = 'flex';
+                    } else {
+                        const err = await resp.text();
+                        alert("Lỗi khi thanh toán: " + err);
+                    }
+                } catch (err) {
+                    console.error("Lỗi:", err);
+                    alert("Có lỗi xảy ra khi kết nối máy chủ.");
+                }
             }
 
             function closePrintSuccess() {
                 document.getElementById('printSuccessPopup').style.display = 'none';
-                resetCheckoutRoom();
-            }
-
-            function resetCheckoutRoom() {
-                const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
-                if (room) {
-                    room.status = 'Trống';
-                    room.customer = '';
-                    room.date = '';
-                    room.date2 = '';
-                    room.items = [];
-                    if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
-                }
-                selectCheckoutRoom(null);
+                window.location.reload(); // Reload to refresh room statuses from DB
             }
 
             function changeCheckoutItemQty(name, type, delta) {

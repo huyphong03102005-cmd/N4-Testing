@@ -122,6 +122,16 @@ public class WebController {
     // 6. /service → Service
     @GetMapping("/service")
     public String services(Model model) {
+        var occupiedRooms = nhanPhongService.getOccupiedRoomsDetail();
+        
+        Map<String, List<com.n4testing.dto.RoomInfoDTO>> floors = occupiedRooms.stream()
+                .sorted(Comparator.comparing(com.n4testing.dto.RoomInfoDTO::getTenPhong))
+                .collect(Collectors.groupingBy(
+                        p -> "Tầng " + p.getTenPhong().substring(0, 1),
+                        TreeMap::new,
+                        Collectors.toList()));
+
+        model.addAttribute("floors", floors);
         model.addAttribute("currentPage", "dichvu");
         return "Service";
     }
@@ -129,15 +139,14 @@ public class WebController {
     // 7. /tra-phong → tra_phong (Có sắp xếp sơ đồ phòng)
     @GetMapping("/tra-phong")
     public String checkOut(Model model) {
-        List<Phong> rooms = nhanPhongService.getAllPhongs();
-        Map<String, List<Phong>> floors = rooms.stream()
-                .filter(p -> p.getTenPhong() != null && !p.getTenPhong().isEmpty())
-                .sorted((p1, p2) -> p1.getTenPhong().compareTo(p2.getTenPhong()))
+        var occupiedRooms = nhanPhongService.getOccupiedRoomsDetail();
+        
+        Map<String, List<com.n4testing.dto.RoomInfoDTO>> floors = occupiedRooms.stream()
+                .sorted(Comparator.comparing(com.n4testing.dto.RoomInfoDTO::getTenPhong))
                 .collect(Collectors.groupingBy(
                         p -> "Tầng " + p.getTenPhong().substring(0, 1),
                         TreeMap::new,
-                        Collectors.toList()
-                ));
+                        Collectors.toList()));
 
         model.addAttribute("floors", floors);
         model.addAttribute("currentPage", "traphong");

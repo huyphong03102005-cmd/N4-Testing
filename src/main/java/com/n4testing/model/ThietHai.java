@@ -1,5 +1,6 @@
 package com.n4testing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,5 +34,6 @@ public class ThietHai {
 
     @ManyToOne
     @JoinColumn(name = "id_luutru")
+    @JsonIgnoreProperties("thietHaiList")
     private LuuTru luuTru;
 }

@@ -706,49 +706,68 @@
         </div>
 
         <script src="shared.js"></script>
-        <script>
+        <script th:inline="javascript">
             const formatMoney = (amount) => amount.toLocaleString('vi-VN');
 
-            const catalog = {
-                service: [
-                    { id: 's1', name: 'Dịch vụ ăn uống', price: 150000, icon: 'fa-utensils', type: 'service' },
-                    { id: 's2', name: 'Giặt ủi', price: 100000, icon: 'fa-shirt', type: 'service' },
-                    { id: 's3', name: 'Dịch vụ dọn phòng', price: 100000, icon: 'fa-broom', type: 'service' },
-                    { id: 's4', name: 'Dịch vụ hỗ trợ khách', price: 50000, icon: 'fa-bell-concierge', type: 'service' },
-                    { id: 's5', name: 'Dịch vụ đặc biệt theo yêu cầu', price: 100000, icon: 'fa-gift', type: 'service' }
-                ],
-                compensation: [
-                    { id: 'c1', name: 'Bàn', price: 300000, icon: 'fa-table', type: 'compensation' },
-                    { id: 'c2', name: 'Ghế', price: 150000, icon: 'fa-chair', type: 'compensation' },
-                    { id: 'c3', name: 'Tủ quần áo', price: 500000, icon: 'fa-door-closed', type: 'compensation' },
-                    { id: 'c4', name: 'Tủ đầu giường', price: 200000, icon: 'fa-box-archive', type: 'compensation' },
-                    { id: 'c5', name: 'Kệ', price: 100000, icon: 'fa-bars-staggered', type: 'compensation' },
-                    { id: 'c6', name: 'Máy sấy', price: 150000, icon: 'fa-wind', type: 'compensation' },
-                    { id: 'c7', name: 'Khăn tắm', price: 50000, icon: 'fa-scroll', type: 'compensation' },
-                    { id: 'c8', name: 'Khác', price: 100000, icon: 'fa-plus', type: 'compensation' }
-                ]
+            let catalog = {
+                service: [],
+                compensation: []
             };
 
-            let roomsData = window.sharedData ? window.sharedData.getSharedRooms() : [
-                { id: 'r101', name: '101', floor: 1, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r102', name: '102', floor: 1, status: 'Đang sử dụng', customer: 'Tôn Thất Huy Phong', date: '20 Th8 2025, 14:00', date2: '26 Th8 2025, 12:00', basePrice: 1600000, items: [] },
-                { id: 'r103', name: '103', floor: 1, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
-                { id: 'r201', name: '201', floor: 2, status: 'Đã đặt', customer: 'Nguyễn Thị Ny', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r202', name: '202', floor: 2, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r203', name: '203', floor: 2, status: 'Bảo trì', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
-                { id: 'r301', name: '301', floor: 3, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r302', name: '302', floor: 3, status: 'Đang sử dụng', customer: 'Trần Thanh Nhã', date: '23 Th5 2024, 14:00', date2: '25 Th5 2024, 12:00', basePrice: 1600000, items: [] },
-                { id: 'r303', name: '303', floor: 3, status: 'Đã đặt', customer: 'Vy Minh Quân', date: '', date2: '', basePrice: 1200000, items: [] },
-                { id: 'r401', name: '401', floor: 4, status: 'Đang sử dụng', customer: 'Thái Ngọc Kim Dung', date: '16 Th3 2026, 14:00', date2: '18 Th3 2026, 12:00', basePrice: 1600000, items: [] },
-                { id: 'r402', name: '402', floor: 4, status: 'Đã đặt', customer: 'Lê Nguyễn Nhật Anh', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r403', name: '403', floor: 4, status: 'Bảo trì', customer: '', date: '', date2: '', basePrice: 1200000, items: [] },
-                { id: 'r501', name: '501', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r502', name: '502', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1600000, items: [] },
-                { id: 'r503', name: '503', floor: 5, status: 'Trống', customer: '', date: '', date2: '', basePrice: 1200000, items: [] }
-            ];
+            // Lấy dữ liệu từ Thymeleaf
+            let floorsMapped = [[${ floors }]];
+            let roomsData = [];
+
+            // Flatten floorsMapped into roomsData for easy search
+            Object.values(floorsMapped).forEach(floorRooms => {
+                floorRooms.forEach(room => {
+                    roomsData.push({
+                        id: room.idPhong,
+                        name: room.tenPhong,
+                        floor: room.floor,
+                        status: room.trangThai,
+                        customer: room.tenKhachHang,
+                        idLuutru: room.idLuutru,
+                        date: room.checkInTime ? new Date(room.checkInTime).toLocaleString('vi-VN') : '',
+                        date2: room.expectedCheckOutTime ? new Date(room.expectedCheckOutTime).toLocaleString('vi-VN') : '',
+                        basePrice: room.giaPhong || 0,
+                        items: [] // Will fetch from API when selected
+                    });
+                });
+            });
 
             let currentTab = 'service';
             let selectedRoomId = null;
+
+            async function initCatalog() {
+                try {
+                    const [svResp, tsResp] = await Promise.all([
+                        fetch('/api/dich-vu'),
+                        fetch('/api/tai-san')
+                    ]);
+                    const services = await svResp.json();
+                    const assets = await tsResp.json();
+
+                    catalog.service = services.map(s => ({
+                        id: s.idDichvu,
+                        name: s.tenDichVu,
+                        price: s.donGia, // Changed from giaDichVu
+                        icon: 'fa-utensils',
+                        type: 'service'
+                    }));
+                    catalog.compensation = assets.map(a => ({
+                        id: a.idTaisan,
+                        name: a.tenTaiSan, // Changed from tenTaisan
+                        price: a.giaTriBoiThuong || 0,
+                        icon: 'fa-chair',
+                        type: 'compensation'
+                    }));
+
+                    renderItemsList();
+                } catch (err) {
+                    console.error("Lỗi khi tải danh mục:", err);
+                }
+            }
 
             function switchTab(tab) {
                 currentTab = tab;
@@ -845,7 +864,7 @@
                         floorRooms.forEach(room => {
                             let bgClass = '';
                             if (room.status === 'Trống') bgClass = 'bg-trong';
-                            if (room.status === 'Đang sử dụng') bgClass = 'bg-sudung';
+                            if (room.status === 'Đang sử dụng' || room.status === 'Bận') bgClass = 'bg-sudung'; // Added 'Bận'
                             if (room.status === 'Đã đặt') bgClass = 'bg-dadat';
                             if (room.status === 'Bảo trì') bgClass = 'bg-baotri';
 
@@ -888,7 +907,7 @@
 
                 let bgClass = '';
                 if (room.status === 'Trống') bgClass = 'bg-trong';
-                if (room.status === 'Đang sử dụng') bgClass = 'bg-sudung';
+                if (room.status === 'Đang sử dụng' || room.status === 'Bận') bgClass = 'bg-sudung';
                 if (room.status === 'Đã đặt') bgClass = 'bg-dadat';
                 if (room.status === 'Bảo trì') bgClass = 'bg-baotri';
 
@@ -916,7 +935,7 @@
                         </div>
                         <div class="room-total">
                             <span>Tiền phòng:</span>
-                            <span style="border-bottom: 2px solid #ccc; padding-bottom: 3px; font-weight: 600; font-size: 16px;">${formatMoney(room.basePrice)}</span>
+                            <span style="border-bottom: 2px solid #ccc; padding-bottom: 3px; font-weight: 600; font-size: 16px;">${formatMoney(room.basePrice || 0)}</span>
                         </div>
                     </div>
                 `;
@@ -939,7 +958,7 @@
                                 </div>
                                 <div class="qty-control">
                                     <span class="qty-btn" onclick="changeQty('${room.id}', ${index}, -1)">-</span>
-                                    <span class="qty-value">${item.qty}</span>
+                                    <span class="qty-value">${item.qty < 10 ? '0' + item.qty : item.qty}</span>
                                     <span class="qty-btn" onclick="changeQty('${room.id}', ${index}, 1)">+</span>
                                 </div>
                                 <div class="selected-item-price">${formatMoney(totalItemPrice)}</div>
@@ -991,12 +1010,46 @@
                 container.innerHTML = html;
             }
 
-            function selectRoom(id) {
+            async function selectRoom(id) {
                 if (id) {
-                    const room = roomsData.find(r => r.id === id);
+                    const room = roomsData.find(r => r.id == id);
                     if (room.status === 'Trống') {
                         alert('Phòng đang trống! Không thể thêm dịch vụ hoặc bồi thường cho phòng trống.');
                         return;
+                    }
+
+                    if (room.idLuutru) {
+                        try {
+                            const resp = await fetch('/api/tra-phong/active-stays');
+                            const stays = await resp.json();
+                            const stay = stays.find(s => s.idLuutru === room.idLuutru);
+
+                            if (stay) {
+                                room.items = [];
+                                stay.suDungDichVuList.forEach(sd => {
+                                    room.items.push({
+                                        id: sd.dichVu.idDichvu,
+                                        idSudung: sd.idSudungDv,
+                                        name: sd.dichVu.tenDichVu,
+                                        price: sd.dichVu.donGia,
+                                        qty: sd.soluong,
+                                        type: 'service'
+                                    });
+                                });
+                                stay.thietHaiList.forEach(th => {
+                                    room.items.push({
+                                        id: th.taiSan.idTaisan,
+                                        idThiethai: th.idThieThai,
+                                        name: th.taiSan.tenTaiSan,
+                                        price: th.soTienBoiThuong,
+                                        qty: 1,
+                                        type: 'compensation'
+                                    });
+                                });
+                            }
+                        } catch (err) {
+                            console.error("Lỗi khi tải chi tiết phòng:", err);
+                        }
                     }
                 }
 
@@ -1057,12 +1110,44 @@
                 selectRoom(null);
             }
 
-            function saveAll() {
-                if (selectedRoomId) {
-                    if (window.sharedData) {
-                        window.sharedData.saveSharedRooms(roomsData);
+            async function saveAll() {
+                if (!selectedRoomId) return;
+                const room = roomsData.find(r => r.id == selectedRoomId);
+                if (!room || !room.idLuutru) return;
+
+                try {
+                    // Filter items that are new (don't have idSudung or idThiethai)
+                    // Or we could just save everything that's currently in the list?
+                    // For simplicity, let's just alert the user and tell them to add items one by one or implement a batch save.
+                    // Actually, let's implement the specific POSTs for newly added items.
+
+                    const newServices = room.items.filter(i => i.type === 'service' && !i.idSudung);
+                    const newDamages = room.items.filter(i => i.type === 'compensation' && !i.idThiethai);
+
+                    const promises = [];
+                    newServices.forEach(s => {
+                        promises.push(fetch('/api/su-dung-dich-vu', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ idLuutru: room.idLuutru, idDichvu: s.id, quantity: s.qty })
+                        }));
+                    });
+                    newDamages.forEach(d => {
+                        promises.push(fetch('/api/thiet-hai', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ idLuutru: room.idLuutru, idTaisan: d.id, mucDo: 'Vừa', fineAmount: d.price })
+                        }));
+                    });
+
+                    if (promises.length > 0) {
+                        await Promise.all(promises);
                     }
+
                     document.getElementById('successPopup').style.display = 'flex';
+                } catch (err) {
+                    console.error("Lỗi khi lưu:", err);
+                    alert("Có lỗi xảy ra khi lưu dữ liệu.");
                 }
             }
 
@@ -1070,10 +1155,10 @@
                 document.getElementById('successPopup').style.display = 'none';
             }
 
-            renderMap();
-
-            // Handle query parameters for automatic room/tab selection
             document.addEventListener('DOMContentLoaded', () => {
+                initCatalog();
+                renderMap();
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const pRoomId = urlParams.get('roomId');
                 const pTab = urlParams.get('tab');
@@ -1082,7 +1167,7 @@
                     switchTab(pTab);
                 }
                 if (pRoomId) {
-                    selectRoom(pRoomId);
+                    selectRoom(parseInt(pRoomId));
                 }
             });
         </script>
