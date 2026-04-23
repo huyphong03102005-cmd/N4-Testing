@@ -25,6 +25,21 @@ public class TaiKhoan {
     @Column(name = "ho_ten")
     private String hoTen;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "ngay_sinh")
+    private String ngaySinh;
+
+    @Column(name = "gioi_tinh")
+    private String gioiTinh;
+
+    @Column(name = "so_dien_thoai")
+    private String soDienThoai;
+
+    @Column(name = "chuc_vu")
+    private String chucVu;
+
     @Column(name = "id_vaitro")
     private Integer idVaitro;
 }

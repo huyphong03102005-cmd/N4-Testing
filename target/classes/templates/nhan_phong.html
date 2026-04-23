@@ -15,7 +15,8 @@
                 overflow: hidden !important;
                 display: flex;
                 flex-direction: column;
-                height: 100vh; /* Dự phòng cho mobile hoặc trình duyệt lạ */
+                height: 100vh;
+                /* Dự phòng cho mobile hoặc trình duyệt lạ */
                 flex: 1;
                 min-height: 0;
             }
@@ -57,7 +58,8 @@
             .nhanphong-wrapper {
                 flex: 1;
                 background-color: #faebd7;
-                padding: 0 40px 20px; /* Bỏ padding top 15px để sát thanh search hơn */
+                padding: 0 40px 20px;
+                /* Bỏ padding top 15px để sát thanh search hơn */
                 display: flex;
                 align-items: stretch;
                 gap: 20px;
@@ -101,7 +103,8 @@
                 display: flex;
                 flex-direction: column;
                 min-height: 0;
-                height: calc(100vh - 280px); /* Giảm chiều cao để không bị che bởi thanh taskbar */
+                height: calc(100vh - 280px);
+                /* Giảm chiều cao để không bị che bởi thanh taskbar */
             }
 
             .booking-list {
@@ -110,8 +113,10 @@
                 display: flex;
                 flex-direction: column;
                 gap: 25px;
-                padding-right: 8px; /* Khoảng thở cho scrollbar */
-                padding-bottom: 20px; /* Thêm padding dưới để item cuối không sát mép */
+                padding-right: 8px;
+                /* Khoảng thở cho scrollbar */
+                padding-bottom: 20px;
+                /* Thêm padding dưới để item cuối không sát mép */
                 min-height: 0;
             }
 
@@ -132,6 +137,33 @@
                 gap: 15px;
                 min-height: 0;
                 height: calc(100vh - 280px);
+            }
+
+            .room-map-card {
+                flex: 0 0 320px;
+                /* Chiều cao cố định cho sơ đồ phòng */
+                display: flex;
+                flex-direction: column;
+            }
+
+            .room-map-scroll {
+                flex: 1;
+                overflow-y: auto;
+                padding-right: 5px;
+            }
+
+            .room-map-scroll::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .room-map-scroll::-webkit-scrollbar-thumb {
+                background-color: rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+            }
+
+            .legend-card {
+                flex: 1;
+                /* Chiều cao linh hoạt chiếm phần còn lại */
             }
 
             /* Khối bao bọc một item thông tin + popup */
@@ -217,12 +249,9 @@
                 color: #333;
             }
 
-            /* Cột phải: Sơ đồ phòng & Chú thích */
-            .right-col {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
+            /* Sơ đồ phòng & Chú thích */
+            .floor-group {
+                margin-bottom: 10px;
             }
 
             .floor-group {
@@ -505,7 +534,8 @@
                                 <div class="booking-info-grid">
                                     <div class="info-field">
                                         <span class="label">Mã đặt phòng:</span>
-                                        <span class="value" th:text="${booking.maDatPhong}" style="color: #d64545;">DPW...</span>
+                                        <span class="value" th:text="${booking.maDatPhong}"
+                                            style="color: #d64545;">DPW...</span>
                                     </div>
                                     <div class="info-field">
                                         <span class="label">Tên người đặt:</span>
@@ -540,7 +570,9 @@
                                         style="display:inline;">
                                         <button type="submit" class="btn btn-checkin">Nhận phòng</button>
                                     </form>
-                                    <button class="btn btn-cancel" onclick="togglePopup(this)">Đổi phòng</button>
+                                    <button class="btn btn-cancel"
+                                        th:attr="data-room-id=${booking.chiTietDatPhongs != null and !booking.chiTietDatPhongs.isEmpty() ? booking.chiTietDatPhongs[0].phong.idPhong : ''}"
+                                        onclick="togglePopup(this)">Đổi phòng</button>
                                 </div>
                             </div>
 
@@ -554,7 +586,7 @@
                                 <div class="popup-row">
                                     <div class="popup-label">Phòng đổi:</div>
                                     <select class="popup-select">
-                                        <option value="" selected disabled hidden>Phòng ▼</option>
+                                        <option value="" selected disabled hidden>Đang tải...</option>
                                     </select>
                                 </div>
                                 <div class="popup-row">
@@ -562,7 +594,7 @@
                                     <textarea class="popup-textarea" placeholder="Nhập lý do đổi phòng"></textarea>
                                 </div>
                                 <div class="popup-actions">
-                                    <button class="btn btn-confirm">Xác nhận</button>
+                                    <button class="btn btn-confirm" onclick="confirmChangeRoom(this)">Xác nhận</button>
                                     <button class="btn btn-cancel-popup"
                                         onclick="togglePopup(this.closest('.change-room-popup').parentNode.querySelector('.btn-cancel'))">Hủy</button>
                                 </div>
@@ -570,7 +602,8 @@
                         </div>
 
                         <!-- Thông báo nếu không có dữ liệu -->
-                        <div th:if="${#lists.isEmpty(bookings)}" style="text-align: center; padding: 40px; color: #777;">
+                        <div th:if="${#lists.isEmpty(bookings)}"
+                            style="text-align: center; padding: 40px; color: #777;">
                             Không tìm thấy phiếu đặt phòng nào phù hợp.
                         </div>
                     </div>
@@ -578,20 +611,22 @@
 
                 <!-- Cột phải: Sơ đồ phòng -->
                 <div class="right-col">
-                    <div class="card">
+                    <div class="card room-map-card">
                         <h2 class="card-title">Sơ đồ phòng</h2>
-                        <div th:each="floor : ${floors}" class="floor-group">
-                            <div class="floor-name" th:text="${floor.key}">Tầng 1</div>
-                            <div class="room-grid">
-                                <div th:each="room : ${floor.value}" class="room-pill"
-                                    th:classappend="${room.trangThai == 'Bận' ? 'status-rented' : 'status-empty'}"
-                                    th:text="${room.tenPhong}">101</div>
+                        <div class="room-map-scroll">
+                            <div th:each="floor : ${floors}" class="floor-group">
+                                <div class="floor-name" th:text="${floor.key}">Tầng 1</div>
+                                <div class="room-grid">
+                                    <div th:each="room : ${floor.value}" class="room-pill"
+                                        th:classappend="${room.trangThai == 'Bận' ? 'status-rented' : 'status-empty'}"
+                                        th:text="${room.tenPhong}">101</div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Chú thích -->
-                    <div class="card">
+                    <div class="card legend-card">
                         <h2 class="card-title">Chú thích</h2>
                         <div class="legend-item">
                             <div class="legend-box legend-empty"></div>
@@ -619,13 +654,85 @@
 
         <!-- Script -->
         <script th:inline="javascript">
-            function togglePopup(btnElement) {
+            async function togglePopup(btnElement) {
                 const wrapper = btnElement.closest('.booking-wrapper');
                 const popup = wrapper.querySelector('.change-room-popup');
+                const select = popup.querySelector('.popup-select');
+                const currentRoomId = btnElement.getAttribute('data-room-id');
+
+                // Close other popups
                 document.querySelectorAll('.change-room-popup').forEach(p => {
                     if (p !== popup) p.classList.remove('show');
                 });
-                popup.classList.toggle('show');
+
+                const isShowing = popup.classList.toggle('show');
+
+                if (isShowing && currentRoomId) {
+                    // Fetch available rooms
+                    try {
+                        select.innerHTML = '<option value="" selected disabled hidden>Đang tải...</option>';
+                        const resp = await fetch('/api/rooms/available');
+                        if (!resp.ok) throw new Error("Lỗi khi tải danh sách phòng");
+                        const rooms = await resp.json();
+
+                        select.innerHTML = '<option value="" selected disabled hidden>Chọn phòng</option>';
+                        rooms.forEach(room => {
+                            const opt = document.createElement('option');
+                            opt.value = room.tenPhong;
+                            opt.textContent = room.tenPhong;
+                            select.appendChild(opt);
+                        });
+
+                        if (rooms.length === 0) {
+                            select.innerHTML = '<option value="" selected disabled hidden>Hết phòng trống</option>';
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        select.innerHTML = '<option value="" selected disabled hidden>Lỗi tải dữ liệu</option>';
+                    }
+                }
+            }
+
+            async function confirmChangeRoom(confirmBtn) {
+                const wrapper = confirmBtn.closest('.booking-wrapper');
+                const toggleBtn = wrapper.querySelector('.btn-cancel');
+                const currentRoomId = toggleBtn.getAttribute('data-room-id');
+                const select = wrapper.querySelector('.popup-select');
+                const targetRoomName = select.value;
+                const reason = wrapper.querySelector('.popup-textarea').value;
+
+                if (!targetRoomName) {
+                    alert("Vui lòng chọn phòng muốn đổi!");
+                    return;
+                }
+
+                if (!currentRoomId) {
+                    alert("Không tìm thấy ID phòng hiện tại.");
+                    return;
+                }
+
+                try {
+                    const resp = await fetch('/api/rooms/change', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            currentRoomId: parseInt(currentRoomId),
+                            targetRoomName: targetRoomName,
+                            reason: reason
+                        })
+                    });
+
+                    if (resp.ok) {
+                        // Success - reload page or show success message
+                        window.location.reload();
+                    } else {
+                        const errorMsg = await resp.text();
+                        alert("Lỗi khi đổi phòng: " + errorMsg);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Có lỗi xảy ra khi kết nối máy chủ.");
+                }
             }
 
             function closeSuccessPopup() {

@@ -78,5 +78,8 @@ public class DatPhong {
     @JoinColumn(name = "id_kh")
     private KhachHang khachHang;
 
+    @Column(name = "ghi_chu")
+    private String ghiChu;
+
     // id_letan reference can be added if LeTan entity is created
 }

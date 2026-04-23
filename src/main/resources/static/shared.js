@@ -44,6 +44,11 @@ function setupGlobalNav() {
 
     const attachLinks = (navs) => {
         navs.forEach((nav, idx) => {
+            // Set active class based on current path
+            if (nav.getAttribute('href') === window.location.pathname) {
+                nav.classList.add('active');
+            }
+
             if (mapping[idx]) {
                 // Keep onclick for Service if it's already there, else overwrite href
                 if (nav.tagName.toLowerCase() === 'a' && !nav.hasAttribute('onclick')) {
@@ -126,6 +131,168 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// 5. User Profile & Logout Management
+function toggleLogoutPopup() {
+    const popup = document.getElementById('logoutPopup');
+    if (popup) popup.classList.toggle('show');
+}
+
+// Global click listener for logout popup
+document.addEventListener('click', function (e) {
+    const popup = document.getElementById('logoutPopup');
+    const icon = document.querySelector('.fa-arrow-right-from-bracket');
+    if (popup && !popup.contains(e.target) && e.target !== icon) {
+        popup.classList.remove('show');
+    }
+});
+
+function openUserInfo() {
+    fetch('/api/users/me')
+        .then(response => {
+            if (!response.ok) throw new Error('Not logged in');
+            return response.json();
+        })
+        .then(user => {
+            console.log("Dữ liệu User hiện tại:", user);
+            const displayName = document.getElementById('profileDisplayName');
+            const displayEmail = document.getElementById('profileDisplayEmail');
+            const editFullName = document.getElementById('editFullName');
+            const editBirthday = document.getElementById('editBirthday');
+            const editGender = document.getElementById('editGender');
+            const editPhone = document.getElementById('editPhone');
+            const editPosition = document.getElementById('editPosition');
+            const profileUsername = document.getElementById('profileUsername');
+
+            if (displayName) displayName.innerText = user.hoTen || 'Chưa cập nhật';
+            if (displayEmail) displayEmail.innerText = user.email || 'Chưa cập nhật';
+            
+            if (editFullName) editFullName.value = user.hoTen || '';
+            if (editBirthday) editBirthday.value = user.ngaySinh || '';
+            if (editGender) editGender.value = user.gioiTinh || '';
+            if (editPhone) editPhone.value = user.soDienThoai || '';
+            if (editPosition) editPosition.value = user.chucVu || '';
+            
+            if (profileUsername) profileUsername.innerText = user.tenDangNhap || 'N/A';
+            
+            const overlay = document.getElementById('userInfoOverlay');
+            if (overlay) overlay.classList.add('show');
+        })
+        .catch(err => {
+            console.error("Lỗi fetch user:", err);
+            alert("Vui lòng đăng nhập lại để cập nhật thông tin!");
+            window.location.href = '/login';
+        });
+}
+
+function closeUserInfo() {
+    const overlay = document.getElementById('userInfoOverlay');
+    if (overlay) overlay.classList.remove('show');
+}
+
+function showSaveSuccess() {
+    const editFullName = document.getElementById('editFullName');
+    const profileDisplayEmail = document.getElementById('profileDisplayEmail');
+    const editBirthday = document.getElementById('editBirthday');
+    const editGender = document.getElementById('editGender');
+    const editPhone = document.getElementById('editPhone');
+    const editPosition = document.getElementById('editPosition');
+
+    const profileData = {
+        hoTen: editFullName ? editFullName.value : '',
+        email: profileDisplayEmail ? profileDisplayEmail.innerText : '',
+        ngaySinh: editBirthday ? editBirthday.value : '',
+        gioiTinh: editGender ? editGender.value : '',
+        soDienThoai: editPhone ? editPhone.value : '',
+        chucVu: editPosition ? editPosition.value : ''
+    };
+
+    fetch('/api/users/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileData)
+    })
+    .then(response => {
+        if (response.ok) {
+            const successOverlay = document.getElementById('saveSuccessOverlay');
+            if (successOverlay) successOverlay.classList.add('show');
+            const profileDisplayName = document.getElementById('profileDisplayName');
+            if (profileDisplayName) profileDisplayName.innerText = profileData.hoTen;
+        } else {
+            alert("Lỗi khi cập nhật thông tin!");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Có lỗi xảy ra.");
+    });
+}
+
+function closeSaveSuccess() {
+    const successOverlay = document.getElementById('saveSuccessOverlay');
+    if (successOverlay) successOverlay.classList.remove('show');
+}
+
+function toggleChangePassword() {
+    const panel = document.getElementById('changePasswordPanel');
+    const footer = document.getElementById('userInfoFooter');
+    if (!panel) return;
+
+    panel.classList.toggle('show');
+    if (panel.classList.contains('show')) {
+        if (footer) footer.style.display = 'none';
+        // Reset fields
+        const curr = document.getElementById('currentPassword');
+        const newP = document.getElementById('newPassword');
+        const conf = document.getElementById('confirmPassword');
+        if (curr) curr.value = '';
+        if (newP) newP.value = '';
+        if (conf) conf.value = '';
+    } else {
+        if (footer) footer.style.display = 'flex';
+    }
+}
+
+function showPwSuccess() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Vui lòng điền đầy đủ các trường!');
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        alert('Mật khẩu xác nhận không khớp!');
+        return;
+    }
+
+    fetch('/api/users/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+    })
+    .then(async response => {
+        const message = await response.text();
+        if (response.ok) {
+            const pwSuccessOverlay = document.getElementById('pwSuccessOverlay');
+            if (pwSuccessOverlay) pwSuccessOverlay.classList.add('show');
+        } else {
+            alert(message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Có lỗi xảy ra khi đổi mật khẩu.');
+    });
+}
+
+function closePwSuccess() {
+    const pwSuccessOverlay = document.getElementById('pwSuccessOverlay');
+    if (pwSuccessOverlay) pwSuccessOverlay.classList.remove('show');
+    toggleChangePassword(); // Quay lại view chính
+}
 
 // Helper for other pages
 window.sharedData = { getSharedRooms, saveSharedRooms };

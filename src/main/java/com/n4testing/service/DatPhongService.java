@@ -97,4 +97,17 @@ public class DatPhongService {
         notificationService.broadcastUpdate();
         return datPhong;
     }
+
+    public DatPhong getDatPhongDetail(String maDatPhong) {
+        return datPhongRepository.findById(maDatPhong).orElse(null);
+    }
+
+    @Transactional
+    public void huyDatPhong(String maDatPhong) {
+        DatPhong dp = datPhongRepository.findById(maDatPhong)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy mã đặt phòng: " + maDatPhong));
+        dp.setTrangThai("Đã hủy");
+        datPhongRepository.save(dp);
+        notificationService.broadcastUpdate();
+    }
 }

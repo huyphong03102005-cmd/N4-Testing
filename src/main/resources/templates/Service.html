@@ -869,7 +869,7 @@
                             if (room.status === 'Bảo trì') bgClass = 'bg-baotri';
 
                             html += `
-                                <div class="map-room-card ${bgClass}" onclick="selectRoom('${room.id}')">
+                                <div class="map-room-card ${bgClass}" onclick="selectRoom(${room.id})">
                                     <div class="map-room-name">${room.name}</div>
                                     <div class="map-room-status">${room.status}</div>
                                     ${room.customer ? `<div class="map-room-customer">${room.customer}</div>` : ''}
@@ -902,7 +902,7 @@
 
             function renderRoomDetail() {
                 const container = document.getElementById('roomDetailContent');
-                const room = roomsData.find(r => r.id === selectedRoomId);
+                const room = roomsData.find(r => r.id == selectedRoomId);
                 if (!room) return;
 
                 let bgClass = '';
@@ -1020,32 +1020,37 @@
 
                     if (room.idLuutru) {
                         try {
-                            const resp = await fetch('/api/tra-phong/active-stays');
-                            const stays = await resp.json();
-                            const stay = stays.find(s => s.idLuutru === room.idLuutru);
+                            const resp = await fetch(`/api/tra-phong/stay-details/${room.idLuutru}`);
+                            if (!resp.ok) throw new Error("Không thể tải thông tin phòng");
+                            const stay = await resp.json();
 
                             if (stay) {
                                 room.items = [];
-                                stay.suDungDichVuList.forEach(sd => {
-                                    room.items.push({
-                                        id: sd.dichVu.idDichvu,
-                                        idSudung: sd.idSudungDv,
-                                        name: sd.dichVu.tenDichVu,
-                                        price: sd.dichVu.donGia,
-                                        qty: sd.soluong,
-                                        type: 'service'
+                                if (stay.suDungDichVuList) {
+                                    stay.suDungDichVuList.forEach(sd => {
+                                        room.items.push({
+                                            id: sd.dichVu.idDichvu,
+                                            idSudung: sd.idSudungDv,
+                                            name: sd.dichVu.tenDichVu,
+                                            price: sd.dichVu.donGia,
+                                            qty: sd.soluong,
+                                            type: 'service'
+                                        });
                                     });
-                                });
-                                stay.thietHaiList.forEach(th => {
-                                    room.items.push({
-                                        id: th.taiSan.idTaisan,
-                                        idThiethai: th.idThieThai,
-                                        name: th.taiSan.tenTaiSan,
-                                        price: th.soTienBoiThuong,
-                                        qty: 1,
-                                        type: 'compensation'
+                                }
+                                if (stay.thietHaiList) {
+                                    stay.thietHaiList.forEach(th => {
+                                        room.items.push({
+                                            id: th.taiSan.idTaisan,
+                                            idThiethai: th.idThieThai,
+                                            name: th.taiSan.tenTaiSan,
+                                            price: th.soTienBoiThuong,
+                                            qty: 1,
+                                            type: 'compensation'
+                                        });
                                     });
-                                });
+                                }
+                                room.basePrice = stay.calculatedBasePrice || 0;
                             }
                         } catch (err) {
                             console.error("Lỗi khi tải chi tiết phòng:", err);

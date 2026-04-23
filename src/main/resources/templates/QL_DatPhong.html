@@ -1,55 +1,467 @@
-<!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="base :: layout(~{::content})">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản lý Khách sạn</title>
-    <!-- Thêm Font Awesome để lấy icon User và Logout -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="QL_DatPhong.css">
+    <title>Quản lý đặt phòng - Hệ thống Quản lý Khách sạn</title>
 </head>
 
 <body>
 
-    <div id="app-container">
-        <!-- 1. Thanh Top Bar -->
-        <div class="top-bar">
-            <div class="top-icons">
-                <i class="fa-regular fa-user" title="Tài khoản người dùng" onclick="openUserInfo()"></i>
-                <i class="fa-solid fa-arrow-right-from-bracket" title="Đăng xuất" onclick="toggleLogoutPopup()"></i>
-            </div>
-        </div>
+    <div th:fragment="content">
+        <style>
+            /* Override base.html styles to isolate scroll */
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
 
-        <!-- 2. Phần Banner Ảnh nền & Navigation Bar -->
-        <div class="hero-banner">
-            <nav class="nav-bar">
-                <a href="/tongquan" class="nav-item" th:classappend="${currentPage == 'tongquan' ? 'active' : ''}">Tổng quan</a>
-                <a href="/dat-phong" class="nav-item" th:classappend="${currentPage == 'datphong' ? 'active' : ''}">Đặt phòng</a>
-                <a href="/ql-datphong" class="nav-item" th:classappend="${currentPage == 'qldatphong' ? 'active' : ''}">Quản lý đặt phòng</a>
-                <a href="/nhan-phong" class="nav-item" th:classappend="${currentPage == 'nhanphong' ? 'active' : ''}">Nhận phòng</a>
-                <a href="/tra-phong" class="nav-item" th:classappend="${currentPage == 'traphong' ? 'active' : ''}">Trả phòng</a>
-                <a href="/service" class="nav-item" th:classappend="${currentPage == 'dichvu' ? 'active' : ''}">Dịch vụ phòng</a>
-            </nav>
-        </div>
+            #content-area {
+                overflow: visible !important;
+            }
 
-        <!-- 3. Vùng Nội Dung Chính -->
-        <main class="main-content">
+            .main-content {
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: visible !important;
+                flex: 1 !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                height: auto !important;
+                position: relative;
+            }
+
+            .ql-datphong-wrapper {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+            }
+
+            /* --- Styles from QL_DatPhong.css --- */
+            .summary-container {
+                display: flex;
+                justify-content: center;
+                gap: 80px;
+                margin-top: -65px;
+                position: relative;
+                z-index: 5;
+                width: 100%;
+                height: 85px;
+                flex-shrink: 0;
+            }
+
+            .summary-box {
+                background-color: white;
+                border-radius: 12px;
+                width: 210px;
+                height: 100%;
+                padding: 10px 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                border: 1px solid #ddd;
+            }
+
+            .box-cho-checkin {
+                border: 1px solid #dca782;
+            }
+
+            .box-da-checkin {
+                border: 1px solid #75a782;
+            }
+
+            .box-da-huy {
+                border: 1px solid #cc3b35;
+            }
+
+            .summary-box .title {
+                font-size: 14px;
+                font-weight: 600;
+                color: #222;
+            }
+
+            .summary-box .count {
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .count-peach {
+                color: #de886f;
+            }
+
+            .count-green {
+                color: #5ea378;
+            }
+
+            .count-red {
+                color: #cc3b35;
+            }
+
+            .search-container {
+                margin-top: 45px;
+                margin-bottom: 10px;
+                width: 1070px;
+                margin-left: auto;
+                margin-right: auto;
+                flex-shrink: 0;
+            }
+
+            .search-box {
+                display: flex;
+                align-items: center;
+                background-color: #e5dfd3;
+                border: 1px solid #cebfa4;
+                border-radius: 30px;
+                padding: 10px 20px;
+                width: 100%;
+            }
+
+            .search-box i {
+                color: #888;
+                font-size: 20px;
+                margin-right: 15px;
+            }
+
+            .search-box input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-size: 15px;
+                width: 100%;
+                color: #444;
+                font-weight: 500;
+            }
+
+            .list-wrapper {
+                background-color: white;
+                border-radius: 16px;
+                padding: 25px 40px;
+                width: 1070px;
+                margin: 0 auto 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+                height: calc(100vh - 280px);
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: #dca782 transparent;
+                flex-shrink: 0;
+            }
+
+            .list-wrapper::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .list-wrapper::-webkit-scrollbar-thumb {
+                background-color: #dca782;
+                border-radius: 10px;
+            }
+
+            .section-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: #111;
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+                gap: 12px;
+            }
+
+            .badge {
+                background-color: #d1b8a5;
+                color: #b03a2e;
+                font-size: 15px;
+                font-weight: bold;
+                border-radius: 50%;
+                width: 28px;
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .badge-green {
+                background-color: #b8e0c9;
+                color: #4f5852;
+            }
+
+            .badge-red {
+                background-color: #fca5a5;
+                color: #b91c1c;
+            }
+
+            .card-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 480px);
+                gap: 30px;
+            }
+
+            .booking-card {
+                border: 1px solid #ecdca0;
+                border-radius: 14px;
+                padding: 20px;
+                background-color: #fffdf5;
+                cursor: pointer;
+                transition: box-shadow 0.2s;
+            }
+
+            .booking-card:hover {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+
+            .guest-name {
+                font-size: 20px;
+                font-weight: bold;
+                color: #111;
+            }
+
+            .status-badge {
+                background-color: #d1a85c;
+                color: white;
+                padding: 5px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: bold;
+            }
+
+            .status-badge-green {
+                background-color: #5fac77;
+            }
+
+            .status-badge-red {
+                background-color: #ef4444;
+            }
+
+            .room-name {
+                font-size: 17px;
+                color: #8f8f8f;
+                margin-bottom: 15px;
+            }
+
+            .info-row {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                color: #808080;
+                margin-bottom: 8px;
+            }
+
+            .info-row i {
+                width: 25px;
+                text-align: left;
+                font-size: 15px;
+            }
+
+            .card-divider {
+                height: 1px;
+                background-color: #e5d3ab;
+                margin: 15px 0;
+            }
+
+            .card-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+            }
+
+            .price {
+                font-size: 20px;
+                font-weight: bold;
+                color: #d96f30;
+                margin-bottom: 10px;
+            }
+
+            .btn-cancel {
+                background-color: #b4161a;
+                color: white;
+                border: none;
+                padding: 8px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .btn-cancel.btn-cancel-active {
+                background-color: #ef4444;
+                animation: pulse-red 2s infinite;
+            }
+
+            @keyframes pulse-red {
+                0% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                }
+
+                70% {
+                    transform: scale(1);
+                    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+                }
+
+                100% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                }
+            }
+
+            /* Modals */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 9999;
+                /* Higher than everything */
+                display: none;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(3px);
+            }
+
+            .modal {
+                background: white;
+                border-radius: 16px;
+                width: 480px;
+                padding: 30px;
+                text-align: center;
+            }
+
+            .modal-header-red {
+                background-color: #cc363a;
+                color: white;
+                padding: 15px;
+                font-size: 22px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+            }
+
+            .btn-red {
+                background-color: #cc363a;
+                color: white;
+                border: none;
+                padding: 12px 35px;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+
+            .btn-grey {
+                background-color: #e6e6e6;
+                color: #111;
+                border: none;
+                padding: 12px 35px;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+
+            /* New Details Modal Styling - Compact Version */
+            .details-modal {
+                width: 480px;
+                text-align: left;
+                padding: 25px 35px;
+                border-radius: 16px;
+                position: relative;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            }
+
+            .details-modal-header h3 {
+                color: #d66b30;
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 5px;
+                margin-top: 0;
+            }
+
+            .details-modal-header .sub-title {
+                color: #8f8f8f;
+                font-size: 15px;
+                margin-bottom: 20px;
+            }
+
+            .details-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-bottom: 5px;
+            }
+
+            .detail-item {
+                margin-bottom: 12px;
+            }
+
+            .detail-item .label {
+                color: #8f8f8f;
+                font-size: 14px;
+                margin-bottom: 4px;
+                display: block;
+            }
+
+            .detail-item .value {
+                color: #111;
+                font-size: 15px;
+                font-weight: 500;
+            }
+
+            .note-section .label {
+                color: #8f8f8f;
+                font-size: 14px;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+            .note-box {
+                border: 1px solid #f2c7a9;
+                border-radius: 10px;
+                padding: 12px 15px;
+                margin-top: 2px;
+                min-height: 80px;
+                color: #222;
+                font-size: 14px;
+                line-height: 1.5;
+                background-color: #fff;
+            }
+
+            #btn-close-details {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                cursor: pointer;
+                font-size: 20px;
+                color: #bbb;
+                transition: color 0.2s;
+            }
+
+            #btn-close-details:hover {
+                color: #555;
+            }
+        </style>
+
+        <div class="ql-datphong-wrapper">
             <!-- 3 Boxes -->
             <div class="summary-container">
                 <div class="summary-box box-cho-checkin">
                     <div class="title">Chờ check-in</div>
-                    <div class="count count-peach" id="summary-cho-checkin-count">2</div>
+                    <div class="count count-peach" id="summary-cho-checkin-count" th:text="${choCheckin.size()}">0</div>
                 </div>
                 <div class="summary-box box-da-checkin">
                     <div class="title">Đã checkin</div>
-                    <div class="count count-green" id="summary-da-checkin-count">1</div>
+                    <div class="count count-green" id="summary-da-checkin-count" th:text="${daCheckin.size()}">0</div>
                 </div>
                 <div class="summary-box box-da-huy">
                     <div class="title">Đã hủy</div>
-                    <div class="count count-red" id="summary-da-huy-count">0</div>
+                    <div class="count count-red" id="summary-da-huy-count" th:text="${daHuy.size()}">0</div>
                 </div>
             </div>
 
@@ -57,544 +469,280 @@
             <div class="search-container">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Tìm kiếm phòng">
+                    <input type="text" id="bookingSearchInput" placeholder="Tìm kiếm phòng" onkeyup="filterBookings()">
                 </div>
             </div>
 
             <!-- List Wrapper -->
             <div class="list-wrapper">
-                <h2 class="section-title">Chờ check-in <span class="badge" id="badge-cho-checkin">2</span></h2>
+                <h2 class="section-title">Chờ check-in <span class="badge" id="badge-cho-checkin"
+                        th:text="${choCheckin.size()}">0</span></h2>
                 <div class="card-grid" id="grid-cho-checkin">
-                    <!-- JS sẽ render HTML vào đây -->
-                </div>
-
-                <h2 class="section-title mt-4">Đã checkin <span class="badge badge-green" id="badge-da-checkin">1</span>
-                </h2>
-                <div class="card-grid mb-4" id="grid-da-checkin">
-                    <!-- JS sẽ render HTML vào đây -->
-                </div>
-
-                <h2 class="section-title mt-4" id="title-da-huy-section" style="display: none;">Đã hủy <span
-                        class="badge badge-red" id="badge-da-huy">0</span></h2>
-                <div class="card-grid mb-4" id="grid-da-huy">
-                    <!-- JS sẽ render HTML vào đây -->
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal Hủy Phòng -->
-    <div class="modal-overlay" id="cancel-modal" style="display: none;">
-        <div class="modal">
-            <h3 class="modal-header-red">Xác nhận Hủy phòng</h3>
-            <div class="modal-actions">
-                <button class="btn btn-red" id="btn-confirm-cancel">Xác nhận</button>
-                <button class="btn btn-grey" id="btn-close-cancel">Đóng</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Success -->
-    <div class="modal-overlay" id="success-modal" style="display: none;">
-        <div class="modal modal-success">
-            <div class="icon-success">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <h3>Đã Hủy đặt phòng!</h3>
-            <button class="btn btn-red" id="btn-done-success">Xong</button>
-        </div>
-    </div>
-
-    <!-- Modal Chi tiết đặt phòng -->
-    <div class="modal-overlay" id="details-modal" style="display: none;">
-        <div class="modal details-modal">
-            <div class="details-modal-header">
-                <h3>Chi tiết đặt phòng</h3>
-                <i class="fa-solid fa-xmark" id="btn-close-details"></i>
-            </div>
-
-            <div class="details-grid" style="margin-bottom: 10px;">
-                <div class="detail-inline">
-                    <span class="label">Mã đặt phòng:</span>
-                    <span class="value" id="detail-code">DP001</span>
-                </div>
-                <div class="detail-inline" style="justify-content: flex-end;">
-                    <span class="label">Ngày đặt:</span>
-                    <span class="value" id="detail-booking-date">20/01/2026</span>
-                </div>
-            </div>
-
-            <div class="details-grid">
-                <div class="details-col">
-                    <div class="detail-item">
-                        <div class="label">Họ và tên</div>
-                        <div class="value" id="detail-name">Nguyễn Văn An</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Số điện thoại</div>
-                        <div class="value" id="detail-phone">0788624523</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Email</div>
-                        <div class="value" id="detail-email">nynguyen05@gmail.com</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Số lượng người</div>
-                        <div class="value" id="detail-guests">2 người lớn - 0 trẻ em</div>
-                    </div>
-                </div>
-
-                <div class="details-col">
-                    <div class="detail-item">
-                        <div class="label">Ngày nhận phòng</div>
-                        <div class="value" id="detail-checkin">14h - 20/01/2026</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Ngày trả phòng</div>
-                        <div class="value" id="detail-checkout">12h - 23/01/2026</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-item">
-                <div class="label">Ghi chú</div>
-                <div class="note-box" id="detail-note">
-                    Tôi muốn 2 bộ dụng cụ ăn uống vì tôi không muốn ra ngoài...
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Popup xác nhận đăng xuất -->
-    <div class="logout-popup" id="logoutPopup">
-        <p>Bạn muốn đăng xuất?</p>
-        <div class="logout-popup-actions">
-            <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-            <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
-        </div>
-    </div>
-
-    <!-- Overlay Thông tin người dùng -->
-    <div class="user-info-overlay" id="userInfoOverlay">
-        <div class="user-info-card">
-            <h2>Thông tin người dùng</h2>
-            <div class="user-info-body">
-                <!-- Cột trái -->
-                <div class="user-left">
-                    <h3>Thông tin cá nhân</h3>
-                    <div class="user-avatar-row">
-                        <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
-                        <div>
-                            <div class="user-avatar-name">Vương Văn Quyền</div>
-                            <div class="user-avatar-email">vvquyen@gmail.com</div>
-                        </div>
-                    </div>
-                    <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
-                            class="user-field-value">Vương Văn Quyền</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
-                            class="user-field-value">25/07/2005</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
-                            class="user-field-value">Nam</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
-                            class="user-field-value">09123467898</span></div>
-                    <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
-                            class="user-field-value">Lễ tân</span></div>
-                </div>
-                <!-- Cột phải -->
-                <div class="user-right">
-                    <h3>Cài đặt tài khoản</h3>
-                    <div class="account-field-row">
-                        <span class="account-field-label">Tên người dùng</span>
-                        <span class="account-field-value">vvquyen_2507</span>
-                    </div>
-                    <div class="account-field-row">
-                        <span class="account-field-label">Mật khẩu</span>
-                        <span class="account-field-value">••••••••••••</span>
-                        <button class="btn-edit-pw" title="Sửa mật khẩu" onclick="toggleChangePassword()"><i
-                                class="fa-solid fa-pen"></i></button>
-                    </div>
-
-                    <div class="change-password-panel" id="changePasswordPanel">
-                        <h4>Đổi mật khẩu</h4>
-                        <div class="pw-row">
-                            <span class="pw-label">Mật khẩu hiện tại:</span>
-                            <input type="password" class="pw-input">
-                        </div>
-                        <div class="pw-row">
-                            <span class="pw-label">Mật khẩu mới:</span>
-                            <input type="password" class="pw-input">
-                        </div>
-                        <div class="pw-row">
-                            <span class="pw-label">Nhập lại mật khẩu mới:</span>
-                            <input type="password" class="pw-input">
-                        </div>
-                        <div class="pw-actions">
-                            <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
-                            <button class="btn-pw-confirm" onclick="showPwSuccess()">Xác nhận</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="user-info-footer" id="userInfoFooter">
-                <button class="btn-user-cancel" onclick="closeUserInfo()">HỦY</button>
-                <button class="btn-user-save" onclick="showSaveSuccess()">LƯU</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Popup Lưu thành công -->
-    <div class="save-success-overlay" id="saveSuccessOverlay">
-        <div class="save-success-card">
-            <i class="fa-solid fa-circle-check"></i>
-            <p>Thông tin đã được lưu</p>
-            <button class="btn-save-done" onclick="closeSaveSuccess()">Xong</button>
-        </div>
-    </div>
-
-    <!-- Popup Đổi mật khẩu thành công -->
-    <div class="pw-success-overlay" id="pwSuccessOverlay">
-        <div class="pw-success-card">
-            <i class="fa-regular fa-circle-check"></i>
-            <p>Đổi mật khẩu thành công</p>
-            <button class="btn-pw-done" onclick="closePwSuccess()">Xong</button>
-        </div>
-    </div>
-
-    <script src="shared.js"></script>
-    <script>
-        // Data logic
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        const formatDate = (date) => {
-            return date.toISOString().split('T')[0];
-        };
-
-        let bookingsChoCheckin = [];
-        let bookingsDaCheckin = [];
-        let cancelTargetId = null;
-        let bookingsDaHuy = [];
-
-        function loadFromShared() {
-            if (!window.sharedData) return;
-            const rooms = window.sharedData.getSharedRooms();
-            bookingsChoCheckin = [];
-            bookingsDaCheckin = [];
-            bookingsDaHuy = [];
-
-            rooms.forEach((r) => {
-                if (r.status === 'Đã đặt' || r.status === 'Đang sử dụng' || r.status === 'Đã hủy') {
-                    const b = {
-                        id: r.id,
-                        guestName: r.customer || "Khách hàng",
-                        roomName: "Phòng " + r.name,
-                        phone: "0188624523",
-                        email: "nynguyen05@gmail.com",
-                        checkIn: r.date || formatDate(yesterday),
-                        checkOut: r.date2 || formatDate(tomorrow),
-                        guests: "2 người - 1 đêm",
-                        bookingDate: "2026-04-20",
-                        price: (r.basePrice || 1500000).toLocaleString('vi-VN') + ' ₫',
-                        code: r.maDatPhong || ("DP" + r.id),
-                        checkInTime: "14h - " + (r.date || formatDate(yesterday)),
-                        checkOutTime: "12h - " + (r.date2 || formatDate(tomorrow)),
-                        guestsDetail: "2 người lớn",
-                        note: "Dữ liệu được đồng bộ từ Quản lý phòng."
-                    };
-                    if (r.status === 'Đã đặt') bookingsChoCheckin.push(b);
-                    else if (r.status === 'Đang sử dụng') bookingsDaCheckin.push(b);
-                    else if (r.status === 'Đã hủy') bookingsDaHuy.push(b);
-                }
-            });
-        }
-
-        function checkCancelEnabled(checkInDateStr) {
-            if (!checkInDateStr) return false;
-            // Parse DD/MM/YYYY or YYYY-MM-DD
-            let parts = checkInDateStr.split('/');
-            let normalizedDate;
-            if (parts.length === 3) {
-                normalizedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            } else {
-                normalizedDate = checkInDateStr;
-            }
-            const checkInDate = new Date(`${normalizedDate}T16:00:00`);
-            const now = new Date();
-            return now >= checkInDate;
-        }
-
-        function renderUI() {
-            // Update Badges & Counts
-            document.getElementById("summary-cho-checkin-count").innerText = bookingsChoCheckin.length;
-            document.getElementById("summary-da-checkin-count").innerText = bookingsDaCheckin.length;
-            document.getElementById("summary-da-huy-count").innerText = bookingsDaHuy.length;
-
-            document.getElementById("badge-cho-checkin").innerText = bookingsChoCheckin.length;
-            document.getElementById("badge-da-checkin").innerText = bookingsDaCheckin.length;
-
-            // Render Chờ check-in
-            const gridChoCheckin = document.getElementById("grid-cho-checkin");
-            gridChoCheckin.innerHTML = "";
-            bookingsChoCheckin.forEach(booking => {
-                const canCancel = checkCancelEnabled(booking.checkIn);
-
-                gridChoCheckin.innerHTML += `
-                    <div class="booking-card" onclick="openDetailsModal(${booking.id})">
+                    <div th:each="booking : ${choCheckin}" class="booking-card"
+                        th:attr="onclick='openDetailsModal(\'' + ${booking.maDatPhong} + '\')'">
                         <div class="card-header">
-                            <div class="guest-name">${booking.guestName}</div>
+                            <div class="guest-name" th:text="${booking.tenNguoiDat}">Tên khách</div>
                             <div class="status-badge">Chờ check-in</div>
                         </div>
-                        <div class="room-name">${booking.roomName}</div>
-                        
-                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong>${booking.code}</strong></div>
-                        <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
-                        <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
-                        <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
-                        <div class="info-row"><i class="fa-solid fa-user"></i> ${booking.guests}</div>
-                        
+                        <div class="room-name" th:text="${booking.displaySoPhong}">Phòng ...</div>
+
+                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong
+                                th:text="${booking.maDatPhong}">DP...</strong></div>
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span
+                                th:text="${booking.sdtNguoiDat}">SĐT</span></div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> <span
+                                th:text="${booking.email}">Email</span></div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}"></span> &rarr;
+                            <span th:text="${#temporals.format(booking.ngayTra, 'dd/MM/yyyy')}"></span>
+                        </div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> <span
+                                th:text="${booking.soNguoiLon + ' NL - ' + booking.soTreEm + ' TE'}">2 người</span>
+                        </div>
+
                         <div class="card-divider"></div>
-                        
+
                         <div class="card-footer">
                             <div class="booking-date">
-                                <div>Ngày đặt: ${booking.bookingDate}</div>
+                                <div>Ngày đặt: <span
+                                        th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}">2026-04-20</span>
+                                </div>
                             </div>
                             <div class="price-section">
-                                <div class="price">${booking.price}</div>
-                                <button class="btn-cancel ${canCancel ? 'btn-cancel-active' : ''}" ${!canCancel ? 'disabled' : ''} onclick="openCancelModal(event, ${booking.id})">
+                                <div class="price"
+                                    th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                                    1.500.000 ₫</div>
+                                <button class="btn-cancel btn-cancel-active"
+                                    th:attr="onclick='openCancelModal(event, \'' + ${booking.maDatPhong} + '\')'">
                                     <i class="fa-regular fa-circle-xmark"></i> Hủy phòng
                                 </button>
                             </div>
                         </div>
                     </div>
-                `;
-            });
+                </div>
 
-            // Render Đã check-in
-            const gridDaCheckin = document.getElementById("grid-da-checkin");
-            gridDaCheckin.innerHTML = "";
-            bookingsDaCheckin.forEach(booking => {
-                gridDaCheckin.innerHTML += `
-                    <div class="booking-card" onclick="openDetailsModal(${booking.id})">
+                <h2 class="section-title mt-4">Đã checkin <span class="badge badge-green" id="badge-da-checkin"
+                        th:text="${daCheckin.size()}">0</span></h2>
+                <div class="card-grid mb-4" id="grid-da-checkin">
+                    <div th:each="booking : ${daCheckin}" class="booking-card"
+                        th:attr="onclick='openDetailsModal(\'' + ${booking.maDatPhong} + '\')'">
                         <div class="card-header">
-                            <div class="guest-name">${booking.guestName}</div>
+                            <div class="guest-name" th:text="${booking.tenNguoiDat}">Tên khách</div>
                             <div class="status-badge status-badge-green">Đã check in</div>
                         </div>
-                        <div class="room-name">${booking.roomName}</div>
-                        
-                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong>${booking.code}</strong></div>
-                        <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
-                        <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
-                        <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
-                        <div class="info-row"><i class="fa-solid fa-user"></i> ${booking.guests}</div>
-                        
+                        <div class="room-name" th:text="${booking.displaySoPhong}">Phòng ...</div>
+
+                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong
+                                th:text="${booking.maDatPhong}">DP...</strong></div>
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span
+                                th:text="${booking.sdtNguoiDat}">SĐT</span></div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> <span
+                                th:text="${booking.email}">Email</span></div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}"></span> &rarr;
+                            <span th:text="${#temporals.format(booking.ngayTra, 'dd/MM/yyyy')}"></span>
+                        </div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> <span
+                                th:text="${booking.soNguoiLon + ' NL - ' + booking.soTreEm + ' TE'}">2 người</span>
+                        </div>
+
                         <div class="card-divider"></div>
-                        
+
                         <div class="card-footer">
                             <div class="booking-date">
-                                <div>Ngày đặt: ${booking.bookingDate}</div>
+                                <div>Ngày đặt: <span
+                                        th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}">...</span></div>
                             </div>
                             <div class="price-section">
-                                <div class="price">${booking.price}</div>
+                                <div class="price"
+                                    th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                                    ...</div>
                             </div>
                         </div>
                     </div>
-                `;
-            });
+                </div>
 
-            // Render Đã hủy
-            const gridDaHuy = document.getElementById("grid-da-huy");
-            const titleDaHuy = document.getElementById("title-da-huy-section");
-            if (bookingsDaHuy.length > 0) {
-                titleDaHuy.style.display = "flex";
-                document.getElementById("badge-da-huy").innerText = bookingsDaHuy.length;
+                <h2 class="section-title mt-4" id="title-da-huy-section"
+                    th:style="${daHuy.size() > 0 ? 'display: flex;' : 'display: none;'}">Đã hủy <span
+                        class="badge badge-red" id="badge-da-huy" th:text="${daHuy.size()}">0</span></h2>
+                <div class="card-grid mb-4" id="grid-da-huy">
+                    <div th:each="booking : ${daHuy}" class="booking-card"
+                        th:attr="onclick='openDetailsModal(\'' + ${booking.maDatPhong} + '\')'">
+                        <div class="card-header">
+                            <div class="guest-name" th:text="${booking.tenNguoiDat}">Tên khách</div>
+                            <div class="status-badge status-badge-red">Đã hủy</div>
+                        </div>
+                        <div class="room-name" th:text="${booking.displaySoPhong}">Phòng ...</div>
 
-                gridDaHuy.innerHTML = "";
-                bookingsDaHuy.forEach(booking => {
-                    gridDaHuy.innerHTML += `
-                        <div class="booking-card" onclick="openDetailsModal(${booking.id})">
-                            <div class="card-header">
-                                <div class="guest-name">${booking.guestName}</div>
-                                <div class="status-badge status-badge-red">Đã hủy</div>
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span
+                                th:text="${booking.sdtNguoiDat}">SĐT</span></div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> <span
+                                th:text="${booking.email}">Email</span></div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}"></span> &rarr;
+                            <span th:text="${#temporals.format(booking.ngayTra, 'dd/MM/yyyy')}"></span>
+                        </div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> <span
+                                th:text="${booking.soNguoiLon + ' NL - ' + booking.soTreEm + ' TE'}">2 người</span>
+                        </div>
+
+                        <div class="card-divider"></div>
+
+                        <div class="card-footer">
+                            <div class="booking-date">
+                                <div>Ngày đặt: <span
+                                        th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}">...</span></div>
                             </div>
-                            <div class="room-name">${booking.roomName}</div>
-                            
-                            <div class="info-row"><i class="fa-solid fa-phone"></i> ${booking.phone}</div>
-                            <div class="info-row"><i class="fa-regular fa-envelope"></i> ${booking.email}</div>
-                            <div class="info-row"><i class="fa-regular fa-calendar"></i> ${booking.checkIn} &rarr; ${booking.checkOut}</div>
-                            <div class="info-row"><i class="fa-solid fa-user"></i> ${booking.guests}</div>
-                            
-                            <div class="card-divider"></div>
-                            
-                            <div class="card-footer">
-                                <div class="booking-date">
-                                    <div>Ngày đặt: ${booking.bookingDate}</div>
-                                </div>
-                                <div class="price-section">
-                                    <div class="price">${booking.price}</div>
-                                </div>
+                            <div class="price-section">
+                                <div class="price"
+                                    th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                                    ...</div>
                             </div>
                         </div>
-                    `;
-                });
-            } else {
-                titleDaHuy.style.display = "none";
-                gridDaHuy.innerHTML = "";
-            }
-        }
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        function getBookingById(id) {
-            return bookingsChoCheckin.find(b => b.id === id) ||
-                bookingsDaCheckin.find(b => b.id === id) ||
-                bookingsDaHuy.find(b => b.id === id);
-        }
+        <!-- Modals -->
+        <div class="modal-overlay" id="cancel-modal">
+            <div class="modal">
+                <h3 class="modal-header-red">Xác nhận Hủy phòng</h3>
+                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 20px;">
+                    <button class="btn-red" id="btn-confirm-cancel">Xác nhận</button>
+                    <button class="btn-grey" id="btn-close-cancel">Đóng</button>
+                </div>
+            </div>
+        </div>
 
-        function openDetailsModal(id) {
-            const booking = getBookingById(id);
-            if (!booking) return;
+        <div class="modal-overlay" id="success-modal">
+            <div class="modal">
+                <i class="fa-solid fa-circle-check" style="font-size: 70px; color: #17a34a; margin-bottom: 20px;"></i>
+                <h3>Đã Hủy đặt phòng!</h3>
+                <button class="btn-red" style="padding: 12px 60px; margin-top: 20px;"
+                    id="btn-done-success">Xong</button>
+            </div>
+        </div>
 
-            document.getElementById("detail-code").innerText = booking.code || ("DP00" + booking.id);
-            document.getElementById("detail-booking-date").innerText = booking.bookingDate;
-            document.getElementById("detail-name").innerText = booking.guestName;
-            document.getElementById("detail-phone").innerText = booking.phone;
-            document.getElementById("detail-email").innerText = booking.email;
-            document.getElementById("detail-guests").innerText = booking.guestsDetail || booking.guests;
+        <div class="modal-overlay" id="details-modal">
+            <div class="modal details-modal">
+                <i class="fa-solid fa-xmark" id="btn-close-details"></i>
+                <div class="details-modal-header">
+                    <h3>Chi tiết đặt phòng</h3>
+                    <div class="sub-title">Mã đặt phòng: <span id="detail-code">DP001</span></div>
+                </div>
 
-            document.getElementById("detail-checkin").innerText = booking.checkInTime || ("14h - " + booking.checkIn);
-            document.getElementById("detail-checkout").innerText = booking.checkOutTime || ("12h - " + booking.checkOut);
+                <div class="details-grid">
+                    <div class="details-col">
+                        <div class="detail-item">
+                            <span class="label">Họ và tên</span>
+                            <div class="value" id="detail-name">Nguyễn Văn An</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Số điện thoại</span>
+                            <div class="value" id="detail-phone">0788624523</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Email</span>
+                            <div class="value" id="detail-email">nynguyen05@gmail.com</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Số lượng người</span>
+                            <div class="value" id="detail-guests">2 người lớn - 0 trẻ em</div>
+                        </div>
+                    </div>
 
-            document.getElementById("detail-note").innerText = booking.note || "Không có ghi chú.";
+                    <div class="details-col">
+                        <div class="detail-item">
+                            <span class="label">Ngày nhận phòng</span>
+                            <div class="value" id="detail-checkin">14h - 20/01/2026</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Ngày trả phòng</span>
+                            <div class="value" id="detail-checkout">12h - 23/01/2026</div>
+                        </div>
+                    </div>
+                </div>
 
-            document.getElementById("details-modal").style.display = "flex";
-        }
+                <div class="note-section">
+                    <span class="label">Ghi chú</span>
+                    <div class="note-box" id="detail-note">
+                        Không có ghi chú.
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        document.getElementById("btn-close-details").addEventListener("click", () => {
-            document.getElementById("details-modal").style.display = "none";
-        });
+        <script th:inline="javascript">
+            const choCheckin = /*[[${choCheckin}]]*/[];
+            const daCheckin = /*[[${daCheckin}]]*/[];
+            const daHuy = /*[[${daHuy}]]*/[];
+            const allBookings = [...choCheckin, ...daCheckin, ...daHuy];
+            let cancelTargetId = null;
 
-        window.addEventListener("click", (e) => {
-            if (e.target.classList.contains("modal-overlay")) {
-                e.target.style.display = "none";
-                if (e.target.id === "cancel-modal") cancelTargetId = null;
-            }
-        });
-
-        function openCancelModal(event, id) {
-            event.stopPropagation();
-            cancelTargetId = id;
-            document.getElementById("cancel-modal").style.display = "flex";
-        }
-
-        document.getElementById("btn-close-cancel").addEventListener("click", () => {
-            document.getElementById("cancel-modal").style.display = "none";
-            cancelTargetId = null;
-        });
-
-        document.getElementById("btn-confirm-cancel").addEventListener("click", () => {
-            if (cancelTargetId !== null) {
-                const targetBooking = bookingsChoCheckin.find(b => b.id === cancelTargetId);
-                if (targetBooking) {
-                    if (window.sharedData) {
-                        const rooms = window.sharedData.getSharedRooms();
-                        const r = rooms.find(x => x.id === cancelTargetId.toString());
-                        if (r) {
-                            r.status = 'Đã hủy';
-                            window.sharedData.saveSharedRooms(rooms);
-                        }
-                    }
-                    loadFromShared(); // Re-load everything from shared data
-                }
-                cancelTargetId = null;
-
-                // Hide modal 1, show modal 2
-                document.getElementById("cancel-modal").style.display = "none";
-                document.getElementById("success-modal").style.display = "flex";
-
-                // Cập nhật giao diện
-                renderUI();
-            }
-        });
-
-        document.getElementById("btn-done-success").addEventListener("click", () => {
-            document.getElementById("success-modal").style.display = "none";
-        });
-
-        // Event for storage sync across tabs
-        window.addEventListener('storageChanged', () => {
-            loadFromShared();
-            renderUI();
-        });
-
-        // Init
-        loadFromShared();
-        renderUI();
-    </script>
-
-    <script>
-
-        function toggleLogoutPopup() {
-            var popups = document.querySelectorAll('.logout-popup');
-            popups.forEach(function (p) { p.classList.toggle('show'); });
-        }
-        document.addEventListener('click', function (e) {
-            const isIcon = e.target.closest('.fa-arrow-right-from-bracket');
-            if (!isIcon) {
-                document.querySelectorAll('.logout-popup').forEach(function (p) {
-                    if (!p.contains(e.target)) {
-                        p.classList.remove('show');
-                    }
+            function filterBookings() {
+                const search = document.getElementById("bookingSearchInput").value.toLowerCase();
+                document.querySelectorAll(".booking-card").forEach(card => {
+                    card.style.display = card.innerText.toLowerCase().includes(search) ? "block" : "none";
                 });
             }
-        });
-        function openUserInfo() {
-            document.getElementById('userInfoOverlay').classList.add('show');
-        }
-        function closeUserInfo() {
-            document.getElementById('userInfoOverlay').classList.remove('show');
-        }
-        function showSaveSuccess() {
-            document.getElementById('saveSuccessOverlay').classList.add('show');
-        }
-        function closeSaveSuccess() {
-            document.getElementById('saveSuccessOverlay').classList.remove('show');
-            document.getElementById('userInfoOverlay').classList.remove('show');
-        }
 
-        function toggleChangePassword() {
-            const panel = document.getElementById('changePasswordPanel');
-            const footer = document.getElementById('userInfoFooter');
-            panel.classList.toggle('show');
-            if (panel.classList.contains('show')) {
-                footer.style.display = 'none';
-            } else {
-                footer.style.display = 'flex';
+            function openDetailsModal(maDatPhong) {
+                const b = allBookings.find(x => x.maDatPhong === maDatPhong);
+                if (!b) return;
+
+                document.getElementById("detail-code").innerText = b.maDatPhong;
+                document.getElementById("detail-name").innerText = b.tenNguoiDat;
+                document.getElementById("detail-phone").innerText = b.sdtNguoiDat;
+                document.getElementById("detail-email").innerText = b.email || "---";
+                document.getElementById("detail-guests").innerText = `${b.soNguoiLon} người lớn - ${b.soTreEm} trẻ em`;
+
+                document.getElementById("detail-checkin").innerText = "14h - " + formatDate(b.ngayNhan);
+                document.getElementById("detail-checkout").innerText = "12h - " + formatDate(b.ngayTra);
+
+                // Hiển thị ghi chú từ database
+                document.getElementById("detail-note").innerText = b.ghiChu || "Không có ghi chú.";
+
+                document.getElementById("details-modal").style.display = "flex";
             }
-        }
 
-        function showPwSuccess() {
-            document.getElementById('pwSuccessOverlay').classList.add('show');
-        }
-
-        function closePwSuccess() {
-            document.getElementById('pwSuccessOverlay').classList.remove('show');
-            toggleChangePassword(); // Quay lại view chính
-        }
-
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const path = window.location.pathname;
-            const navLinks = document.querySelectorAll('.nav-bar .nav-item');
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === path) {
-                    link.classList.add('active');
+            function formatDate(dateArr) {
+                if (!dateArr) return "";
+                if (Array.isArray(dateArr)) return `${dateArr[2]}/${dateArr[1]}/${dateArr[0]}`;
+                if (typeof dateArr === 'string') {
+                    const d = new Date(dateArr);
+                    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
                 }
-            });
-        });
-    </script>
+                return dateArr;
+            }
+
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            }
+
+            function openCancelModal(event, maDatPhong) {
+                event.stopPropagation();
+                cancelTargetId = maDatPhong;
+                document.getElementById("cancel-modal").style.display = "flex";
+            }
+
+            document.getElementById("btn-close-details").onclick = () => document.getElementById("details-modal").style.display = "none";
+            document.getElementById("btn-close-cancel").onclick = () => document.getElementById("cancel-modal").style.display = "none";
+
+            document.getElementById("btn-confirm-cancel").onclick = async () => {
+                if (!cancelTargetId) return;
+                const resp = await fetch(`/dat-phong/huy?maDatPhong=${cancelTargetId}`, { method: 'POST' });
+                if (resp.ok) {
+                    document.getElementById("cancel-modal").style.display = "none";
+                    document.getElementById("success-modal").style.display = "flex";
+                } else alert("Lỗi khi hủy phòng");
+            };
+
+            document.getElementById("btn-done-success").onclick = () => window.location.reload();
+
+            window.onclick = (e) => { if (e.target.classList.contains("modal-overlay")) e.target.style.display = "none"; };
+        </script>
+    </div>
 </body>
 
 </html>

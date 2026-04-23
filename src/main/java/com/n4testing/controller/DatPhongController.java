@@ -56,4 +56,23 @@ public class DatPhongController {
             ));
         }
     }
+
+    @org.springframework.web.bind.annotation.GetMapping("/{maDatPhong}")
+    @ResponseBody
+    public ResponseEntity<?> getChiTiet(@org.springframework.web.bind.annotation.PathVariable String maDatPhong) {
+        DatPhong dp = datPhongService.getDatPhongDetail(maDatPhong);
+        if (dp == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dp);
+    }
+
+    @PostMapping("/huy")
+    @ResponseBody
+    public ResponseEntity<?> huyDatPhong(@RequestParam("maDatPhong") String maDatPhong) {
+        try {
+            datPhongService.huyDatPhong(maDatPhong);
+            return ResponseEntity.ok(Map.of("success", true, "message", "Đã hủy đặt phòng thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
 }

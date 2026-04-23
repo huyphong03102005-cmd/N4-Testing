@@ -24,9 +24,19 @@ public class TraPhongController {
 
     @GetMapping("/active-stays")
     public ResponseEntity<?> getActiveStays() {
-        List<LuuTru> stays = luuTruRepository.findByThoiGianCheckoutThucTeIsNull();
-        List<Map<String, Object>> result = stays.stream().map(s -> traPhongService.getStayDetailDto(s.getIdLuutru()))
-                .collect(Collectors.toList());
+        // Use optimized query that fetches related and room data in one go
+        List<LuuTru> stays = luuTruRepository.findActiveStaysWithDetails();
+        
+        // Return a simplified list for discovery/overview, 
+        // detailed info should be fetched via /stay-details/{id}
+        List<Map<String, Object>> result = stays.stream().map(s -> {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("idLuutru", s.getIdLuutru());
+            map.put("tenNguoiDat", s.getDatPhong() != null ? s.getDatPhong().getTenNguoiDat() : "N/A");
+            map.put("thoiGianCheckinThucTe", s.getThoiGianCheckinThucTe());
+            return map;
+        }).collect(Collectors.toList());
+        
         return ResponseEntity.ok(result);
     }
 

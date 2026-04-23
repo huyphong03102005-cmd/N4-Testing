@@ -623,12 +623,18 @@
             <div class="hero-banner">
                 <nav class="nav-bar">
                     <!-- Thêm class active vào thẻ a nào là trang hiện tại -->
-                    <a href="/tongquan" class="nav-item" th:classappend="${currentPage == 'tongquan' ? 'active' : ''}">Tổng quan</a>
-                    <a href="/dat-phong" class="nav-item" th:classappend="${currentPage == 'datphong' ? 'active' : ''}">Đặt phòng</a>
-                    <a href="/ql-datphong" class="nav-item" th:classappend="${currentPage == 'qldatphong' ? 'active' : ''}">Quản lý đặt phòng</a>
-                    <a href="/nhan-phong" class="nav-item" th:classappend="${currentPage == 'nhanphong' ? 'active' : ''}">Nhận phòng</a>
-                    <a href="/tra-phong" class="nav-item" th:classappend="${currentPage == 'traphong' ? 'active' : ''}">Trả phòng</a>
-                    <a href="/service" class="nav-item" th:classappend="${currentPage == 'dichvu' ? 'active' : ''}">Dịch vụ phòng</a>
+                    <a href="/tongquan" class="nav-item"
+                        th:classappend="${currentPage == 'tongquan' ? 'active' : ''}">Tổng quan</a>
+                    <a href="/dat-phong" class="nav-item"
+                        th:classappend="${currentPage == 'datphong' ? 'active' : ''}">Đặt phòng</a>
+                    <a href="/ql-datphong" class="nav-item"
+                        th:classappend="${currentPage == 'qldatphong' ? 'active' : ''}">Quản lý đặt phòng</a>
+                    <a href="/nhan-phong" class="nav-item"
+                        th:classappend="${currentPage == 'nhanphong' ? 'active' : ''}">Nhận phòng</a>
+                    <a href="/tra-phong" class="nav-item"
+                        th:classappend="${currentPage == 'traphong' ? 'active' : ''}">Trả phòng</a>
+                    <a href="/service" class="nav-item" th:classappend="${currentPage == 'dichvu' ? 'active' : ''}">Dịch
+                        vụ phòng</a>
                 </nav>
             </div>
 
@@ -643,7 +649,7 @@
             <p>Bạn muốn đăng xuất?</p>
             <div class="logout-popup-actions">
                 <button class="btn-logout-cancel" onclick="toggleLogoutPopup()">Hủy</button>
-                <button class="btn-logout-confirm" onclick="window.location.href='/'">Xác nhận</button>
+                <button class="btn-logout-confirm" onclick="window.location.href='/logout'">Xác nhận</button>
             </div>
         </div>
 
@@ -658,27 +664,57 @@
                         <div class="user-avatar-row">
                             <img src="https://cdn-icons-png.flaticon.com/512/4128/4128349.png" alt="Avatar">
                             <div>
-                                <div class="user-avatar-name">Vương Văn Quyền</div>
-                                <div class="user-avatar-email">vvquyen@gmail.com</div>
+                                <div class="user-avatar-name" id="profileDisplayName">Vương Văn Quyền</div>
+                                <div class="user-avatar-email" id="profileDisplayEmail">vvquyen@gmail.com</div>
                             </div>
                         </div>
-                        <div class="user-field-row"><span class="user-field-label">Họ và tên</span><span
-                                class="user-field-value">Vương Văn Quyền</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Ngày sinh</span><span
-                                class="user-field-value">25/07/2005</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Giới tính</span><span
-                                class="user-field-value">Nam</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Số điện thoại</span><span
-                                class="user-field-value">09123467898</span></div>
-                        <div class="user-field-row"><span class="user-field-label">Chức vụ</span><span
-                                class="user-field-value">Lễ tân</span></div>
+                        <div class="user-field-row">
+                            <span class="user-field-label">Họ và tên</span>
+                            <input type="text" class="user-field-input" id="editFullName" value="Vương Văn Quyền">
+                        </div>
+                        <div class="user-field-row">
+                            <span class="user-field-label">Ngày sinh</span>
+                            <input type="text" class="user-field-input" id="editBirthday" value="25/07/2005">
+                        </div>
+                        <div class="user-field-row">
+                            <span class="user-field-label">Giới tính</span>
+                            <input type="text" class="user-field-input" id="editGender" value="Nam">
+                        </div>
+                        <div class="user-field-row">
+                            <span class="user-field-label">Số điện thoại</span>
+                            <input type="text" class="user-field-input" id="editPhone" value="09123467898">
+                        </div>
+                        <div class="user-field-row">
+                            <span class="user-field-label">Chức vụ</span>
+                            <input type="text" class="user-field-input" id="editPosition" value="Lễ tân">
+                        </div>
+
+                        <style>
+                            .user-field-input {
+                                border: none;
+                                border-bottom: 1px solid transparent;
+                                background: transparent;
+                                font-size: 16px;
+                                color: #222;
+                                font-weight: 600;
+                                width: 250px;
+                                padding: 2px 5px;
+                                transition: all 0.3s;
+                            }
+
+                            .user-field-input:focus {
+                                outline: none;
+                                border-bottom-color: #d35400;
+                                background: #fdf2e9;
+                            }
+                        </style>
                     </div>
                     <!-- Cột phải -->
                     <div class="user-right">
                         <h3>Cài đặt tài khoản</h3>
                         <div class="account-field-row">
                             <span class="account-field-label">Tên người dùng</span>
-                            <span class="account-field-value">vvquyen_2507</span>
+                            <span class="account-field-value" id="profileUsername">vvquyen_2507</span>
                         </div>
                         <div class="account-field-row">
                             <span class="account-field-label">Mật khẩu</span>
@@ -691,15 +727,15 @@
                             <h4>Đổi mật khẩu</h4>
                             <div class="pw-row">
                                 <span class="pw-label">Mật khẩu hiện tại:</span>
-                                <input type="password" class="pw-input">
+                                <input type="password" class="pw-input" id="currentPassword">
                             </div>
                             <div class="pw-row">
                                 <span class="pw-label">Mật khẩu mới:</span>
-                                <input type="password" class="pw-input">
+                                <input type="password" class="pw-input" id="newPassword">
                             </div>
                             <div class="pw-row">
                                 <span class="pw-label">Nhập lại mật khẩu mới:</span>
-                                <input type="password" class="pw-input">
+                                <input type="password" class="pw-input" id="confirmPassword">
                             </div>
                             <div class="pw-actions">
                                 <button class="btn-pw-cancel" onclick="toggleChangePassword()">Hủy</button>
@@ -746,17 +782,67 @@
                 }
             });
             function openUserInfo() {
-                document.getElementById('userInfoOverlay').classList.add('show');
+                fetch('/api/users/me')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Not logged in');
+                        return response.json();
+                    })
+                    .then(user => {
+                        console.log("Dữ liệu User hiện tại:", user);
+                        document.getElementById('profileDisplayName').innerText = user.hoTen || 'Chưa cập nhật';
+                        document.getElementById('profileDisplayEmail').innerText = user.email || 'Chưa cập nhật';
+
+                        document.getElementById('editFullName').value = user.hoTen || '';
+                        document.getElementById('editBirthday').value = user.ngaySinh || '';
+                        document.getElementById('editGender').value = user.gioiTinh || '';
+                        document.getElementById('editPhone').value = user.soDienThoai || '';
+                        document.getElementById('editPosition').value = user.chucVu || '';
+
+                        document.getElementById('profileUsername').innerText = user.tenDangNhap || 'N/A';
+
+                        document.getElementById('userInfoOverlay').classList.add('show');
+                    })
+                    .catch(err => {
+                        console.error("Lỗi fetch user:", err);
+                        alert("Vui lòng đăng nhập lại để cập nhật thông tin!");
+                        window.location.href = '/login';
+                    });
             }
             function closeUserInfo() {
                 document.getElementById('userInfoOverlay').classList.remove('show');
             }
             function showSaveSuccess() {
-                document.getElementById('saveSuccessOverlay').classList.add('show');
+                const profileData = {
+                    hoTen: document.getElementById('editFullName').value,
+                    email: document.getElementById('profileDisplayEmail').innerText, // Giữ email cũ hoặc thêm input nếu cần
+                    ngaySinh: document.getElementById('editBirthday').value,
+                    gioiTinh: document.getElementById('editGender').value,
+                    soDienThoai: document.getElementById('editPhone').value,
+                    chucVu: document.getElementById('editPosition').value
+                };
+
+                fetch('/api/users/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(profileData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            document.getElementById('saveSuccessOverlay').classList.add('show');
+                            // Cập nhật lại text hiển thị
+                            document.getElementById('profileDisplayName').innerText = profileData.hoTen;
+                        } else {
+                            alert("Lỗi khi cập nhật thông tin!");
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Có lỗi xảy ra.");
+                    });
             }
             function closeSaveSuccess() {
                 document.getElementById('saveSuccessOverlay').classList.remove('show');
-                document.getElementById('userInfoOverlay').classList.remove('show');
+                // Không đóng overlay chính để người dùng thấy kết quả
             }
 
             function toggleChangePassword() {
@@ -765,13 +851,47 @@
                 panel.classList.toggle('show');
                 if (panel.classList.contains('show')) {
                     footer.style.display = 'none';
+                    // Reset fields
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
                 } else {
                     footer.style.display = 'flex';
                 }
             }
 
             function showPwSuccess() {
-                document.getElementById('pwSuccessOverlay').classList.add('show');
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    alert('Vui lòng điền đầy đủ các trường!');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    alert('Mật khẩu xác nhận không khớp!');
+                    return;
+                }
+
+                fetch('/api/users/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+                })
+                    .then(async response => {
+                        const message = await response.text();
+                        if (response.ok) {
+                            document.getElementById('pwSuccessOverlay').classList.add('show');
+                        } else {
+                            alert(message);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Có lỗi xảy ra khi đổi mật khẩu.');
+                    });
             }
 
             function closePwSuccess() {
@@ -782,7 +902,7 @@
 
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const path = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-bar .nav-item');
             navLinks.forEach(link => {

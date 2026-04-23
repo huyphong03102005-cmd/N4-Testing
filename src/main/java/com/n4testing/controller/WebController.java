@@ -5,6 +5,7 @@ import com.n4testing.model.TaiKhoan;
 import com.n4testing.repository.TaiKhoanRepository;
 import com.n4testing.service.NhanPhongService;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ public class WebController {
 
     private final NhanPhongService nhanPhongService;
     private final TaiKhoanRepository taiKhoanRepository;
+    private final com.n4testing.repository.DatPhongRepository datPhongRepository;
 
     // 1. / → dang_nhap
     @GetMapping("/")
@@ -42,19 +44,27 @@ public class WebController {
     @PostMapping("/login")
     public String handleLogin(@RequestParam("username") String username,
                               @RequestParam("password") String password,
+                              HttpSession session,
                               Model model,
                               RedirectAttributes redirectAttributes) {
         
         Optional<TaiKhoan> account = taiKhoanRepository.findByTenDangNhap(username);
         
         if (account.isPresent() && account.get().getMatKhau().equals(password)) {
-            // Đăng nhập thành công
+            // Đăng nhập thành công - Lưu vào session
+            session.setAttribute("user", account.get());
             return "redirect:/tongquan";
         } else {
             // Đăng nhập thất bại
             model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng!");
             return "dang_nhap";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
     }
 
     // 2. /tongquan → tongquan
@@ -115,6 +125,23 @@ public class WebController {
     // 5. /ql-datphong → QL_DatPhong
     @GetMapping("/ql-datphong")
     public String manageBooking(Model model) {
+        List<com.n4testing.model.DatPhong> allBookings = datPhongRepository.findAll();
+        
+        List<com.n4testing.model.DatPhong> choCheckin = allBookings.stream()
+                .filter(b -> "Đã đặt".equals(b.getTrangThai()) || "Chờ check-in".equals(b.getTrangThai()))
+                .collect(Collectors.toList());
+        
+        List<com.n4testing.model.DatPhong> daCheckin = allBookings.stream()
+                .filter(b -> "Đang ở".equals(b.getTrangThai()) || "Đã checkin".equals(b.getTrangThai()))
+                .collect(Collectors.toList());
+        
+        List<com.n4testing.model.DatPhong> daHuy = allBookings.stream()
+                .filter(b -> "Đã hủy".equals(b.getTrangThai()))
+                .collect(Collectors.toList());
+
+        model.addAttribute("choCheckin", choCheckin);
+        model.addAttribute("daCheckin", daCheckin);
+        model.addAttribute("daHuy", daHuy);
         model.addAttribute("currentPage", "qldatphong");
         return "QL_DatPhong";
     }
