@@ -126,6 +126,19 @@ public class NhanPhongService {
         DatPhong datPhong = datPhongRepository.findById(maDatPhong)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin đặt phòng"));
 
+        // [BỔ SUNG] Chống Double Check-in
+        if ("Đang ở".equals(datPhong.getTrangThai())) {
+            throw new RuntimeException("Phiếu này đã được nhận phòng rồi!");
+        }
+
+        // [BỔ SUNG] Kiểm tra tất cả phòng có sẵn sàng không
+        List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
+        for (ChiTietDatPhong ct : chiTiets) {
+            if (ct.getPhong() != null && !"Trống".equals(ct.getPhong().getTrangThai())) {
+                throw new RuntimeException("Phòng " + ct.getPhong().getTenPhong() + " hiện không sẵn sàng!");
+            }
+        }
+
         // 1. Cập nhật trạng thái phiếu đặt phòng
         datPhong.setTrangThai("Đang ở");
         datPhongRepository.save(datPhong);
@@ -138,7 +151,6 @@ public class NhanPhongService {
         luuTruRepository.save(luuTru);
 
         // 3. Cập nhật trạng thái các phòng liên quan sang 'Bận'
-        List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
         for (ChiTietDatPhong ct : chiTiets) {
             Phong phong = ct.getPhong();
             if (phong != null) {
