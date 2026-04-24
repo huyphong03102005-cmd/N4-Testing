@@ -94,7 +94,9 @@ public class NhanPhongService {
      * Lấy danh sách phiếu đặt phòng đang ở trạng thái 'Chờ check-in'
      */
     public List<DatPhong> getDanhSachChoNhanPhong() {
-        return datPhongRepository.findByTrangThai("Chờ check-in");
+        List<DatPhong> list = datPhongRepository.findByTrangThai("Chờ check-in");
+        list.addAll(datPhongRepository.findByTrangThai("Đã đặt"));
+        return list;
     }
 
     /**
@@ -104,7 +106,9 @@ public class NhanPhongService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getDanhSachChoNhanPhong();
         }
-        return datPhongRepository.searchBookings(keyword, "Chờ check-in");
+        List<DatPhong> list = datPhongRepository.searchBookings(keyword, "Chờ check-in");
+        list.addAll(datPhongRepository.searchBookings(keyword, "Đã đặt"));
+        return list;
     }
 
     /**
@@ -190,8 +194,16 @@ public class NhanPhongService {
         ct.setPhong(targetRoom);
         chiTietDatPhongRepository.save(ct);
 
-        // 5. Đảm bảo dữ liệu được đẩy xuống DB trước khi kết thúc transaction
+        // 5. Cập nhật field so_phong trong DatPhong để đồng bộ (nếu có)
+        DatPhong dp = ct.getDatPhong();
+        if (dp != null) {
+            dp.setSoPhong(targetRoomName);
+            datPhongRepository.save(dp);
+        }
+
+        // 6. Đảm bảo dữ liệu được đẩy xuống DB trước khi kết thúc transaction
         phongRepository.flush();
         chiTietDatPhongRepository.flush();
+        datPhongRepository.flush();
     }
 }

@@ -40,7 +40,7 @@ public class DatPhongService {
     @Transactional
     public DatPhong datPhong(String hoTen, String sdt, String cccd, String tenPhong, 
                              LocalDateTime ngayNhan, LocalDateTime ngayTra, 
-                             Integer soNguoiLon, Integer soTreEm,
+                             Integer soNguoiLon, Integer soTreEm, String email,
                              BigDecimal tienCoc, BigDecimal tongThanhToan, String phuongThuc) {
         
         // 1. Tìm hoặc tạo khách hàng (Trim whitespace để tìm chính xác hơn)
@@ -75,6 +75,7 @@ public class DatPhongService {
         datPhong.setKhachHang(khachHang);
         datPhong.setTenNguoiDat(hoTen);
         datPhong.setSdtNguoiDat(sdt);
+        datPhong.setEmail(email);
         datPhong.setNgayNhan(ngayNhan);
         datPhong.setNgayTra(ngayTra);
         datPhong.setSoNguoiLon(soNguoiLon);
@@ -83,7 +84,7 @@ public class DatPhongService {
         datPhong.setTienCoc(tienCoc);
         datPhong.setTongThanhToan(tongThanhToan);
         datPhong.setPhuongThucThanhToan(phuongThuc);
-        datPhong.setTrangThai("Đã đặt cọc");
+        datPhong.setTrangThai("Đã đặt");
         
         datPhong = datPhongRepository.save(datPhong);
 

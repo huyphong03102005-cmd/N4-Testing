@@ -46,35 +46,43 @@ public class TraPhongService {
         if (datPhong == null)
             return BigDecimal.ZERO;
 
+        // Calculate nights (Minimum 1 night)
+        long nights = Duration.between(datPhong.getNgayNhan(), datPhong.getNgayTra()).toDays();
+        if (nights <= 0) nights = 1;
+        BigDecimal nightMultiplier = new BigDecimal(nights);
+
+        BigDecimal baseRoomPrice = BigDecimal.ZERO;
+
         // 1. Try to get price from ChiTietDatPhong (Recommended)
         List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
         if (chiTiets != null && !chiTiets.isEmpty()) {
-            BigDecimal totalFromDetails = BigDecimal.ZERO;
             for (ChiTietDatPhong ct : chiTiets) {
                 if (ct.getPhong() != null && ct.getPhong().getGiaPhong() != null) {
                     BigDecimal qty = new BigDecimal(ct.getSoLuongPhong() != null ? ct.getSoLuongPhong() : 1);
-                    totalFromDetails = totalFromDetails.add(ct.getPhong().getGiaPhong().multiply(qty));
+                    baseRoomPrice = baseRoomPrice.add(ct.getPhong().getGiaPhong().multiply(qty));
                 }
-            }
-            if (totalFromDetails.compareTo(BigDecimal.ZERO) > 0) {
-                return totalFromDetails;
             }
         }
 
-        // 2. Fallback: Check DatPhong.tongThanhToan
-        BigDecimal basePrice = datPhong.getTongThanhToan();
-        if (basePrice != null && basePrice.compareTo(BigDecimal.ZERO) > 0) {
-            return basePrice;
+        // 2. Fallback: Check DatPhong.tongThanhToan if baseRoomPrice is still zero
+        if (baseRoomPrice.compareTo(BigDecimal.ZERO) == 0) {
+            BigDecimal totalPayment = datPhong.getTongThanhToan();
+            if (totalPayment != null && totalPayment.compareTo(BigDecimal.ZERO) > 0) {
+                // If it's a small number, it's likely price per night, not total
+                // For this system, we'll assume it's the daily rate if it's less than a threshold 
+                // or just use it as the base price.
+                baseRoomPrice = totalPayment;
+            }
         }
 
         // 3. Last Fallback: Use soPhong directly if possible
-        if (datPhong.getSoPhong() != null) {
+        if (baseRoomPrice.compareTo(BigDecimal.ZERO) == 0 && datPhong.getSoPhong() != null) {
             Optional<Phong> phongOpt = phongRepository.findByTenPhong(datPhong.getSoPhong());
             if (phongOpt.isPresent())
-                return phongOpt.get().getGiaPhong();
+                baseRoomPrice = phongOpt.get().getGiaPhong();
         }
 
-        return BigDecimal.ZERO;
+        return baseRoomPrice.multiply(nightMultiplier).setScale(0, java.math.RoundingMode.CEILING);
     }
 
     /**
@@ -120,7 +128,7 @@ public class TraPhongService {
                 .map(th -> th.getSoTienBoiThuong() != null ? th.getSoTienBoiThuong() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return tienPhong.add(tienDichVu).add(tienBoiThuong);
+        return tienPhong.add(tienDichVu).add(tienBoiThuong).setScale(0, java.math.RoundingMode.CEILING);
     }
 
     /**

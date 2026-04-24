@@ -23,7 +23,7 @@
                 display: flex;
                 gap: 30px;
                 flex: 1;
-                height: calc(100vh - 280px);
+                height: calc(100vh - 200px);
                 /* Tránh bị che bởi Taskbar */
                 overflow: hidden;
             }
@@ -176,7 +176,7 @@
             .room-info-card {
                 background: white;
                 border-radius: 8px;
-                padding: 25px;
+                padding: 50px 25px;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
                 margin-bottom: 15px;
             }
@@ -297,6 +297,25 @@
             .f-btn-save:hover {
                 background: #c0ab7b;
             }
+
+            /* Custom scrollbar for invoice popup */
+            #invoicePopup div::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #invoicePopup div::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+
+            #invoicePopup div::-webkit-scrollbar-thumb {
+                background: #d3c4a1;
+                border-radius: 10px;
+            }
+
+            #invoicePopup div::-webkit-scrollbar-thumb:hover {
+                background: #c0ab7b;
+            }
         </style>
 
         <div class="layout-grid" id="checkoutView">
@@ -329,7 +348,7 @@
 
         <div class="overlay" id="invoicePopup">
             <div
-                style="background: #fffdf5; padding: 40px; border-radius: 12px; width: 620px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                style="background: #fffdf5; padding: 40px; border-radius: 12px; width: 620px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 <div style="text-align: center; margin-bottom: 25px;">
                     <img src="./Picture/bill_logo_logo.png" alt="Logo"
                         style="width: 70px; height: 70px; object-fit: contain;">
@@ -420,7 +439,7 @@
 
         <script src="shared.js"></script>
         <script th:inline="javascript">
-            const formatMoney = (amount) => amount.toLocaleString('vi-VN');
+            const formatMoney = (amount) => Math.ceil(amount).toLocaleString('vi-VN');
 
             // Lấy dữ liệu từ Thymeleaf
             let floorsMapped = [[${ floors }]];
@@ -706,24 +725,53 @@
                 window.location.reload(); // Reload to refresh room statuses from DB
             }
 
-            function changeCheckoutItemQty(name, type, delta) {
+            async function changeCheckoutItemQty(name, type, delta) {
                 const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
                 if (!room) return;
                 const item = room.items.find(i => i.name === name && i.type === type);
                 if (item) {
-                    item.qty += delta;
-                    if (item.qty < 1) item.qty = 1;
-                    if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
+                    const newQty = item.qty + delta;
+                    if (newQty < 1) return;
+
+                    // If it's a service usage in DB, update on backend
+                    if (item.type === 'service' && item.id) {
+                        try {
+                            const resp = await fetch(`/api/su-dung-dich-vu/${item.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ quantity: newQty })
+                            });
+                            if (!resp.ok) throw new Error("Update failed");
+                        } catch (e) {
+                            console.error(e);
+                            alert("Không thể cập nhật số lượng trên máy chủ.");
+                            return;
+                        }
+                    }
+
+                    item.qty = newQty;
                     renderCheckoutParams();
                 }
             }
 
-            function deleteCheckoutItem(name, type) {
+            async function deleteCheckoutItem(name, type) {
                 const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
                 if (!room) return;
                 if (confirm(`Bạn có chắc chắn muốn xóa "${name}"?`)) {
+                    const item = room.items.find(i => i.name === name && i.type === type);
+                    if (item && item.id) {
+                        try {
+                            let endpoint = item.type === 'service' ? `/api/su-dung-dich-vu/${item.id}` : `/api/thiet-hai/${item.id}`;
+                            const resp = await fetch(endpoint, { method: 'DELETE' });
+                            if (!resp.ok) throw new Error("Delete failed");
+                        } catch (e) {
+                            console.error(e);
+                            alert("Không thể xóa mục này trên máy chủ.");
+                            return;
+                        }
+                    }
+
                     room.items = room.items.filter(i => !(i.name === name && i.type === type));
-                    if (window.sharedData) window.sharedData.saveSharedRooms(roomsData);
                     renderCheckoutParams();
                 }
             }

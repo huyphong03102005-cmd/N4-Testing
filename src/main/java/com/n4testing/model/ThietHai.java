@@ -36,4 +36,12 @@ public class ThietHai {
     @JoinColumn(name = "id_luutru")
     @JsonIgnoreProperties("thietHaiList")
     private LuuTru luuTru;
+
+    @PrePersist
+    @PreUpdate
+    protected void onSave() {
+        if (soTienBoiThuong != null) {
+            soTienBoiThuong = soTienBoiThuong.setScale(0, java.math.RoundingMode.CEILING);
+        }
+    }
 }

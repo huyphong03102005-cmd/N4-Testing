@@ -43,12 +43,15 @@ public class SuDungDichVu {
     private HoaDon hoaDon;
 
     @PrePersist
+    @PreUpdate
     protected void onCreate() {
         if (thoiGian == null) {
             thoiGian = LocalDateTime.now();
         }
-        if (thanhTien == null && dichVu != null && soluong != null) {
-            thanhTien = dichVu.getDonGia().multiply(new BigDecimal(soluong));
+        if (dichVu != null && soluong != null) {
+            // Luôn làm tròn lên thành tiền
+            thanhTien = dichVu.getDonGia().multiply(new BigDecimal(soluong))
+                    .setScale(0, java.math.RoundingMode.CEILING);
         }
     }
 }

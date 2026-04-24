@@ -63,12 +63,12 @@ public class SummaryController {
 
         // Statistics
         long total = rooms.size();
-        long occupied = rooms.stream().filter(p -> "Bận".equals(p.getTrangThai())).count();
-        long maintenance = rooms.stream().filter(p -> "Sửa chữa".equals(p.getTrangThai())).count();
+        long occupied = rooms.stream().filter(p -> "Bận".equals(p.getTrangThai()) || "Đang ở".equals(p.getTrangThai())).count();
+        long maintenance = rooms.stream().filter(p -> "Sửa chữa".equals(p.getTrangThai()) || "Bảo trì".equals(p.getTrangThai())).count();
         long reserved = rooms.stream()
-                .filter(p -> "Trống".equals(p.getTrangThai()) && 
+                .filter(p -> ("Trống".equals(p.getTrangThai()) || "Đã đặt".equals(p.getTrangThai())) && 
                              roomBookings.containsKey(p.getIdPhong()) && 
-                             "Chờ check-in".equals(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai()))
+                             (Arrays.asList("Chờ check-in", "Đã đặt").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai())))
                 .count();
         long available = total - occupied - maintenance - reserved;
 

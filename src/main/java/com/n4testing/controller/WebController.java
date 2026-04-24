@@ -90,14 +90,14 @@ public class WebController {
 
         // 2. Tính toán thống kê
         long total = rooms.size();
-        long occupied = rooms.stream().filter(p -> "Bận".equals(p.getTrangThai())).count();
-        long maintenance = rooms.stream().filter(p -> "Sửa chữa".equals(p.getTrangThai())).count();
+        long occupied = rooms.stream().filter(p -> "Bận".equals(p.getTrangThai()) || "Đang ở".equals(p.getTrangThai())).count();
+        long maintenance = rooms.stream().filter(p -> "Sửa chữa".equals(p.getTrangThai()) || "Bảo trì".equals(p.getTrangThai())).count();
         
-        // "Đã đặt" là những phòng Trống nhưng đã có ChiTietDatPhong (Chờ check-in)
+        // "Đã đặt" là những phòng Trống/Đã đặt nhưng đã có ChiTietDatPhong (Chờ check-in hoặc Đã đặt)
         long reserved = rooms.stream()
-                .filter(p -> "Trống".equals(p.getTrangThai()) && 
+                .filter(p -> ("Trống".equals(p.getTrangThai()) || "Đã đặt".equals(p.getTrangThai())) && 
                              roomBookings.containsKey(p.getIdPhong()) && 
-                             "Chờ check-in".equals(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai()))
+                             java.util.Arrays.asList("Chờ check-in", "Đã đặt").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai()))
                 .count();
         
         long available = total - occupied - maintenance - reserved;
@@ -118,6 +118,11 @@ public class WebController {
     // 3. /dat-phong → DAT_PHONG
     @GetMapping("/dat-phong")
     public String bookRoom(Model model) {
+        List<Phong> availableRooms = nhanPhongService.getAllPhongs().stream()
+                .filter(p -> "Trống".equals(p.getTrangThai()))
+                .collect(Collectors.toList());
+        
+        model.addAttribute("availableRooms", availableRooms);
         model.addAttribute("currentPage", "datphong");
         return "DAT_PHONG";
     }

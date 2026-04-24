@@ -17,6 +17,7 @@ public class RoomController {
 
     private final PhongRepository phongRepository;
     private final NhanPhongService nhanPhongService;
+    private final com.n4testing.service.NotificationService notificationService;
 
     @GetMapping("/available")
     public ResponseEntity<List<Phong>> getAvailableRooms() {
@@ -30,6 +31,7 @@ public class RoomController {
             String targetRoomName = (String) payload.get("targetRoomName");
             
             nhanPhongService.changeRoom(currentRoomId, targetRoomName);
+            notificationService.broadcastUpdate();
             
             return ResponseEntity.ok(Map.of("message", "Đổi phòng thành công!"));
         } catch (Exception e) {

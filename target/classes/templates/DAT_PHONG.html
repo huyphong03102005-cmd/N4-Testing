@@ -54,11 +54,10 @@
 
             .cards-section {
                 padding: 20px 40px 50px;
-                display: flex;
-                gap: 40px;
-                justify-content: center;
-                flex-wrap: wrap;
-                max-width: 1200px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+                max-width: 1368px;
                 margin: 0 auto;
             }
 
@@ -66,25 +65,29 @@
                 background: #ffffff;
                 border-radius: 12px;
                 padding: 16px;
-                width: 480px;
                 box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
                 border: 1px solid #ebebeb;
                 display: flex;
                 flex-direction: column;
+                transition: transform 0.2s;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
             }
 
             .card-image {
                 width: 100%;
-                height: 280px;
+                height: 200px;
                 object-fit: cover;
                 border-radius: 8px;
                 margin-bottom: 20px;
             }
 
             .card-title {
-                font-size: 26px;
+                font-size: 22px;
                 font-weight: 700;
-                margin-bottom: 25px;
+                margin-bottom: 15px;
                 color: #111;
             }
 
@@ -95,7 +98,7 @@
                 font-size: 15px;
             }
 
-            .info-label { width: 140px; color: #333; font-weight: 400; }
+            .info-label { width: 100px; color: #333; font-weight: 400; }
             .status-badge {
                 background: #d1e8d9;
                 color: #47A25E;
@@ -135,7 +138,7 @@
             .divider { height: 1px; background: #e0e0e0; margin: 10px 0 25px; border: none; }
             .footer-row { display: flex; align-items: center; justify-content: space-between; }
             .price-section { display: flex; align-items: center; }
-            .price-label { width: 140px; color: #333; font-size: 15px; }
+            .price-label { width: 100px; color: #333; font-size: 15px; }
             .price-value-container { border-bottom: 1px solid #aaa; padding-bottom: 2px; min-width: 110px; }
             .price-value { font-size: 16px; color: #777; text-align: left; }
 
@@ -176,11 +179,12 @@
             .modal-title { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; }
             .modal-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
             .form-row { display: flex; align-items: center; margin-bottom: 16px; }
-            .form-label { width: 170px; font-size: 15px; color: #333; }
-            .input-group { flex: 1; display: flex; align-items: center; border-radius: 20px; padding: 8px 15px; gap: 12px; }
+            .form-label { width: 140px; font-size: 15px; color: #333; }
+            .input-group { width: 320px; display: flex; align-items: center; border-radius: 20px; padding: 8px 15px; gap: 12px; }
             .bg-green { background-color: #d1ead8; }
             .bg-tan { background-color: #e3d2be; }
             .input-group input { border: none; background: transparent; outline: none; flex: 1; min-width: 0; font-size: 14px; color: #333; }
+            .input-group i { width: 25px; text-align: center; font-size: 18px; color: #555; }
             .qty-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; margin-right: 10px; }
             .qty-controls i { cursor: pointer; font-size: 20px; color: #111; }
             .qty-controls span { font-size: 15px; font-weight: 600; width: 15px; text-align: center; }
@@ -204,73 +208,48 @@
         </div>
 
         <main class="cards-section">
-            <article class="card">
-                <img src="./Picture/Pictuer_1.jpg" alt="Phòng 101" class="card-image">
-                <h2 class="card-title">Phòng 101</h2>
+            <article class="card" th:each="room : ${availableRooms}">
+                <!-- Using a placeholder image based on room name or type if needed, but for now using Pictuer_1.jpg as requested -->
+                <img src="./Picture/Pictuer_1.jpg" th:alt="${room.tenPhong}" class="card-image">
+                <h2 class="card-title" th:text="${room.tenPhong}">Phòng 101</h2>
                 <div class="info-row">
                     <div class="info-label">Trạng thái:</div>
-                    <div class="status-badge">Phòng trống</div>
+                    <div class="status-badge" th:text="${room.trangThai}">Phòng trống</div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Dự kiến:</div>
                     <div class="dates-container">
-                        <div class="date-input">30 Th1, 14:00 <i class="fa-regular fa-calendar"></i></div>
+                        <div class="date-input">24/04/2026 <i class="fa-regular fa-calendar"></i></div>
                         <div class="date-separator">Đến</div>
-                        <div class="date-input">15 Th2, 12:00 <i class="fa-regular fa-calendar"></i></div>
+                        <div class="date-input">25/04/2026 <i class="fa-regular fa-calendar"></i></div>
                     </div>
                 </div>
                 <div class="info-row">
                     <div class="info-label">Số lượng người:</div>
                     <div class="capacity-badges">
-                        <div class="capacity-badge">2 <i class="fa-solid fa-user"></i></div>
-                        <div class="capacity-badge">1 <i class="fa-solid fa-face-smile"></i></div>
+                        <div class="capacity-badge"><span th:text="${room.sucChua}">2</span> <i class="fa-solid fa-user"></i></div>
+                        <div class="capacity-badge">0 <i class="fa-solid fa-face-smile"></i></div>
                     </div>
                 </div>
                 <hr class="divider">
                 <div class="footer-row">
                     <div class="price-section">
                         <div class="price-label">Tiền phòng:</div>
-                        <div class="price-value-container"><span class="price-value">800,000</span></div>
+                        <div class="price-value-container"><span class="price-value" th:text="${#numbers.formatDecimal(room.giaPhong, 0, 'COMMA', 0, 'POINT')}">800,000</span></div>
                     </div>
-                    <button class="btn-book" data-room="101" data-checkin="30 Th1, 14:00" data-checkout="15 Th2, 12:00"
-                        data-checkin-iso="2026-01-30T14:00:00" data-checkout-iso="2026-02-15T12:00:00"
-                        data-price="800000" data-max-adults="2" data-max-children="1">ĐẶT PHÒNG</button>
+                    <button class="btn-book" 
+                        th:attr="data-room=${room.tenPhong}, 
+                                data-price=${room.giaPhong}, 
+                                data-max-adults=${room.sucChua}, 
+                                data-max-children=2,
+                                data-checkin='2026-04-24',
+                                data-checkout='2026-04-25'">ĐẶT PHÒNG</button>
                 </div>
             </article>
 
-            <article class="card">
-                <img src="./Picture/Pictuer_1.jpg" alt="Phòng 104" class="card-image">
-                <h2 class="card-title">Phòng 104</h2>
-                <div class="info-row">
-                    <div class="info-label">Trạng thái:</div>
-                    <div class="status-badge">Phòng trống</div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Dự kiến:</div>
-                    <div class="dates-container">
-                        <div class="date-input">15 Th1, 14:00 <i class="fa-regular fa-calendar"></i></div>
-                        <div class="date-separator">Đến</div>
-                        <div class="date-input">28 Th2, 12:00 <i class="fa-regular fa-calendar"></i></div>
-                    </div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Số lượng người:</div>
-                    <div class="capacity-badges">
-                        <div class="capacity-badge">4 <i class="fa-solid fa-user"></i></div>
-                        <div class="capacity-badge">2 <i class="fa-solid fa-face-smile"></i></div>
-                    </div>
-                </div>
-                <hr class="divider">
-                <div class="footer-row">
-                    <div class="price-section">
-                        <div class="price-label">Tiền phòng:</div>
-                        <div class="price-value-container"><span class="price-value">2,300,000</span></div>
-                    </div>
-                    <button class="btn-book" data-room="104" data-checkin="15 Th1, 14:00" data-checkout="28 Th2, 12:00"
-                        data-checkin-iso="2026-01-15T14:00:00" data-checkout-iso="2026-02-28T12:00:00"
-                        data-price="2300000" data-max-adults="4" data-max-children="2">ĐẶT PHÒNG</button>
-                </div>
-            </article>
+            <div th:if="${#lists.isEmpty(availableRooms)}" style="text-align: center; padding: 50px; width: 100%; color: #777;">
+                <h3>Hiện không có phòng trống nào khả dụng.</h3>
+            </div>
         </main>
 
         <!-- Modals -->
@@ -281,11 +260,12 @@
                     <div class="form-row"><div class="form-label">Phòng:</div><div class="input-group bg-green"><i class="fa-solid fa-bed"></i><input type="text" id="mRoom" readonly></div></div>
                     <div class="form-row"><div class="form-label">Họ tên:</div><div class="input-group bg-green"><i class="fa-solid fa-circle-user"></i><input type="text" id="mHoTen" placeholder="Họ và tên"></div></div>
                     <div class="form-row"><div class="form-label">Điện thoại:</div><div class="input-group bg-green"><i class="fa-solid fa-phone"></i><input type="text" id="mSdt" placeholder="Số điện thoại"></div></div>
+                    <div class="form-row"><div class="form-label">Email:</div><div class="input-group bg-green"><i class="fa-solid fa-envelope"></i><input type="email" id="mEmail" placeholder="Nhập email"></div></div>
                     <div class="form-row"><div class="form-label">CCCD:</div><div class="input-group bg-green"><i class="fa-solid fa-address-card"></i><input type="text" id="mCccd" placeholder="CCCD"></div></div>
-                    <div class="form-row"><div class="form-label">Nhận:</div><div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="text" id="mCheckin" readonly></div></div>
-                    <div class="form-row"><div class="form-label">Trả:</div><div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="text" id="mCheckout" readonly></div></div>
-                    <div class="form-row"><div class="form-label">Người lớn:</div><div class="input-group bg-green"><i class="fa-solid fa-user"></i><div class="qty-controls"><i class="fa-solid fa-circle-minus" onclick="changeQty('mSoNguoiLon', -1)"></i><span id="mSoNguoiLon">0</span><i class="fa-solid fa-circle-plus" onclick="changeQty('mSoNguoiLon', 1)"></i></div></div></div>
-                    <div class="form-row"><div class="form-label">Trẻ em:</div><div class="input-group bg-green"><i class="fa-solid fa-face-smile"></i><div class="qty-controls"><i class="fa-solid fa-circle-minus" onclick="changeQty('mSoTreEm', -1)"></i><span id="mSoTreEm">0</span><i class="fa-solid fa-circle-plus" onclick="changeQty('mSoTreEm', 1)"></i></div></div></div>
+                    <div class="form-row"><div class="form-label">Nhận:</div><div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="date" id="mCheckin" readonly></div></div>
+                    <div class="form-row"><div class="form-label">Trả:</div><div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="date" id="mCheckout" readonly></div></div>
+                    <div class="form-row"><div class="form-label">Người lớn:</div><div class="input-group bg-green"><i class="fa-solid fa-user"></i><div class="qty-controls"><i class="fa-solid fa-circle-minus" onclick="changeQty('mSoNguoiLon', -1)"></i><span id="mSoNguoiLon">0</span><i class="fa-solid fa-circle-plus" style="opacity: 0.3; cursor: not-allowed;" title="Chỉ được phép giảm"></i></div></div></div>
+                    <div class="form-row"><div class="form-label">Trẻ em:</div><div class="input-group bg-green"><i class="fa-solid fa-face-smile"></i><div class="qty-controls"><i class="fa-solid fa-circle-minus" onclick="changeQty('mSoTreEm', -1)"></i><span id="mSoTreEm">0</span><i class="fa-solid fa-circle-plus" style="opacity: 0.3; cursor: not-allowed;" title="Chỉ được phép giảm"></i></div></div></div>
                 </div>
                 <div class="modal-actions"><button class="btn-modal btn-cancel-modal" onclick="closeModal('bookingModal')">Hủy</button><button class="btn-modal btn-ok-modal" id="btnConfirmBooking">XÁC NHẬN</button></div>
             </div>
@@ -306,7 +286,29 @@
                 <h3 class="payment-title">Hãy chọn hình thức thanh toán</h3>
                 <div class="modal-actions" style="gap: 20px;">
                     <button class="btn-pay" id="btnDomestic">NỘI ĐỊA</button>
-                    <button class="btn-pay" id="btnVisa">VISA</button>
+                    <button class="btn-pay" onclick="openVisaModal()">VISA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visa Info Modal (Hồ sơ thanh toán) -->
+        <div class="modal-overlay" id="visaModal">
+            <div class="modal-content" style="width: 550px;">
+                <h3 class="modal-title">HỒ SƠ THANH TOÁN</h3>
+                <div class="modal-card">
+                    <div class="form-row"><div class="form-label">Số tiền thanh toán:</div><div class="input-group bg-green"><i class="fa-solid fa-money-bill"></i><input type="text" id="mVisaAmount" readonly></div></div>
+                    <div class="form-row"><div class="form-label">Số thẻ:</div><div class="input-group bg-green"><i class="fa-solid fa-credit-card"></i><input type="text" placeholder="Nhập số thẻ"></div></div>
+                    <div class="form-row"><div class="form-label">Ngày hết hạn:</div><div class="input-group bg-green"><i class="fa-solid fa-calendar-days"></i><input type="date" placeholder="mm/dd/yyyy"></div></div>
+                    <div class="form-row"><div class="form-label">CVC/CVV:</div><div class="input-group bg-green"><i class="fa-solid fa-shield-halved"></i><input type="text" placeholder="Nhập số CVC/CVV"></div></div>
+                    <div class="form-row"><div class="form-label">Tên chủ thẻ:</div><div class="input-group bg-green"><i class="fa-solid fa-user"></i><input type="text" placeholder="Nhập họ tên"></div></div>
+                    <div class="form-row"><div class="form-label">Email:</div><div class="input-group bg-green"><i class="fa-solid fa-envelope"></i><input type="email" placeholder="Nhập email"></div></div>
+                    <div class="form-row"><div class="form-label">Quốc gia:</div><div class="input-group bg-green"><i class="fa-solid fa-globe"></i><input type="text" placeholder="Nhập quốc gia"></div></div>
+                    <div class="form-row"><div class="form-label">Tỉnh/Thành phố:</div><div class="input-group bg-green"><i class="fa-solid fa-city"></i><input type="text" placeholder="Nhập Tỉnh/Thành phố"></div></div>
+                    <div class="form-row"><div class="form-label">Địa chỉ:</div><div class="input-group bg-green"><i class="fa-solid fa-location-dot"></i><input type="text" placeholder="Nhập địa chỉ cụ thể"></div></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-modal btn-cancel-modal" onclick="closeModal('visaModal')">HỦY</button>
+                    <button class="btn-modal btn-ok-modal" onclick="confirmVisa()">XÁC NHẬN</button>
                 </div>
             </div>
         </div>
@@ -332,10 +334,22 @@
         <script>
             let currentData = {};
 
+            // Set min date to today for date inputs
+            window.onload = () => {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('mCheckin').min = today;
+                document.getElementById('mCheckout').min = today;
+            };
+
             function changeQty(id, delta) {
                 let span = document.getElementById(id);
                 let val = parseInt(span.innerText);
-                if (val + delta >= 0) span.innerText = val + delta;
+                let min = (id === 'mSoNguoiLon') ? 1 : 0;
+                
+                // Only allow decrease (delta < 0) and respect min values
+                if (delta < 0 && val + delta >= min) {
+                    span.innerText = val + delta;
+                }
             }
 
             function closeModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -346,13 +360,16 @@
                     document.getElementById('mRoom').value = currentData.room;
                     document.getElementById('mCheckin').value = currentData.checkin;
                     document.getElementById('mCheckout').value = currentData.checkout;
-                    document.getElementById('mSoNguoiLon').innerText = currentData.maxAdults;
                     document.getElementById('mSoTreEm').innerText = currentData.maxChildren;
                     document.getElementById('bookingModal').style.display = 'flex';
                 };
             });
 
             document.getElementById('btnConfirmBooking').onclick = () => {
+                if (!document.getElementById('mCheckin').value || !document.getElementById('mCheckout').value) {
+                    alert("Vui lòng chọn ngày nhận và ngày trả phòng!");
+                    return;
+                }
                 closeModal('bookingModal');
                 document.getElementById('mPaymentValue').innerText = (parseInt(currentData.price) / 2).toLocaleString('vi-VN') + 'đ';
                 document.getElementById('paymentModal').style.display = 'flex';
@@ -368,12 +385,63 @@
                 document.getElementById('qrModal').style.display = 'flex';
             };
 
+            function openVisaModal() {
+                closeModal('paymentMethodModal');
+                document.getElementById('mVisaAmount').value = (parseInt(currentData.price) / 2).toLocaleString('vi-VN');
+                document.getElementById('visaModal').style.display = 'flex';
+            }
+
+            async function confirmAndPay(phuongThuc) {
+                const data = new FormData();
+                data.append('phong', currentData.room);
+                data.append('hoTen', document.getElementById('mHoTen').value);
+                data.append('sdt', document.getElementById('mSdt').value);
+                data.append('email', document.getElementById('mEmail').value);
+                data.append('cccd', document.getElementById('mCccd').value);
+                
+                // Append default times to dates for LocalDateTime compatibility
+                data.append('ngayNhan', document.getElementById('mCheckin').value + 'T14:00:00');
+                data.append('ngayTra', document.getElementById('mCheckout').value + 'T12:00:00');
+                
+                data.append('soNguoiLon', document.getElementById('mSoNguoiLon').innerText);
+                data.append('soTreEm', document.getElementById('mSoTreEm').innerText);
+                
+                const total = parseInt(currentData.price);
+                data.append('tienCoc', total / 2);
+                data.append('tongThanhToan', total);
+                data.append('phuongThuc', phuongThuc);
+
+                try {
+                    const response = await fetch('/dat-phong/xac-nhan', {
+                        method: 'POST',
+                        body: data
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        showSuccess(result.maDatPhong);
+                    } else {
+                        alert("Lỗi: " + result.message);
+                    }
+                } catch (error) {
+                    console.error("Booking error:", error);
+                    alert("Có lỗi xảy ra khi kết nối máy chủ.");
+                }
+            }
+
+            function confirmVisa() {
+                closeModal('visaModal');
+                confirmAndPay('VISA');
+            }
+
             document.getElementById('btnConfirmPay').onclick = async () => {
-                // Here you would normally send fetch request to backend
                 closeModal('qrModal');
-                document.getElementById('mBookingCode').innerText = 'DPW' + Math.floor(Math.random()*10000000);
-                document.getElementById('successModal').style.display = 'flex';
+                confirmAndPay('NỘI ĐỊA');
             };
+
+            function showSuccess(code) {
+                document.getElementById('mBookingCode').innerText = code || ('DPW' + Math.floor(Math.random()*10000000));
+                document.getElementById('successModal').style.display = 'flex';
+            }
             
             // Basic search
             document.getElementById('roomSearch').oninput = (e) => {

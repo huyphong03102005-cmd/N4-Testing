@@ -476,7 +476,7 @@
                             content += `
                                 <div class="room-detail">
                                     <span>${room.booking.tenKhach}</span><br>
-                                    ${room.trangThai === 'Bận' ? `<span>→ ${formatDate(room.booking.ngayTra)}</span>` : ''}
+                                    ${(room.trangThai === 'Bận' || room.trangThai === 'Đang ở') ? `<span>→ ${formatDate(room.booking.ngayTra)}</span>` : ''}
                                 </div>
                             `;
                         }
@@ -492,16 +492,22 @@
             }
 
             function getStatusClass(room) {
-                if (room.trangThai === 'Bận' || (room.booking && room.booking.trangThaiDat === 'Đang ở')) return 'status-dangsu-dung';
-                if (room.trangThai === 'Sửa chữa') return 'status-baotri';
-                if (room.booking && room.booking.trangThaiDat === 'Chờ check-in') return 'status-dadat';
+                const roomStatus = room.trangThai;
+                const bookingStatus = room.booking ? room.booking.trangThaiDat : null;
+
+                if (roomStatus === 'Bận' || roomStatus === 'Đang ở' || bookingStatus === 'Đang ở') return 'status-dangsu-dung';
+                if (roomStatus === 'Sửa chữa' || roomStatus === 'Bảo trì') return 'status-baotri';
+                if (roomStatus === 'Đã đặt' || bookingStatus === 'Chờ check-in' || bookingStatus === 'Đã đặt') return 'status-dadat';
                 return 'status-trong';
             }
 
             function getStatusText(room) {
-                if (room.trangThai === 'Bận' || (room.booking && room.booking.trangThaiDat === 'Đang ở')) return 'Đang sử dụng';
-                if (room.trangThai === 'Sửa chữa') return 'Bảo trì';
-                if (room.booking && room.booking.trangThaiDat === 'Chờ check-in') return 'Đã đặt';
+                const roomStatus = room.trangThai;
+                const bookingStatus = room.booking ? room.booking.trangThaiDat : null;
+
+                if (roomStatus === 'Bận' || roomStatus === 'Đang ở' || bookingStatus === 'Đang ở') return 'Đang sử dụng';
+                if (roomStatus === 'Sửa chữa' || roomStatus === 'Bảo trì') return 'Bảo trì';
+                if (roomStatus === 'Đã đặt' || bookingStatus === 'Chờ check-in' || bookingStatus === 'Đã đặt') return 'Đã đặt';
                 return 'Trống';
             }
 

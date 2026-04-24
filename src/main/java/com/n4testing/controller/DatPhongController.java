@@ -37,13 +37,14 @@ public class DatPhongController {
             @RequestParam("ngayTra") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime ngayTra,
             @RequestParam("soNguoiLon") Integer soNguoiLon,
             @RequestParam("soTreEm") Integer soTreEm,
+            @RequestParam("email") String email,
             @RequestParam("tienCoc") BigDecimal tienCoc,
             @RequestParam("tongThanhToan") BigDecimal tongThanhToan,
             @RequestParam("phuongThuc") String phuongThuc) {
         
         try {
             DatPhong dp = datPhongService.datPhong(hoTen, sdt, cccd, tenPhong, ngayNhan, ngayTra, 
-                                                  soNguoiLon, soTreEm, tienCoc, tongThanhToan, phuongThuc);
+                                                  soNguoiLon, soTreEm, email, tienCoc, tongThanhToan, phuongThuc);
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "maDatPhong", dp.getMaDatPhong(),
