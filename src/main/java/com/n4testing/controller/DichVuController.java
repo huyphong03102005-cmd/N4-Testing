@@ -23,9 +23,65 @@ public class DichVuController {
         return dichVuService.getAllDichVu();
     }
 
+    @PostMapping("/dich-vu")
+    public ResponseEntity<?> createDichVu(@RequestBody DichVu dichVu) {
+        try {
+            return ResponseEntity.ok(dichVuService.createDichVu(dichVu));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/dich-vu/{id}")
+    public ResponseEntity<?> updateDichVu(@PathVariable Integer id, @RequestBody DichVu dichVu) {
+        try {
+            return ResponseEntity.ok(dichVuService.updateDichVu(id, dichVu));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/dich-vu/{id}")
+    public ResponseEntity<?> deleteDichVu(@PathVariable Integer id) {
+        try {
+            dichVuService.deleteDichVu(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/tai-san")
     public List<TaiSan> getAllTaiSan() {
         return dichVuService.getAllTaiSan();
+    }
+
+    @PostMapping("/tai-san")
+    public ResponseEntity<?> createTaiSan(@RequestBody TaiSan taiSan) {
+        try {
+            return ResponseEntity.ok(dichVuService.createTaiSan(taiSan));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/tai-san/{id}")
+    public ResponseEntity<?> updateTaiSan(@PathVariable Integer id, @RequestBody TaiSan taiSan) {
+        try {
+            return ResponseEntity.ok(dichVuService.updateTaiSan(id, taiSan));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/tai-san/{id}")
+    public ResponseEntity<?> deleteTaiSan(@PathVariable Integer id) {
+        try {
+            dichVuService.deleteTaiSan(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/phong/{idPhong}/tai-san")
@@ -52,8 +108,9 @@ public class DichVuController {
             Integer idLuutru = (Integer) payload.get("idLuutru");
             Integer idTaisan = (Integer) payload.get("idTaisan");
             String mucDo = (String) payload.get("mucDo");
+            Integer quantity = payload.containsKey("quantity") ? (Integer) payload.get("quantity") : 1;
             BigDecimal fineAmount = new BigDecimal(payload.get("fineAmount").toString());
-            dichVuService.addThietHai(idLuutru, idTaisan, mucDo, fineAmount);
+            dichVuService.addThietHai(idLuutru, idTaisan, mucDo, quantity, fineAmount);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -85,6 +142,17 @@ public class DichVuController {
     public ResponseEntity<?> deleteThietHai(@PathVariable Integer id) {
         try {
             dichVuService.deleteThietHai(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/thiet-hai/{id}")
+    public ResponseEntity<?> updateThietHai(@PathVariable Integer id, @RequestBody Map<String, Object> payload) {
+        try {
+            Integer quantity = (Integer) payload.get("quantity");
+            dichVuService.updateThietHaiQty(id, quantity);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

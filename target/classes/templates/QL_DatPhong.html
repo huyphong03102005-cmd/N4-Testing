@@ -1,0 +1,785 @@
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="base :: layout(~{::content})">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đặt phòng - Hệ thống Quản lý Khách sạn</title>
+</head>
+
+<body>
+
+    <div th:fragment="content">
+        <style>
+            /* Override base.html styles to isolate scroll */
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            #content-area {
+                overflow: visible !important;
+            }
+
+            .main-content {
+                display: flex !important;
+                flex-direction: column !important;
+                overflow: visible !important;
+                flex: 1 !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+                height: auto !important;
+                position: relative;
+            }
+
+            .ql-datphong-wrapper {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+            }
+
+            /* --- Styles from QL_DatPhong.css --- */
+            .summary-container {
+                display: flex;
+                justify-content: center;
+                gap: 80px;
+                margin-top: -65px;
+                position: relative;
+                z-index: 5;
+                width: 100%;
+                height: 85px;
+                flex-shrink: 0;
+            }
+
+            .summary-box {
+                background-color: white;
+                border-radius: 12px;
+                width: 210px;
+                height: 100%;
+                padding: 10px 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                border: 1px solid #ddd;
+            }
+
+            .box-cho-checkin {
+                border: 1px solid #dca782;
+            }
+
+            .box-da-checkin {
+                border: 1px solid #75a782;
+            }
+
+            .box-da-huy {
+                border: 1px solid #cc3b35;
+            }
+
+            .summary-box .title {
+                font-size: 14px;
+                font-weight: 600;
+                color: #222;
+            }
+
+            .summary-box .count {
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .count-peach {
+                color: #de886f;
+            }
+
+            .count-green {
+                color: #5ea378;
+            }
+
+            .count-red {
+                color: #cc3b35;
+            }
+
+            .search-container {
+                margin-top: 45px;
+                margin-bottom: 10px;
+                width: 1070px;
+                margin-left: auto;
+                margin-right: auto;
+                flex-shrink: 0;
+            }
+
+            .search-box {
+                display: flex;
+                align-items: center;
+                background-color: #e5dfd3;
+                border: 1px solid #cebfa4;
+                border-radius: 30px;
+                padding: 10px 20px;
+                width: 100%;
+            }
+
+            .search-box i {
+                color: #888;
+                font-size: 20px;
+                margin-right: 15px;
+            }
+
+            .search-box input {
+                border: none;
+                background: transparent;
+                outline: none;
+                font-size: 15px;
+                width: 100%;
+                color: #444;
+                font-weight: 500;
+            }
+
+            .list-wrapper {
+                background-color: white;
+                border-radius: 16px;
+                padding: 25px 40px;
+                width: 1070px;
+                margin: 0 auto 10px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+                height: calc(100vh - 325px);
+                overflow-y: auto;
+                scrollbar-width: thin;
+                scrollbar-color: #dca782 transparent;
+                flex-shrink: 0;
+            }
+
+            .list-wrapper::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            .list-wrapper::-webkit-scrollbar-thumb {
+                background-color: #dca782;
+                border-radius: 10px;
+            }
+
+            .section-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: #111;
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+                gap: 12px;
+            }
+
+            .badge {
+                background-color: #d1b8a5;
+                color: #b03a2e;
+                font-size: 15px;
+                font-weight: bold;
+                border-radius: 50%;
+                width: 28px;
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .badge-green {
+                background-color: #b8e0c9;
+                color: #4f5852;
+            }
+
+            .badge-red {
+                background-color: #fca5a5;
+                color: #b91c1c;
+            }
+
+            .card-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 480px);
+                gap: 30px;
+            }
+
+            .booking-card {
+                border: 1px solid #ecdca0;
+                border-radius: 14px;
+                padding: 20px;
+                background-color: #fffdf5;
+                cursor: pointer;
+                transition: box-shadow 0.2s;
+            }
+
+            .booking-card:hover {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+
+            .guest-name {
+                font-size: 20px;
+                font-weight: bold;
+                color: #111;
+            }
+
+            .status-badge {
+                background-color: #d1a85c;
+                color: white;
+                padding: 5px 14px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: bold;
+            }
+
+            .status-badge-green {
+                background-color: #5fac77;
+            }
+
+            .status-badge-red {
+                background-color: #ef4444;
+            }
+
+            .room-name {
+                font-size: 17px;
+                color: #8f8f8f;
+                margin-bottom: 15px;
+            }
+
+            .info-row {
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                color: #808080;
+                margin-bottom: 8px;
+            }
+
+            .info-row i {
+                width: 25px;
+                text-align: left;
+                font-size: 15px;
+            }
+
+            .card-divider {
+                height: 1px;
+                background-color: #e5d3ab;
+                margin: 15px 0;
+            }
+
+            .card-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+            }
+
+            .price {
+                font-size: 20px;
+                font-weight: bold;
+                color: #d96f30;
+                margin-bottom: 10px;
+            }
+
+            .btn-cancel {
+                background-color: #b4161a;
+                color: white;
+                border: none;
+                padding: 8px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .btn-cancel.btn-cancel-active {
+                background-color: #ef4444;
+                animation: pulse-red 2s infinite;
+            }
+
+            @keyframes pulse-red {
+                0% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+                }
+
+                70% {
+                    transform: scale(1);
+                    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+                }
+
+                100% {
+                    transform: scale(0.95);
+                    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+                }
+            }
+
+            /* Modals */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 9999;
+                /* Higher than everything */
+                display: none;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: blur(3px);
+            }
+
+            .modal {
+                background: white;
+                border-radius: 16px;
+                width: 480px;
+                padding: 30px;
+                text-align: center;
+            }
+
+            .modal-header-red {
+                background-color: #cc363a;
+                color: white;
+                padding: 15px;
+                font-size: 22px;
+                border-radius: 10px;
+                margin-bottom: 25px;
+            }
+
+            .btn-red {
+                background-color: #cc363a;
+                color: white;
+                border: none;
+                padding: 12px 35px;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+
+            .btn-grey {
+                background-color: #e6e6e6;
+                color: #111;
+                border: none;
+                padding: 12px 35px;
+                border-radius: 10px;
+                cursor: pointer;
+            }
+
+            /* New Details Modal Styling - Compact Version */
+            .details-modal {
+                width: 480px;
+                text-align: left;
+                padding: 25px 35px;
+                border-radius: 16px;
+                position: relative;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            }
+
+            .details-modal-header h3 {
+                color: #d66b30;
+                font-size: 22px;
+                font-weight: bold;
+                margin-bottom: 5px;
+                margin-top: 0;
+            }
+
+            .details-modal-header .sub-title {
+                color: #8f8f8f;
+                font-size: 15px;
+                margin-bottom: 20px;
+            }
+
+            .details-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                margin-bottom: 5px;
+            }
+
+            .detail-item {
+                margin-bottom: 12px;
+            }
+
+            .detail-item .label {
+                color: #8f8f8f;
+                font-size: 14px;
+                margin-bottom: 4px;
+                display: block;
+            }
+
+            .detail-item .value {
+                color: #111;
+                font-size: 15px;
+                font-weight: 500;
+            }
+
+            .note-section .label {
+                color: #8f8f8f;
+                font-size: 14px;
+                margin-bottom: 8px;
+                display: block;
+            }
+
+            .note-box {
+                border: 1px solid #f2c7a9;
+                border-radius: 10px;
+                padding: 12px 15px;
+                margin-top: 2px;
+                min-height: 80px;
+                color: #222;
+                font-size: 14px;
+                line-height: 1.5;
+                background-color: #fff;
+            }
+
+            #btn-close-details {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                cursor: pointer;
+                font-size: 20px;
+                color: #bbb;
+                transition: color 0.2s;
+            }
+
+            #btn-close-details:hover {
+                color: #555;
+            }
+        </style>
+
+        <div class="ql-datphong-wrapper">
+            <!-- 3 Boxes -->
+            <div class="summary-container">
+                <div class="summary-box box-cho-checkin">
+                    <div class="title">Chờ check-in</div>
+                    <div class="count count-peach" id="summary-cho-checkin-count" th:text="${choCheckin.size()}">0</div>
+                </div>
+                <div class="summary-box box-da-checkin">
+                    <div class="title">Đã checkin</div>
+                    <div class="count count-green" id="summary-da-checkin-count" th:text="${daCheckin.size()}">0</div>
+                </div>
+                <div class="summary-box box-da-huy">
+                    <div class="title">Đã hủy</div>
+                    <div class="count count-red" id="summary-da-huy-count" th:text="${daHuy.size()}">0</div>
+                </div>
+            </div>
+
+            <!-- Thanh Tìm Kiếm -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="bookingSearchInput" placeholder="Tìm kiếm phòng" onkeyup="filterBookings()">
+                </div>
+            </div>
+
+            <!-- List Wrapper -->
+            <div class="list-wrapper">
+                <h2 class="section-title">Chờ check-in <span class="badge" id="badge-cho-checkin"
+                        th:text="${choCheckin.size()}">0</span></h2>
+                <div class="card-grid" id="grid-cho-checkin">
+                    <div th:each="booking : ${choCheckin}" class="booking-card"
+                        th:attr="onclick='openDetailsModal(\'' + ${booking.maDatPhong} + '\')'">
+                        <div class="card-header">
+                            <div class="guest-name" th:text="${booking.tenNguoiDat}">Tên khách</div>
+                            <div class="status-badge">Chờ check-in</div>
+                        </div>
+                        <div class="room-name" th:text="${booking.displaySoPhong}">Phòng ...</div>
+
+                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong
+                                th:text="${booking.maDatPhong}">DP...</strong></div>
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span
+                                th:text="${booking.sdtNguoiDat}">SĐT</span></div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> <span
+                                th:text="${booking.email}">Email</span></div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}"></span> &rarr;
+                            <span th:text="${#temporals.format(booking.ngayTra, 'dd/MM/yyyy')}"></span>
+                        </div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> <span
+                                th:text="${booking.soNguoiLon + ' NL - ' + booking.soTreEm + ' TE'}">2 người</span>
+                        </div>
+
+                        <div class="card-divider"></div>
+
+                        <div class="card-footer">
+                            <div class="booking-date">
+                                <div>Ngày đặt: <span
+                                        th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}">2026-04-20</span>
+                                </div>
+                            </div>
+                            <div class="price-section">
+                                <div class="price"
+                                    th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                                    1.500.000 ₫</div>
+                                <button class="btn-cancel"
+                                    th:data-id="${booking.maDatPhong}"
+                                    th:attr="onclick='openCancelModal(event, \'' + ${booking.maDatPhong} + '\')'">
+                                    <i class="fa-regular fa-circle-xmark"></i> Hủy phòng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title mt-4">Đã checkin <span class="badge badge-green" id="badge-da-checkin"
+                        th:text="${daCheckin.size()}">0</span></h2>
+                <div class="card-grid mb-4" id="grid-da-checkin">
+                    <div th:each="booking : ${daCheckin}" class="booking-card"
+                        th:attr="onclick='openDetailsModal(\'' + ${booking.maDatPhong} + '\')'">
+                        <div class="card-header">
+                            <div class="guest-name" th:text="${booking.tenNguoiDat}">Tên khách</div>
+                            <div class="status-badge status-badge-green">Đã check in</div>
+                        </div>
+                        <div class="room-name" th:text="${booking.displaySoPhong}">Phòng ...</div>
+
+                        <div class="info-row"><i class="fa-solid fa-barcode"></i> Mã: <strong
+                                th:text="${booking.maDatPhong}">DP...</strong></div>
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span
+                                th:text="${booking.sdtNguoiDat}">SĐT</span></div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> <span
+                                th:text="${booking.email}">Email</span></div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}"></span> &rarr;
+                            <span th:text="${#temporals.format(booking.ngayTra, 'dd/MM/yyyy')}"></span>
+                        </div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> <span
+                                th:text="${booking.soNguoiLon + ' NL - ' + booking.soTreEm + ' TE'}">2 người</span>
+                        </div>
+
+                        <div class="card-divider"></div>
+
+                        <div class="card-footer">
+                            <div class="booking-date">
+                                <div>Ngày đặt: <span
+                                        th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}">...</span></div>
+                            </div>
+                            <div class="price-section">
+                                <div class="price"
+                                    th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                                    ...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title mt-4" id="title-da-huy-section"
+                    th:style="${daHuy.size() > 0 ? 'display: flex;' : 'display: none;'}">Đã hủy <span
+                        class="badge badge-red" id="badge-da-huy" th:text="${daHuy.size()}">0</span></h2>
+                <div class="card-grid mb-4" id="grid-da-huy">
+                    <div th:each="booking : ${daHuy}" class="booking-card"
+                        th:attr="onclick='openDetailsModal(\'' + ${booking.maDatPhong} + '\')'">
+                        <div class="card-header">
+                            <div class="guest-name" th:text="${booking.tenNguoiDat}">Tên khách</div>
+                            <div class="status-badge status-badge-red">Đã hủy</div>
+                        </div>
+                        <div class="room-name" th:text="${booking.displaySoPhong}">Phòng ...</div>
+
+                        <div class="info-row"><i class="fa-solid fa-phone"></i> <span
+                                th:text="${booking.sdtNguoiDat}">SĐT</span></div>
+                        <div class="info-row"><i class="fa-regular fa-envelope"></i> <span
+                                th:text="${booking.email}">Email</span></div>
+                        <div class="info-row"><i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}"></span> &rarr;
+                            <span th:text="${#temporals.format(booking.ngayTra, 'dd/MM/yyyy')}"></span>
+                        </div>
+                        <div class="info-row"><i class="fa-solid fa-user"></i> <span
+                                th:text="${booking.soNguoiLon + ' NL - ' + booking.soTreEm + ' TE'}">2 người</span>
+                        </div>
+
+                        <div class="card-divider"></div>
+
+                        <div class="card-footer">
+                            <div class="booking-date">
+                                <div>Ngày đặt: <span
+                                        th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy')}">...</span></div>
+                            </div>
+                            <div class="price-section">
+                                <div class="price"
+                                    th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
+                                    ...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div class="modal-overlay" id="cancel-modal">
+            <div class="modal">
+                <h3 class="modal-header-red">Xác nhận Hủy phòng</h3>
+                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 20px;">
+                    <button class="btn-red" id="btn-confirm-cancel">Xác nhận</button>
+                    <button class="btn-grey" id="btn-close-cancel">Đóng</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="success-modal">
+            <div class="modal">
+                <i class="fa-solid fa-circle-check" style="font-size: 70px; color: #17a34a; margin-bottom: 20px;"></i>
+                <h3>Đã Hủy đặt phòng!</h3>
+                <button class="btn-red" style="padding: 12px 60px; margin-top: 20px;"
+                    id="btn-done-success">Xong</button>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="details-modal">
+            <div class="modal details-modal">
+                <i class="fa-solid fa-xmark" id="btn-close-details"></i>
+                <div class="details-modal-header">
+                    <h3>Chi tiết đặt phòng</h3>
+                    <div class="sub-title">Mã đặt phòng: <span id="detail-code">DP001</span></div>
+                </div>
+
+                <div class="details-grid">
+                    <div class="details-col">
+                        <div class="detail-item">
+                            <span class="label">Họ và tên</span>
+                            <div class="value" id="detail-name">Nguyễn Văn An</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Số điện thoại</span>
+                            <div class="value" id="detail-phone">0788624523</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Email</span>
+                            <div class="value" id="detail-email">nynguyen05@gmail.com</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Số lượng người</span>
+                            <div class="value" id="detail-guests">2 người lớn - 0 trẻ em</div>
+                        </div>
+                    </div>
+
+                    <div class="details-col">
+                        <div class="detail-item">
+                            <span class="label">Ngày nhận phòng</span>
+                            <div class="value" id="detail-checkin">14h - 20/01/2026</div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Ngày trả phòng</span>
+                            <div class="value" id="detail-checkout">12h - 23/01/2026</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note-section">
+                    <span class="label">Ghi chú</span>
+                    <div class="note-box" id="detail-note">
+                        Không có ghi chú.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            const choCheckin = /*[[${choCheckin}]]*/[];
+            const daCheckin = /*[[${daCheckin}]]*/[];
+            const daHuy = /*[[${daHuy}]]*/[];
+            const allBookings = [...choCheckin, ...daCheckin, ...daHuy];
+            let cancelTargetId = null;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const now = new Date();
+                document.querySelectorAll('.btn-cancel').forEach(btn => {
+                    const maDatPhong = btn.getAttribute('data-id');
+                    if (maDatPhong) {
+                        const booking = allBookings.find(b => b.maDatPhong === maDatPhong);
+                        if (booking && booking.ngayNhan) {
+                            let checkinDate;
+                            if (Array.isArray(booking.ngayNhan)) {
+                                // Jackson localdatetime array [year, month, day, hour, minute]
+                                checkinDate = new Date(booking.ngayNhan[0], booking.ngayNhan[1] - 1, booking.ngayNhan[2], 16, 0, 0);
+                            } else if (typeof booking.ngayNhan === 'string') {
+                                const d = new Date(booking.ngayNhan);
+                                checkinDate = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 16, 0, 0);
+                            }
+
+                            if (checkinDate) {
+                                if (now > checkinDate) {
+                                    btn.classList.add('btn-cancel-active');
+                                    btn.style.backgroundColor = ''; // Restore original
+                                    btn.disabled = false;
+                                } else {
+                                    btn.classList.remove('btn-cancel-active');
+                                    btn.style.backgroundColor = '#d1d5db';
+                                    btn.style.color = '#6b7280';
+                                    btn.style.cursor = 'not-allowed';
+                                    btn.style.animation = 'none';
+                                    btn.disabled = true;
+                                    btn.removeAttribute('onclick');
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            function filterBookings() {
+                const search = document.getElementById("bookingSearchInput").value.toLowerCase();
+                document.querySelectorAll(".booking-card").forEach(card => {
+                    card.style.display = card.innerText.toLowerCase().includes(search) ? "block" : "none";
+                });
+            }
+
+            function openDetailsModal(maDatPhong) {
+                const b = allBookings.find(x => x.maDatPhong === maDatPhong);
+                if (!b) return;
+
+                document.getElementById("detail-code").innerText = b.maDatPhong;
+                document.getElementById("detail-name").innerText = b.tenNguoiDat;
+                document.getElementById("detail-phone").innerText = b.sdtNguoiDat;
+                document.getElementById("detail-email").innerText = b.email || "---";
+                document.getElementById("detail-guests").innerText = `${b.soNguoiLon} người lớn - ${b.soTreEm} trẻ em`;
+
+                document.getElementById("detail-checkin").innerText = "14h - " + formatDate(b.ngayNhan);
+                document.getElementById("detail-checkout").innerText = "12h - " + formatDate(b.ngayTra);
+
+                // Hiển thị ghi chú từ database
+                document.getElementById("detail-note").innerText = b.ghiChu || "Không có ghi chú.";
+
+                document.getElementById("details-modal").style.display = "flex";
+            }
+
+            function formatDate(dateArr) {
+                if (!dateArr) return "";
+                if (Array.isArray(dateArr)) return `${dateArr[2]}/${dateArr[1]}/${dateArr[0]}`;
+                if (typeof dateArr === 'string') {
+                    const d = new Date(dateArr);
+                    return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+                }
+                return dateArr;
+            }
+
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+            }
+
+            function openCancelModal(event, maDatPhong) {
+                event.stopPropagation();
+                cancelTargetId = maDatPhong;
+                document.getElementById("cancel-modal").style.display = "flex";
+            }
+
+            document.getElementById("btn-close-details").onclick = () => document.getElementById("details-modal").style.display = "none";
+            document.getElementById("btn-close-cancel").onclick = () => document.getElementById("cancel-modal").style.display = "none";
+
+            document.getElementById("btn-confirm-cancel").onclick = async () => {
+                if (!cancelTargetId) return;
+                const resp = await fetch(`/dat-phong/huy?maDatPhong=${cancelTargetId}`, { method: 'POST' });
+                if (resp.ok) {
+                    document.getElementById("cancel-modal").style.display = "none";
+                    document.getElementById("success-modal").style.display = "flex";
+                } else alert("Lỗi khi hủy phòng");
+            };
+
+            document.getElementById("btn-done-success").onclick = () => window.location.reload();
+
+            window.onclick = (e) => { if (e.target.classList.contains("modal-overlay")) e.target.style.display = "none"; };
+        </script>
+    </div>
+</body>
+
+</html>

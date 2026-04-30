@@ -24,8 +24,46 @@ public class DichVuService {
         return dichVuRepository.findAll();
     }
 
+    @Transactional
+    public DichVu createDichVu(DichVu dichVu) {
+        return dichVuRepository.save(dichVu);
+    }
+
+    @Transactional
+    public DichVu updateDichVu(Integer id, DichVu updated) {
+        DichVu dichVu = dichVuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+        dichVu.setTenDichVu(updated.getTenDichVu());
+        dichVu.setDonGia(updated.getDonGia());
+        return dichVuRepository.save(dichVu);
+    }
+
+    @Transactional
+    public void deleteDichVu(Integer id) {
+        dichVuRepository.deleteById(id);
+    }
+
     public List<TaiSan> getAllTaiSan() {
         return taiSanRepository.findAll();
+    }
+
+    @Transactional
+    public TaiSan createTaiSan(TaiSan taiSan) {
+        return taiSanRepository.save(taiSan);
+    }
+
+    @Transactional
+    public TaiSan updateTaiSan(Integer id, TaiSan updated) {
+        TaiSan taiSan = taiSanRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tài sản không tồn tại"));
+        taiSan.setTenTaiSan(updated.getTenTaiSan());
+        taiSan.setGiaTriBoiThuong(updated.getGiaTriBoiThuong());
+        return taiSanRepository.save(taiSan);
+    }
+
+    @Transactional
+    public void deleteTaiSan(Integer id) {
+        taiSanRepository.deleteById(id);
     }
 
     public List<TaiSan> getTaiSanByPhong(Integer idPhong) {
@@ -51,7 +89,7 @@ public class DichVuService {
     }
 
     @Transactional
-    public void addThietHai(Integer idLuutru, Integer idTaisan, String mucDo, BigDecimal fineAmount) {
+    public void addThietHai(Integer idLuutru, Integer idTaisan, String mucDo, Integer soLuong, BigDecimal fineAmount) {
         LuuTru luuTru = luuTruRepository.findById(idLuutru)
                 .orElseThrow(() -> new RuntimeException("Bản ghi lưu trú không tồn tại"));
         TaiSan taiSan = taiSanRepository.findById(idTaisan)
@@ -61,6 +99,7 @@ public class DichVuService {
         thietHai.setLuuTru(luuTru);
         thietHai.setTaiSan(taiSan);
         thietHai.setMucDo(mucDo);
+        thietHai.setSoLuong(soLuong);
         thietHai.setSoTienBoiThuong(fineAmount);
         thietHai.setTrangThai("Chưa thanh toán");
 
@@ -76,6 +115,17 @@ public class DichVuService {
             sd.setThanhTien(sd.getDichVu().getDonGia().multiply(new BigDecimal(quantity)));
         }
         suDungDichVuRepository.save(sd);
+    }
+
+    @Transactional
+    public void updateThietHaiQty(Integer idThietHai, Integer quantity) {
+        ThietHai th = thietHaiRepository.findById(idThietHai)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bản ghi bồi thường"));
+        th.setSoLuong(quantity);
+        if (th.getTaiSan() != null && th.getTaiSan().getGiaTriBoiThuong() != null) {
+            th.setSoTienBoiThuong(th.getTaiSan().getGiaTriBoiThuong().multiply(new BigDecimal(quantity)));
+        }
+        thietHaiRepository.save(th);
     }
 
     @Transactional

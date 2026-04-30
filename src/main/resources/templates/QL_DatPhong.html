@@ -512,7 +512,8 @@
                                 <div class="price"
                                     th:text="${#numbers.formatDecimal(booking.tongThanhToan, 0, 'COMMA', 0, 'POINT') + ' ₫'}">
                                     1.500.000 ₫</div>
-                                <button class="btn-cancel btn-cancel-active"
+                                <button class="btn-cancel"
+                                    th:data-id="${booking.maDatPhong}"
                                     th:attr="onclick='openCancelModal(event, \'' + ${booking.maDatPhong} + '\')'">
                                     <i class="fa-regular fa-circle-xmark"></i> Hủy phòng
                                 </button>
@@ -679,6 +680,42 @@
             const daHuy = /*[[${daHuy}]]*/[];
             const allBookings = [...choCheckin, ...daCheckin, ...daHuy];
             let cancelTargetId = null;
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const now = new Date();
+                document.querySelectorAll('.btn-cancel').forEach(btn => {
+                    const maDatPhong = btn.getAttribute('data-id');
+                    if (maDatPhong) {
+                        const booking = allBookings.find(b => b.maDatPhong === maDatPhong);
+                        if (booking && booking.ngayNhan) {
+                            let checkinDate;
+                            if (Array.isArray(booking.ngayNhan)) {
+                                // Jackson localdatetime array [year, month, day, hour, minute]
+                                checkinDate = new Date(booking.ngayNhan[0], booking.ngayNhan[1] - 1, booking.ngayNhan[2], 16, 0, 0);
+                            } else if (typeof booking.ngayNhan === 'string') {
+                                const d = new Date(booking.ngayNhan);
+                                checkinDate = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 16, 0, 0);
+                            }
+
+                            if (checkinDate) {
+                                if (now > checkinDate) {
+                                    btn.classList.add('btn-cancel-active');
+                                    btn.style.backgroundColor = ''; // Restore original
+                                    btn.disabled = false;
+                                } else {
+                                    btn.classList.remove('btn-cancel-active');
+                                    btn.style.backgroundColor = '#d1d5db';
+                                    btn.style.color = '#6b7280';
+                                    btn.style.cursor = 'not-allowed';
+                                    btn.style.animation = 'none';
+                                    btn.disabled = true;
+                                    btn.removeAttribute('onclick');
+                                }
+                            }
+                        }
+                    }
+                });
+            });
 
             function filterBookings() {
                 const search = document.getElementById("bookingSearchInput").value.toLowerCase();

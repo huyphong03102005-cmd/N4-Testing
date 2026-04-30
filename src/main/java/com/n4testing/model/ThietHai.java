@@ -22,6 +22,9 @@ public class ThietHai {
     @Column(name = "muc_do")
     private String mucDo;
 
+    @Column(name = "so_luong")
+    private Integer soLuong;
+
     @Column(name = "so_tien_boi_thuong")
     private BigDecimal soTienBoiThuong;
 

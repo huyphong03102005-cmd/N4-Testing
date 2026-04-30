@@ -95,7 +95,7 @@ public class NhanPhongService {
      */
     public List<DatPhong> getDanhSachChoNhanPhong() {
         List<DatPhong> list = datPhongRepository.findByTrangThai("Chờ check-in");
-        list.addAll(datPhongRepository.findByTrangThai("Đã đặt"));
+        list.addAll(datPhongRepository.findByTrangThai("Đã đặt cọc"));
         return list;
     }
 
@@ -107,7 +107,7 @@ public class NhanPhongService {
             return getDanhSachChoNhanPhong();
         }
         List<DatPhong> list = datPhongRepository.searchBookings(keyword, "Chờ check-in");
-        list.addAll(datPhongRepository.searchBookings(keyword, "Đã đặt"));
+        list.addAll(datPhongRepository.searchBookings(keyword, "Đã đặt cọc"));
         return list;
     }
 

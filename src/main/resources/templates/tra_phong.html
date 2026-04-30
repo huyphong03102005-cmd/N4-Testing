@@ -437,9 +437,57 @@
             </div>
         </div>
 
+        <!-- Modal Xác nhận (Confirm) -->
+        <div class="overlay" id="confirmPopup">
+            <div class="popup" style="width: 380px;">
+                <div class="popup-icon" style="color: #e74c3c; font-size: 50px; margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="popup-title" style="font-size: 20px; margin-bottom: 15px;">Xác nhận xóa</div>
+                <p id="confirmMessage" style="color: #555; margin-bottom: 25px; line-height: 1.5;">Bạn có chắc chắn muốn xóa không?</p>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <button class="popup-btn" style="background: #ddd; color: #333; width: 120px;" onclick="closeConfirmPopup()">HUỶ</button>
+                    <button class="popup-btn" style="background: #e74c3c; width: 120px;" id="confirmYesBtn">XÓA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Thông báo (Alert) -->
+        <div class="overlay" id="alertPopup">
+            <div class="popup" style="width: 380px;">
+                <div class="popup-icon" style="color: #e74c3c; font-size: 50px; margin-bottom: 15px;"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <div class="popup-title" style="font-size: 20px; margin-bottom: 15px;">Thông báo</div>
+                <p id="alertMessage" style="color: #555; margin-bottom: 25px; line-height: 1.5;"></p>
+                <button class="popup-btn" style="width: 120px;" onclick="closeAlertPopup()">ĐÓNG</button>
+            </div>
+        </div>
+
         <script src="shared.js"></script>
         <script th:inline="javascript">
             const formatMoney = (amount) => Math.ceil(amount).toLocaleString('vi-VN');
+
+            // --- Custom Modal Functions ---
+            function showCustomAlert(msg) {
+                document.getElementById('alertMessage').innerText = msg;
+                document.getElementById('alertPopup').style.display = 'flex';
+            }
+            window.closeAlertPopup = () => {
+                document.getElementById('alertPopup').style.display = 'none';
+            }
+
+            function showCustomConfirm(msg) {
+                return new Promise(resolve => {
+                    document.getElementById('confirmMessage').innerText = msg;
+                    document.getElementById('confirmPopup').style.display = 'flex';
+                    
+                    document.getElementById('confirmYesBtn').onclick = () => {
+                        document.getElementById('confirmPopup').style.display = 'none';
+                        resolve(true);
+                    };
+                    window.closeConfirmPopup = () => {
+                        document.getElementById('confirmPopup').style.display = 'none';
+                        resolve(false);
+                    };
+                });
+            }
 
             // Lấy dữ liệu từ Thymeleaf
             let floorsMapped = [[${ floors }]];
@@ -664,7 +712,7 @@
             function openInvoiceForm() {
                 const cbCash = document.getElementById('cbCash').checked;
                 const cbQr = document.getElementById('cbQr').checked;
-                if (!cbCash && !cbQr) { alert('Vui lòng chọn 1 phương thức thanh toán!'); return; }
+                if (!cbCash && !cbQr) { showCustomAlert('Vui lòng chọn 1 phương thức thanh toán!'); return; }
 
                 const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
                 document.getElementById('invCust').innerText = room.customer || '';
@@ -712,11 +760,11 @@
                         document.getElementById('printSuccessPopup').style.display = 'flex';
                     } else {
                         const err = await resp.text();
-                        alert("Lỗi khi thanh toán: " + err);
+                        showCustomAlert("Lỗi khi thanh toán: " + err);
                     }
                 } catch (err) {
                     console.error("Lỗi:", err);
-                    alert("Có lỗi xảy ra khi kết nối máy chủ.");
+                    showCustomAlert("Có lỗi xảy ra khi kết nối máy chủ.");
                 }
             }
 
@@ -744,7 +792,7 @@
                             if (!resp.ok) throw new Error("Update failed");
                         } catch (e) {
                             console.error(e);
-                            alert("Không thể cập nhật số lượng trên máy chủ.");
+                            showCustomAlert("Không thể cập nhật số lượng trên máy chủ.");
                             return;
                         }
                     }
@@ -757,7 +805,8 @@
             async function deleteCheckoutItem(name, type) {
                 const room = roomsData.find(r => r.id === selectedCheckoutRoomId);
                 if (!room) return;
-                if (confirm(`Bạn có chắc chắn muốn xóa "${name}"?`)) {
+                const isConfirm = await showCustomConfirm(`Bạn có chắc chắn muốn xóa "${name}"?`);
+                if (isConfirm) {
                     const item = room.items.find(i => i.name === name && i.type === type);
                     if (item && item.id) {
                         try {
@@ -766,7 +815,7 @@
                             if (!resp.ok) throw new Error("Delete failed");
                         } catch (e) {
                             console.error(e);
-                            alert("Không thể xóa mục này trên máy chủ.");
+                            showCustomAlert("Không thể xóa mục này trên máy chủ.");
                             return;
                         }
                     }
