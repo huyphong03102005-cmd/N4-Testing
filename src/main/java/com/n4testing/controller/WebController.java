@@ -118,11 +118,17 @@ public class WebController {
     // 3. /dat-phong → DAT_PHONG
     @GetMapping("/dat-phong")
     public String bookRoom(Model model) {
-        List<Phong> availableRooms = nhanPhongService.getAllPhongs().stream()
-                .filter(p -> "Trống".equals(p.getTrangThai()))
+        List<Phong> allRooms = nhanPhongService.getAllPhongs().stream()
+                .sorted(Comparator.comparing(Phong::getTenPhong, (s1, s2) -> {
+                    try {
+                        return Integer.compare(Integer.parseInt(s1), Integer.parseInt(s2));
+                    } catch (NumberFormatException e) {
+                        return s1.compareTo(s2);
+                    }
+                }))
                 .collect(Collectors.toList());
         
-        model.addAttribute("availableRooms", availableRooms);
+        model.addAttribute("availableRooms", allRooms); // Giữ tên biến để tránh sửa template nhiều
         model.addAttribute("currentPage", "datphong");
         return "DAT_PHONG";
     }

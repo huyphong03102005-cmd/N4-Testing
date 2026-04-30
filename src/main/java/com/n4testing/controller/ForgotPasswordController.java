@@ -35,22 +35,26 @@ public class ForgotPasswordController {
         Optional<TaiKhoan> account = taiKhoanRepository.findByEmail(email);
         
         if (account.isPresent()) {
-            // Tạo mã OTP 6 chữ số
             String otp = String.format("%06d", new Random().nextInt(999999));
-            
-            // Lưu OTP vào session (hoặc database/redis trong thực tế)
             session.setAttribute("otp", otp);
             session.setAttribute("resetEmail", email);
-            
-            // Gửi OTP qua email
             mailService.sendOtp(email, otp);
             
-            model.addAttribute("email", email);
-            return "verify_otp"; // Chuyển sang bước 2
+            return "redirect:/verify-otp"; // Chuyển hướng sang URL mới
         } else {
             model.addAttribute("error", "Email không tồn tại trong hệ thống!");
             return "forgot_password";
         }
+    }
+
+    // Bước 2: Hiển thị trang nhập OTP
+    @GetMapping("/verify-otp")
+    public String showVerifyOtpPage(HttpSession session, Model model) {
+        String email = (String) session.getAttribute("resetEmail");
+        if (email == null) return "redirect:/forgot-password";
+        
+        model.addAttribute("email", email);
+        return "verify_otp";
     }
 
     // Bước 2: Xử lý xác thực OTP
@@ -63,13 +67,22 @@ public class ForgotPasswordController {
         String sessionEmail = (String) session.getAttribute("resetEmail");
         
         if (sessionOtp != null && sessionOtp.equals(otp) && email.equals(sessionEmail)) {
-            model.addAttribute("email", email);
-            return "reset_password"; // Chuyển sang bước 3
+            return "redirect:/reset-password"; // Chuyển hướng sang bước 3
         } else {
             model.addAttribute("email", email);
             model.addAttribute("error", "Mã OTP không chính xác hoặc đã hết hạn!");
             return "verify_otp";
         }
+    }
+
+    // Bước 3: Hiển thị trang đặt lại mật khẩu
+    @GetMapping("/reset-password")
+    public String showResetPasswordPage(HttpSession session, Model model) {
+        String email = (String) session.getAttribute("resetEmail");
+        if (email == null) return "redirect:/forgot-password";
+        
+        model.addAttribute("email", email);
+        return "reset_password";
     }
 
     // Bước 3: Xử lý đặt lại mật khẩu
@@ -88,15 +101,13 @@ public class ForgotPasswordController {
         Optional<TaiKhoan> accountOpt = taiKhoanRepository.findByEmail(email);
         if (accountOpt.isPresent()) {
             TaiKhoan account = accountOpt.get();
-            account.setMatKhau(password); // Trong thực tế nên mã hóa mật khẩu (BCrypt)
+            account.setMatKhau(password);
             taiKhoanRepository.save(account);
             
-            // Xóa session sau khi hoàn tất
             session.removeAttribute("otp");
             session.removeAttribute("resetEmail");
             
-            model.addAttribute("success", "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.");
-            return "dang_nhap";
+            return "redirect:/login?success=true";
         } else {
             model.addAttribute("error", "Đã có lỗi xảy ra. Vui lòng thử lại.");
             return "forgot_password";

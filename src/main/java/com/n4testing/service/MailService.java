@@ -27,7 +27,15 @@ public class MailService {
             System.out.println("OTP sent to " + to + ": " + otp);
         } catch (Exception e) {
             System.err.println("Error sending email: " + e.getMessage());
-            // In case of error (e.g. no SMTP configured), we still log it for testing
+        }
+
+        // Ghi OTP vào file để phục vụ Test Automation (Dùng đường dẫn tuyệt đối)
+        try {
+            String path = System.getProperty("user.dir") + "/otp.txt";
+            java.nio.file.Files.writeString(java.nio.file.Paths.get(path), otp);
+            System.out.println("OTP saved to: " + path);
+        } catch (java.io.IOException e) {
+            System.err.println("Error writing OTP to file: " + e.getMessage());
         }
     }
 }

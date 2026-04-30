@@ -43,6 +43,37 @@ public class DatPhongService {
                              Integer soNguoiLon, Integer soTreEm, String email,
                              BigDecimal tienCoc, BigDecimal tongThanhToan, String phuongThuc) {
         
+        // 0. Validation logic
+        if (soNguoiLon == null || soNguoiLon < 1) {
+            throw new RuntimeException("Số người lớn phải ít nhất là 1.");
+        }
+        if (soTreEm == null || soTreEm < 0) {
+            throw new RuntimeException("Số trẻ em không hợp lệ.");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (ngayNhan.isBefore(now.minusMinutes(1))) { // Allow 1 min buffer
+            throw new RuntimeException("Ngày nhận phải là thời gian trong tương lai.");
+        }
+        if (!ngayTra.isAfter(ngayNhan)) {
+            throw new RuntimeException("Ngày trả phải lớn hơn ngày nhận.");
+        }
+
+        // 2. Tìm phòng
+        Phong phong = phongRepository.findByTenPhong(tenPhong)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng: " + tenPhong));
+
+        if (soNguoiLon + soTreEm > phong.getSucChua()) {
+            throw new RuntimeException("Tổng số người (" + (soNguoiLon + soTreEm) + ") vượt quá sức chứa của phòng (" + phong.getSucChua() + " người).");
+        }
+
+        // Kiểm tra trùng lịch
+        long overlaps = datPhongRepository.countOverlappingBookings(phong.getIdPhong(), ngayNhan, ngayTra);
+        if (overlaps > 0) {
+            throw new RuntimeException("Phòng " + tenPhong + " đã có người đặt trong khoảng thời gian từ " + 
+                ngayNhan.toLocalDate() + " đến " + ngayTra.toLocalDate() + ".");
+        }
+
         // 1. Tìm hoặc tạo khách hàng (Trim whitespace để tìm chính xác hơn)
         String trimmedCccd = (cccd != null) ? cccd.trim() : "";
         String trimmedSdt = (sdt != null) ? sdt.trim() : "";
@@ -63,10 +94,6 @@ public class DatPhongService {
             khachHang.setCccd(trimmedCccd);
             khachHang = khachHangRepository.save(khachHang);
         }
-
-        // 2. Tìm phòng
-        Phong phong = phongRepository.findByTenPhong(tenPhong)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng: " + tenPhong));
 
         // 3. Tạo phiếu đặt phòng
         DatPhong datPhong = new DatPhong();

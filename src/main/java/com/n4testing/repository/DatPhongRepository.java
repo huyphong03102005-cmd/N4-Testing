@@ -18,4 +18,13 @@ public interface DatPhongRepository extends JpaRepository<DatPhong, String> {
            "OR d.maDatPhong LIKE CONCAT('%', :keyword, '%') " +
            "OR d.sdtNguoiDat LIKE CONCAT('%', :keyword, '%')) AND d.trangThai = :status")
     List<DatPhong> searchBookings(@Param("keyword") String keyword, @Param("status") String status);
+
+    @Query("SELECT COUNT(ct) FROM ChiTietDatPhong ct " +
+           "JOIN ct.datPhong dp " +
+           "WHERE ct.phong.idPhong = :idPhong " +
+           "AND dp.trangThai != 'Đã hủy' " +
+           "AND (dp.ngayNhan < :ngayTra AND dp.ngayTra > :ngayNhan)")
+    long countOverlappingBookings(@Param("idPhong") Integer idPhong, 
+                                 @Param("ngayNhan") java.time.LocalDateTime ngayNhan, 
+                                 @Param("ngayTra") java.time.LocalDateTime ngayTra);
 }
