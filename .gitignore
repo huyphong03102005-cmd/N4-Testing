@@ -1,0 +1,11 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+/target/
+.idea/
+.vscode/
+*.class
+*.log
+*.jar
+*.war
+.DS_Store
+otp.txt
