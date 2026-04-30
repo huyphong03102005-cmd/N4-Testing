@@ -1,6 +1,7 @@
 com\n4testing\repository\DatPhongRepository.class
 com\n4testing\service\UserService.class
 com\n4testing\repository\LuuTruRepository.class
+com\n4testing\controller\RoomController.class
 com\n4testing\model\ChiTietDatPhong.class
 com\n4testing\model\LuuTru.class
 com\n4testing\repository\HoaDonRepository.class
@@ -18,12 +19,14 @@ com\n4testing\repository\ChiTietDatPhongRepository.class
 com\n4testing\repository\TaiSanRepository.class
 com\n4testing\model\TaiSan.class
 com\n4testing\repository\TaiKhoanRepository.class
+com\n4testing\service\MailService.class
 com\n4testing\model\HoaDon.class
 com\n4testing\model\DatPhong.class
 com\n4testing\service\TraPhongService.class
 com\n4testing\model\User.class
 com\n4testing\model\ThietHai.class
 com\n4testing\controller\SummaryController.class
+com\n4testing\dto\RoomInfoDTO.class
 com\n4testing\controller\UserController.class
 com\n4testing\repository\ThietHaiRepository.class
 com\n4testing\repository\ThanhToanRepository.class
@@ -31,9 +34,11 @@ com\n4testing\service\DichVuService.class
 com\n4testing\controller\DichVuController.class
 com\n4testing\controller\TraPhongController.class
 com\n4testing\controller\DatPhongController.class
+com\n4testing\controller\ForgotPasswordController.class
 com\n4testing\service\DatPhongService.class
 com\n4testing\controller\NhanPhongController.class
 com\n4testing\model\ThanhToan.class
+com\n4testing\dto\RoomInfoDTO$RoomInfoDTOBuilder.class
 com\n4testing\config\WebSocketConfig.class
 com\n4testing\model\DichVu.class
 com\n4testing\model\SuDungDichVu.class

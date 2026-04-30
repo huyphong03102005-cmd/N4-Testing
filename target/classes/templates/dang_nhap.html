@@ -191,12 +191,18 @@
                     <span th:text="${error}"></span>
                 </div>
 
+                <!-- Hiển thị thành công nếu có -->
+                <div th:if="${success}"
+                    style="color: #4a7c59; font-size: 13px; margin-bottom: 15px; font-weight: 600; text-align: center;">
+                    <span th:text="${success}"></span>
+                </div>
+
                 <div class="form-options">
                     <label class="remember-me">
                         <input type="checkbox" id="remember">
                         Ghi nhớ đăng nhập
                     </label>
-                    <a href="#" class="forgot-pw">Quên mật khẩu?</a>
+                    <a href="/forgot-password" class="forgot-pw">Quên mật khẩu?</a>
                 </div>
 
                 <button type="submit" class="btn-login">Đăng nhập</button>
