@@ -604,6 +604,74 @@
         .btn-save-done:hover {
             filter: brightness(0.92);
         }
+
+        /* --- Popup Lỗi --- */
+        .error-alert-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9800;
+            background: rgba(0, 0, 0, 0.30);
+            justify-content: center;
+            align-items: center;
+            animation: overlayFadeIn 0.18s ease;
+        }
+
+        .error-alert-overlay.show {
+            display: flex;
+        }
+
+        @keyframes overlayFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .error-alert-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 40px 50px 32px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+            min-width: 300px;
+            max-width: 420px;
+            animation: cardPopIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes cardPopIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .error-alert-card i {
+            font-size: 52px;
+            color: #e05c5c;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .error-alert-card p {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .btn-error-close {
+            padding: 10px 36px;
+            border-radius: 8px;
+            border: none;
+            background: #e05c5c;
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+
+        .btn-error-close:hover {
+            filter: brightness(0.90);
+        }
     </style>
 </head>
 
@@ -769,6 +837,15 @@
             </div>
         </div>
 
+        <!-- Popup Lỗi chung -->
+        <div class="error-alert-overlay" id="errorAlertOverlay">
+            <div class="error-alert-card">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <p id="errorAlertMessage">Đã có lỗi xảy ra.</p>
+                <button class="btn-error-close" onclick="closeErrorAlert()">Đóng</button>
+            </div>
+        </div>
+
         <script src="shared.js"></script>
         <script>
             function toggleLogoutPopup() {
@@ -811,14 +888,60 @@
             function closeUserInfo() {
                 document.getElementById('userInfoOverlay').classList.remove('show');
             }
+            function showErrorAlert(msg) {
+                document.getElementById('errorAlertMessage').textContent = msg;
+                document.getElementById('errorAlertOverlay').classList.add('show');
+            }
+
+            function closeErrorAlert() {
+                document.getElementById('errorAlertOverlay').classList.remove('show');
+            }
+
             function showSaveSuccess() {
+                // --- Validation: không cho để trống ---
+                const requiredFields = [
+                    { id: 'editFullName',  label: 'Họ và tên' },
+                    { id: 'editBirthday',  label: 'Ngày sinh' },
+                    { id: 'editGender',    label: 'Giới tính' },
+                    { id: 'editPhone',     label: 'Số điện thoại' },
+                    { id: 'editPosition',  label: 'Chức vụ' }
+                ];
+
+                let emptyLabels = [];
+                requiredFields.forEach(({ id, label }) => {
+                    const input = document.getElementById(id);
+                    if (!input.value.trim()) {
+                        input.style.borderBottom = '2px solid #e05c5c';
+                        input.style.background = '#fff5f5';
+                        emptyLabels.push(label);
+                    } else {
+                        input.style.borderBottom = '';
+                        input.style.background = '';
+                    }
+                });
+
+                if (emptyLabels.length > 0) {
+                    showErrorAlert('Vui lòng điền đầy đủ các trường bắt buộc:\n' + emptyLabels.join(', '));
+                    return;
+                }
+
+                // Validation số điện thoại
+                const phoneVal = document.getElementById('editPhone').value.trim();
+                if (!/^\d{10}$/.test(phoneVal)) {
+                    const phoneInput = document.getElementById('editPhone');
+                    phoneInput.style.borderBottom = '2px solid #e05c5c';
+                    phoneInput.style.background = '#fff5f5';
+                    showErrorAlert('Số điện thoại không hợp lệ!\nVui lòng nhập đúng 10 chữ số.');
+                    return;
+                }
+
                 const profileData = {
-                    hoTen: document.getElementById('editFullName').value,
-                    email: document.getElementById('profileDisplayEmail').innerText, // Giữ email cũ hoặc thêm input nếu cần
-                    ngaySinh: document.getElementById('editBirthday').value,
-                    gioiTinh: document.getElementById('editGender').value,
-                    soDienThoai: document.getElementById('editPhone').value,
-                    chucVu: document.getElementById('editPosition').value
+                    hoTen: document.getElementById('editFullName').value.trim(),
+                    email: document.getElementById('profileDisplayEmail').innerText,
+                    ngaySinh: document.getElementById('editBirthday').value.trim(),
+                    gioiTinh: document.getElementById('editGender').value.trim(),
+                    soDienThoai: phoneVal,
+                    chucVu: document.getElementById('editPosition').value.trim()
                 };
 
                 fetch('/api/users/update-profile', {
@@ -829,15 +952,14 @@
                     .then(response => {
                         if (response.ok) {
                             document.getElementById('saveSuccessOverlay').classList.add('show');
-                            // Cập nhật lại text hiển thị
                             document.getElementById('profileDisplayName').innerText = profileData.hoTen;
                         } else {
-                            alert("Lỗi khi cập nhật thông tin!");
+                            showErrorAlert('Lỗi khi cập nhật thông tin!\nVui lòng thử lại.');
                         }
                     })
                     .catch(err => {
                         console.error(err);
-                        alert("Có lỗi xảy ra.");
+                        showErrorAlert('Không thể kết nối đến máy chủ.\nVui lòng thử lại sau.');
                     });
             }
             function closeSaveSuccess() {
@@ -866,12 +988,12 @@
                 const confirmPassword = document.getElementById('confirmPassword').value;
 
                 if (!currentPassword || !newPassword || !confirmPassword) {
-                    alert('Vui lòng điền đầy đủ các trường!');
+                    showErrorAlert('Vui lòng điền đầy đủ tất cả\ncác trường mật khẩu!');
                     return;
                 }
 
                 if (newPassword !== confirmPassword) {
-                    alert('Mật khẩu xác nhận không khớp!');
+                    showErrorAlert('Mật khẩu xác nhận không khớp!\nVui lòng kiểm tra lại.');
                     return;
                 }
 
