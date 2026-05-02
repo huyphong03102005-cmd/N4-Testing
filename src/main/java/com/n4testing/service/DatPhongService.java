@@ -52,8 +52,9 @@ public class DatPhongService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        if (ngayNhan.isBefore(now.minusMinutes(1))) { // Allow 1 min buffer
-            throw new RuntimeException("Ngày nhận phải là thời gian trong tương lai.");
+        // So sánh theo ngày (LocalDate) để cho phép đặt phòng ngay trong ngày hôm nay
+        if (ngayNhan.toLocalDate().isBefore(now.toLocalDate())) {
+            throw new RuntimeException("Ngày nhận không được ở quá khứ.");
         }
         if (!ngayTra.isAfter(ngayNhan)) {
             throw new RuntimeException("Ngày trả phải lớn hơn ngày nhận.");
