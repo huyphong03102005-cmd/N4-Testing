@@ -745,6 +745,13 @@
 
                 if (!hoTen) { showNotify("Vui lòng nhập Họ tên khách hàng!"); return; }
                 if (!sdt) { showNotify("Vui lòng nhập Số điện thoại!"); return; }
+                
+                // Phone number validation (must be 10 digits)
+                if (sdt.length !== 10 || !/^\d+$/.test(sdt)) {
+                    showNotify("Vui lòng nhập số điện thoại phải đủ 10 số");
+                    return;
+                }
+                
                 if (!email) { showNotify("Vui lòng nhập Email!"); return; }
                 if (!cccd) { showNotify("Vui lòng nhập số CCCD!"); return; }
 
@@ -850,6 +857,16 @@
 
                 if (!cardNum) { showNotify("Vui lòng nhập Số thẻ!"); return; }
                 if (!expiry) { showNotify("Vui lòng chọn Ngày hết hạn thẻ!"); return; }
+                
+                // Expiry date validation
+                const expDate = new Date(expiry);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (expDate < today) {
+                    showNotify("Thẻ đã hết hạn, vui lòng sử dụng phương thức khác");
+                    return;
+                }
+                
                 if (!cvc) { showNotify("Vui lòng nhập mã CVC/CVV!"); return; }
                 if (!name) { showNotify("Vui lòng nhập Tên chủ thẻ!"); return; }
                 if (!email) { showNotify("Vui lòng nhập Email thanh toán!"); return; }
