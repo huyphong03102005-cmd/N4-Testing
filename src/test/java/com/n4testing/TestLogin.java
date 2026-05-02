@@ -156,9 +156,9 @@ public class TestLogin {
 
     @AfterEach
     public void teardown() {
-        // Đóng comment dòng bên dưới để giữ màn hình không bị tắt tự động
-        // if (driver != null) {
-        //     driver.quit();
-        // }
+//         Đóng comment dòng bên dưới để giữ màn hình không bị tắt tự động
+         if (driver != null) {
+             driver.quit();
+         }
     }
 }
