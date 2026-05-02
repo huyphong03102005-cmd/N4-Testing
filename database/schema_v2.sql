@@ -1,129 +1,195 @@
--- PostgreSQL Database Schema for Hotel Management System
+-- =========================
+-- 1. BẢNG KHÔNG PHỤ THUỘC FK
+-- =========================
 
--- 1. VaiTro (Role for Permissions)
-CREATE TABLE vai_tro (
-    id_vaitro SERIAL PRIMARY KEY,
-    ten_vaitro VARCHAR(50) UNIQUE NOT NULL
+CREATE TABLE public.vai_tro (
+                                id_vaitro integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                ten_vaitro character varying NOT NULL UNIQUE
 );
 
--- 2. TaiKhoan (User Accounts)
-CREATE TABLE tai_khoan (
-    id_taikhoan SERIAL PRIMARY KEY,
-    ten_dang_nhap VARCHAR(50) UNIQUE NOT NULL,
-    mat_khau VARCHAR(255) NOT NULL,
-    ho_ten VARCHAR(255),
-    id_vaitro INTEGER REFERENCES vai_tro(id_vaitro)
+CREATE TABLE public.khach_hang (
+                                   id_kh integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                   ho_ten character varying NOT NULL,
+                                   sdt character varying,
+                                   cccd character varying UNIQUE,
+                                   email character varying
 );
 
--- 3. LeTan (Receptionist linked to Account)
-CREATE TABLE le_tan (
-    id_letan SERIAL PRIMARY KEY,
-    id_taikhoan INTEGER REFERENCES tai_khoan(id_taikhoan)
+CREATE TABLE public.phong (
+                              id_phong integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                              ten_phong character varying NOT NULL,
+                              loai_phong character varying,
+                              suc_chua integer,
+                              gia_phong numeric,
+                              trang_thai character varying
 );
 
--- 2. Phong (Room)
-CREATE TABLE phong (
-    id_phong SERIAL PRIMARY KEY,
-    ten_phong VARCHAR(100) NOT NULL,
-    loai_phong VARCHAR(50),
-    suc_chua INTEGER,
-    gia_phong DECIMAL(15, 2),
-    trang_thai VARCHAR(50) -- e.g., 'AVAILABLE', 'OCCUPIED', 'MAINTENANCE'
+CREATE TABLE public.dich_vu (
+                                id_dichvu integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                ten_dich_vu character varying NOT NULL,
+                                don_gia numeric NOT NULL
 );
 
--- 3. KhachHang (Customer)
-CREATE TABLE khach_hang (
-    id_kh SERIAL PRIMARY KEY,
-    ho_ten VARCHAR(255) NOT NULL,
-    sdt VARCHAR(15),
-    cccd VARCHAR(20) UNIQUE
+CREATE TABLE public.hoa_don (
+                                id_hoadon integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                tong_tien numeric DEFAULT 0,
+                                trang_thai character varying,
+                                ngay_lap timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. DatPhong (Booking)
-CREATE TABLE dat_phong (
-    ma_dat_phong VARCHAR(50) PRIMARY KEY,
-    ngay_nhan TIMESTAMP NOT NULL,          -- Expected Check-in
-    ngay_tra TIMESTAMP NOT NULL,           -- Expected Check-out
-    so_nguoi_lon INTEGER DEFAULT 1,
-    so_tre_em INTEGER DEFAULT 0,
-    tong_so_nguoi INTEGER GENERATED ALWAYS AS (so_nguoi_lon + so_tre_em) STORED,
-    so_phong VARCHAR(50),                  -- Room number(s) string for quick reference
-    trang_thai VARCHAR(50),                -- e.g., 'PENDING', 'CONFIRMED', 'CANCELLED', 'CHECKED_IN', 'COMPLETED'
-    ten_nguoi_dat VARCHAR(255),
-    email VARCHAR(255),
-    sdt_nguoi_dat VARCHAR(15),
-    tien_coc DECIMAL(15, 2) DEFAULT 0,
-    tong_thanh_toan DECIMAL(15, 2) DEFAULT 0,
-    id_letan INTEGER REFERENCES le_tan(id_letan),
-    id_kh INTEGER REFERENCES khach_hang(id_kh)
+CREATE TABLE public.users (
+                              id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                              email character varying NOT NULL UNIQUE,
+                              name character varying NOT NULL
 );
 
--- 5. ChiTietDatPhong (Booking Details - Many-to-Many between DatPhong and Phong)
-CREATE TABLE chi_tiet_dat_phong (
-    id_ct_dat_phong SERIAL PRIMARY KEY,
-    id_phong INTEGER REFERENCES phong(id_phong),
-    ma_dat_phong VARCHAR(50) REFERENCES dat_phong(ma_dat_phong),
-    so_luong_phong INTEGER DEFAULT 1
+-- =========================
+-- 2. TÀI KHOẢN / LỄ TÂN
+-- =========================
+
+CREATE TABLE public.tai_khoan (
+                                  id_taikhoan integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                  ten_dang_nhap character varying NOT NULL UNIQUE,
+                                  mat_khau character varying NOT NULL,
+                                  ho_ten character varying NOT NULL,
+                                  id_vaitro integer,
+                                  id_nhan_vien integer,
+                                  chuc_vu character varying NOT NULL,
+                                  email character varying NOT NULL,
+                                  gioi_tinh character varying NOT NULL,
+                                  ngay_sinh character varying,
+                                  so_dien_thoai character varying NOT NULL,
+                                  trang_thai character varying DEFAULT 'Hoạt động',
+
+                                  CONSTRAINT tai_khoan_id_vaitro_fkey
+                                      FOREIGN KEY (id_vaitro) REFERENCES public.vai_tro(id_vaitro)
 );
 
--- 6. LuuTru (Stay Records / Actual Check-in/out)
-CREATE TABLE luu_tru (
-    id_luutru SERIAL PRIMARY KEY,
-    ma_dat_phong VARCHAR(50) REFERENCES dat_phong(ma_dat_phong),
-    thoi_gian_checkin_thuc_te TIMESTAMP,
-    thoi_gian_checkout_thuc_te TIMESTAMP,
-    so_nguoi_thuc_te INTEGER
+CREATE TABLE public.le_tan (
+                               id_letan integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                               id_taikhoan integer,
+
+                               CONSTRAINT le_tan_id_taikhoan_fkey
+                                   FOREIGN KEY (id_taikhoan) REFERENCES public.tai_khoan(id_taikhoan)
 );
 
--- 7. DichVu (Services)
-CREATE TABLE dich_vu (
-    id_dichvu SERIAL PRIMARY KEY,
-    ten_dich_vu VARCHAR(255) NOT NULL,
-    don_gia DECIMAL(15, 2) NOT NULL
+-- =========================
+-- 3. ĐẶT PHÒNG
+-- =========================
+
+CREATE TABLE public.dat_phong (
+                                  ma_dat_phong character varying PRIMARY KEY,
+                                  email character varying,
+                                  ngay_nhan timestamp without time zone NOT NULL,
+                                  ngay_tra timestamp without time zone NOT NULL,
+                                  phuong_thuc_thanh_toan character varying,
+                                  sdt_nguoi_dat character varying,
+                                  so_nguoi_lon integer,
+                                  so_phong character varying,
+                                  so_tre_em integer,
+                                  ten_nguoi_dat character varying,
+                                  tien_coc numeric,
+                                  tong_so_nguoi integer,
+                                  tong_thanh_toan numeric,
+                                  trang_thai character varying,
+                                  id_kh integer,
+                                  ghi_chu text,
+
+                                  CONSTRAINT dat_phong_id_kh_fkey
+                                      FOREIGN KEY (id_kh) REFERENCES public.khach_hang(id_kh)
 );
 
--- 8. HoaDon (Invoices)
-CREATE TABLE hoa_don (
-    id_hoadon SERIAL PRIMARY KEY,
-    tong_tien DECIMAL(15, 2) DEFAULT 0,
-    trang_thai VARCHAR(50), -- e.g., 'UNPAID', 'PAID', 'CANCELLED'
-    ngay_lap TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE public.chi_tiet_dat_phong (
+                                           id_ct_dat_phong integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                           id_phong integer,
+                                           ma_dat_phong character varying,
+                                           so_luong_phong integer DEFAULT 1,
+
+                                           CONSTRAINT chi_tiet_dat_phong_id_phong_fkey
+                                               FOREIGN KEY (id_phong) REFERENCES public.phong(id_phong),
+
+                                           CONSTRAINT chi_tiet_dat_phong_ma_dat_phong_fkey
+                                               FOREIGN KEY (ma_dat_phong) REFERENCES public.dat_phong(ma_dat_phong)
 );
 
--- 9. SuDungDichVu (Service Usage)
-CREATE TABLE su_dung_dich_vu (
-    id_sudung_dv SERIAL PRIMARY KEY,
-    soluong INTEGER DEFAULT 1,
-    thoi_gian TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    thanh_tien DECIMAL(15, 2),
-    id_dichvu INTEGER REFERENCES dich_vu(id_dichvu),
-    id_luutru INTEGER REFERENCES luu_tru(id_luutru),
-    id_hoadon INTEGER REFERENCES hoa_don(id_hoadon)
+-- =========================
+-- 4. LƯU TRÚ
+-- =========================
+
+CREATE TABLE public.luu_tru (
+                                id_luutru integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                ma_dat_phong character varying,
+                                thoi_gian_checkin_thuc_te timestamp without time zone DEFAULT now(),
+                                thoi_gian_checkout_thuc_te timestamp without time zone,
+                                so_nguoi_thuc_te integer,
+                                ma_book_room character varying,
+                                late_fee numeric,
+                                late_hours double precision,
+
+                                CONSTRAINT luu_tru_ma_dat_phong_fkey
+                                    FOREIGN KEY (ma_dat_phong) REFERENCES public.dat_phong(ma_dat_phong)
 );
 
--- 10. ThanhToan (Payments)
-CREATE TABLE thanh_toan (
-    id_thanhtoan SERIAL PRIMARY KEY,
-    so_tien DECIMAL(15, 2) NOT NULL,
-    phuong_thuc VARCHAR(50), -- e.g., 'CASH', 'CREDIT_CARD', 'TRANSFER'
-    trang_thai VARCHAR(50),
-    id_hoadon INTEGER REFERENCES hoa_don(id_hoadon)
+-- =========================
+-- 5. TÀI SẢN / THIỆT HẠI
+-- =========================
+
+CREATE TABLE public.tai_san (
+                                id_taisan integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                ten_tai_san character varying NOT NULL,
+                                gia_tri_boi_thuong numeric,
+                                id_phong integer,
+
+                                CONSTRAINT tai_san_id_phong_fkey
+                                    FOREIGN KEY (id_phong) REFERENCES public.phong(id_phong)
 );
 
--- 11. TaiSan (Assets in Rooms)
-CREATE TABLE tai_san (
-    id_taisan SERIAL PRIMARY KEY,
-    ten_tai_san VARCHAR(255) NOT NULL,
-    gia_tri_boi_thuong DECIMAL(15, 2),
-    id_phong INTEGER REFERENCES phong(id_phong)
+CREATE TABLE public.thiet_hai (
+                                  id_thie_thai integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                  muc_do character varying,
+                                  so_tien_boi_thuong numeric,
+                                  trang_thai character varying,
+                                  id_taisan integer,
+                                  id_luutru integer,
+                                  so_luong integer,
+
+                                  CONSTRAINT thiet_hai_id_taisan_fkey
+                                      FOREIGN KEY (id_taisan) REFERENCES public.tai_san(id_taisan),
+
+                                  CONSTRAINT thiet_hai_id_luutru_fkey
+                                      FOREIGN KEY (id_luutru) REFERENCES public.luu_tru(id_luutru)
 );
 
--- 12. ThietHai (Damages during Stay)
-CREATE TABLE thiet_hai (
-    id_thie_thai SERIAL PRIMARY KEY,
-    muc_do VARCHAR(50),
-    so_tien_boi_thuong DECIMAL(15, 2),
-    trang_thai VARCHAR(50),
-    id_taisan INTEGER REFERENCES tai_san(id_taisan),
-    id_luutru INTEGER REFERENCES luu_tru(id_luutru)
+-- =========================
+-- 6. DỊCH VỤ / THANH TOÁN
+-- =========================
+
+CREATE TABLE public.su_dung_dich_vu (
+                                        id_sudung_dv integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                        soluong integer DEFAULT 1,
+                                        thoi_gian timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                                        thanh_tien numeric,
+                                        id_dichvu integer,
+                                        id_luutru integer,
+                                        id_hoadon integer,
+
+                                        CONSTRAINT su_dung_dich_vu_id_dichvu_fkey
+                                            FOREIGN KEY (id_dichvu) REFERENCES public.dich_vu(id_dichvu),
+
+                                        CONSTRAINT su_dung_dich_vu_id_luutru_fkey
+                                            FOREIGN KEY (id_luutru) REFERENCES public.luu_tru(id_luutru),
+
+                                        CONSTRAINT su_dung_dich_vu_id_hoadon_fkey
+                                            FOREIGN KEY (id_hoadon) REFERENCES public.hoa_don(id_hoadon)
+);
+
+CREATE TABLE public.thanh_toan (
+                                   id_thanhtoan integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+                                   so_tien numeric NOT NULL,
+                                   phuong_thuc character varying,
+                                   trang_thai character varying,
+                                   id_hoadon integer,
+
+                                   CONSTRAINT thanh_toan_id_hoadon_fkey
+                                       FOREIGN KEY (id_hoadon) REFERENCES public.hoa_don(id_hoadon)
 );

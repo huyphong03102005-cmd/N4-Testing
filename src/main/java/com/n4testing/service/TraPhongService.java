@@ -170,14 +170,22 @@ public class TraPhongService {
         datPhong.setTrangThai("Đã trả");
         datPhongRepository.save(datPhong);
 
-        // 5. Cập nhật trạng thái các phòng liên quan sang 'Trống'
+        // 5. Cập nhật trạng thái các phòng liên quan sang 'Bảo trì'
         List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
-        for (ChiTietDatPhong ct : chiTiets) {
-            Phong phong = ct.getPhong();
-            if (phong != null) {
-                phong.setTrangThai("Trống");
-                phongRepository.save(phong);
+        if (chiTiets != null && !chiTiets.isEmpty()) {
+            for (ChiTietDatPhong ct : chiTiets) {
+                Phong phong = ct.getPhong();
+                if (phong != null) {
+                    phong.setTrangThai("Bảo trì");
+                    phongRepository.save(phong);
+                }
             }
+        } else if (datPhong.getSoPhong() != null) {
+            // Fallback: Tìm theo tên phòng nếu thiếu ChiTietDatPhong
+            phongRepository.findByTenPhong(datPhong.getSoPhong()).ifPresent(p -> {
+                p.setTrangThai("Bảo trì");
+                phongRepository.save(p);
+            });
         }
 
         // 6. Gán hóa đơn cho các dịch vụ đã dùng
@@ -240,12 +248,20 @@ public class TraPhongService {
 
         // Cập nhật trạng thái các phòng sang 'Bảo trì'
         List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
-        for (ChiTietDatPhong ct : chiTiets) {
-            Phong phong = ct.getPhong();
-            if (phong != null) {
-                phong.setTrangThai("Bảo trì");
-                phongRepository.save(phong);
+        if (chiTiets != null && !chiTiets.isEmpty()) {
+            for (ChiTietDatPhong ct : chiTiets) {
+                Phong phong = ct.getPhong();
+                if (phong != null) {
+                    phong.setTrangThai("Bảo trì");
+                    phongRepository.save(phong);
+                }
             }
+        } else if (datPhong.getSoPhong() != null) {
+            // Fallback: Tìm theo tên phòng nếu thiếu ChiTietDatPhong
+            phongRepository.findByTenPhong(datPhong.getSoPhong()).ifPresent(p -> {
+                p.setTrangThai("Bảo trì");
+                phongRepository.save(p);
+            });
         }
 
         notificationService.broadcastUpdate();

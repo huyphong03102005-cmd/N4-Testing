@@ -25,7 +25,8 @@ public class TestQuanLyDatPhong {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
+        // Thay maximize() bằng setSize để tránh lỗi Chrome 147
+        driver.manage().window().setSize(new org.openqa.selenium.Dimension(1440, 900));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(15));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         

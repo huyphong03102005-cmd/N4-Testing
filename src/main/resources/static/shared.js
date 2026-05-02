@@ -191,20 +191,55 @@ function closeUserInfo() {
 }
 
 function showSaveSuccess() {
-    const editFullName = document.getElementById('editFullName');
-    const profileDisplayEmail = document.getElementById('profileDisplayEmail');
-    const editBirthday = document.getElementById('editBirthday');
-    const editGender = document.getElementById('editGender');
-    const editPhone = document.getElementById('editPhone');
-    const editPosition = document.getElementById('editPosition');
+    const hoTen = document.getElementById('editFullName').value.trim();
+    const email = document.getElementById('editEmail')?.value.trim() || document.getElementById('editEmailDisplay')?.innerText.trim();
+    const ngaySinh = document.getElementById('editBirthday').value;
+    const gioiTinh = document.getElementById('editGender').value;
+    const soDienThoai = document.getElementById('editPhone').value.trim();
+    const chucVu = document.getElementById('editPosition').value.trim();
+
+    const showError = (msg) => {
+        const errorOverlay = document.getElementById('saveErrorOverlay');
+        const errorText = document.getElementById('saveErrorMessage');
+        if (errorOverlay && errorText) {
+            errorText.innerText = msg;
+            errorOverlay.classList.add('show');
+        }
+    };
+
+    // Kiểm tra tất cả các trường không được để trống
+    if (!hoTen) {
+        showError("Họ và tên không được để trống!");
+        return;
+    }
+    if (!ngaySinh) {
+        showError("Ngày sinh không được để trống!");
+        return;
+    }
+    if (!gioiTinh) {
+        showError("Giới tính không được để trống!");
+        return;
+    }
+    if (!soDienThoai) {
+        showError("Số điện thoại không được để trống!");
+        return;
+    }
+    if (!chucVu) {
+        showError("Chức vụ không được để trống!");
+        return;
+    }
+    if (!email) {
+        showError("Email không được để trống!");
+        return;
+    }
 
     const profileData = {
-        hoTen: editFullName ? editFullName.value : '',
-        email: profileDisplayEmail ? profileDisplayEmail.innerText : '',
-        ngaySinh: editBirthday ? editBirthday.value : '',
-        gioiTinh: editGender ? editGender.value : '',
-        soDienThoai: editPhone ? editPhone.value : '',
-        chucVu: editPosition ? editPosition.value : ''
+        hoTen,
+        email,
+        ngaySinh,
+        gioiTinh,
+        soDienThoai,
+        chucVu
     };
 
     fetch('/api/users/update-profile', {
@@ -218,13 +253,15 @@ function showSaveSuccess() {
             if (successOverlay) successOverlay.classList.add('show');
             const profileDisplayName = document.getElementById('profileDisplayName');
             if (profileDisplayName) profileDisplayName.innerText = profileData.hoTen;
+            const profileDisplayEmail = document.getElementById('profileDisplayEmail');
+            if (profileDisplayEmail) profileDisplayEmail.innerText = profileData.email;
         } else {
-            alert("Lỗi khi cập nhật thông tin!");
+            showError("Có lỗi xảy ra khi lưu thông tin. Vui lòng kiểm tra lại!");
         }
     })
     .catch(err => {
-        console.error(err);
-        alert("Có lỗi xảy ra.");
+        console.error("Lỗi:", err);
+        showError("Không thể kết nối đến máy chủ!");
     });
 }
 

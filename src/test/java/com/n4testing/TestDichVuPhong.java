@@ -23,7 +23,8 @@ public class TestDichVuPhong {
         ChromeOptions options = new ChromeOptions();
         // options.addArguments("--headless"); // Mở comment nếu muốn chạy ẩn danh
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
+        // Thay maximize() bằng setSize để tránh lỗi Chrome 147
+        driver.manage().window().setSize(new org.openqa.selenium.Dimension(1440, 900));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.get(BASE_URL);
     }

@@ -65,10 +65,19 @@ public class SummaryController {
         long total = rooms.size();
         long occupied = rooms.stream().filter(p -> "Bận".equals(p.getTrangThai()) || "Đang ở".equals(p.getTrangThai())).count();
         long maintenance = rooms.stream().filter(p -> "Sửa chữa".equals(p.getTrangThai()) || "Bảo trì".equals(p.getTrangThai())).count();
+        
+        // Lấy tất cả tên phòng từ các đơn đặt "Đã đặt" hoặc "Đã đặt cọc"
+        // Lưu ý: Cần inject DatPhongRepository hoặc lấy qua service nếu SummaryController chưa có
+        // Tuy nhiên, SummaryController hiện tại đang dùng nhanPhongService, tôi sẽ dùng tạm roomBookings nhưng sửa lại logic lọc cho chính xác hơn
+        Set<Integer> reservedRoomIds = roomBookings.values().stream()
+                .filter(ct -> Arrays.asList("Đã đặt", "Đã đặt cọc").contains(ct.getDatPhong().getTrangThai()))
+                .map(ct -> ct.getPhong().getIdPhong())
+                .collect(Collectors.toSet());
+
         long reserved = rooms.stream()
-                .filter(p -> ("Trống".equals(p.getTrangThai()) || "Đã đặt".equals(p.getTrangThai())) && 
-                             roomBookings.containsKey(p.getIdPhong()) && 
-                             (Arrays.asList("Đã đặt", "Đã đặt cọc").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai())))
+                .filter(p -> reservedRoomIds.contains(p.getIdPhong()) && 
+                             !"Bận".equals(p.getTrangThai()) && !"Đang ở".equals(p.getTrangThai()) && 
+                             !"Sửa chữa".equals(p.getTrangThai()) && !"Bảo trì".equals(p.getTrangThai()))
                 .count();
         long available = total - occupied - maintenance - reserved;
 

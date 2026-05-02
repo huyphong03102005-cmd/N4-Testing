@@ -742,7 +742,11 @@
                         const rooms = await resp.json();
 
                         select.innerHTML = '<option value="" selected disabled hidden>Chọn phòng</option>';
-                        rooms.forEach(room => {
+                        rooms.sort((a, b) => {
+                            const numA = parseInt(a.tenPhong.replace(/\D/g, '')) || 0;
+                            const numB = parseInt(b.tenPhong.replace(/\D/g, '')) || 0;
+                            return numA - numB;
+                        }).forEach(room => {
                             const opt = document.createElement('option');
                             opt.value = room.tenPhong;
                             opt.textContent = room.tenPhong;

@@ -75,12 +75,22 @@ public class UserController {
     // Cập nhật thông tin cá nhân
     @PostMapping("/update-profile")
     public ResponseEntity<?> updateProfile(@RequestBody TaiKhoan profileData, HttpSession session) {
-        TaiKhoan sessionUser = (TaiKhoan) session.getAttribute("user");
-        if (sessionUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Chưa đăng nhập");
+        TaiKhoan currentUser = (TaiKhoan) session.getAttribute("user");
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
         }
 
-        TaiKhoan dbUser = taiKhoanRepository.findById(sessionUser.getId()).orElseThrow();
+        // Validation backend
+        if (profileData.getHoTen() == null || profileData.getHoTen().trim().isEmpty() ||
+            profileData.getEmail() == null || profileData.getEmail().trim().isEmpty() ||
+            profileData.getNgaySinh() == null || profileData.getNgaySinh().trim().isEmpty() ||
+            profileData.getGioiTinh() == null || profileData.getGioiTinh().trim().isEmpty() ||
+            profileData.getSoDienThoai() == null || profileData.getSoDienThoai().trim().isEmpty() ||
+            profileData.getChucVu() == null || profileData.getChucVu().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Tất cả các trường thông tin không được để trống");
+        }
+
+        TaiKhoan dbUser = taiKhoanRepository.findByTenDangNhap(currentUser.getTenDangNhap()).orElse(null);
         dbUser.setHoTen(profileData.getHoTen());
         dbUser.setEmail(profileData.getEmail());
         dbUser.setNgaySinh(profileData.getNgaySinh());

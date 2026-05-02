@@ -27,6 +27,7 @@ public class TestCheckin {
         public void testSuccessful(ExtensionContext context) {
             System.out.println("✅ [PASS] " + context.getDisplayName());
         }
+
         @Override
         public void testFailed(ExtensionContext context, Throwable cause) {
             System.err.println("\n❌ [FAIL] " + context.getDisplayName());
@@ -41,9 +42,11 @@ public class TestCheckin {
         options.addArguments("--remote-allow-origins=*");
         // options.addArguments("--headless"); // Commented out to show browser window
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
+        // Thay maximize() bằng setSize để tránh lỗi Chrome 147
+        driver.manage().window().setSize(new org.openqa.selenium.Dimension(1440, 900));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         login();
+        // QUAN TRỌNG: Phải chuyển sang trang Nhận phòng mới có ô search
         driver.get(BASE_URL + "/nhan-phong");
         wait.until(ExpectedConditions.urlContains("/nhan-phong"));
     }
@@ -53,19 +56,26 @@ public class TestCheckin {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username"))).sendKeys("admin_hotel");
         driver.findElement(By.id("password")).sendKeys("pass_123");
         driver.findElement(By.className("btn-login")).click();
+
+        // Đợi chuyển hướng và session ổn định
         wait.until(ExpectedConditions.urlContains("/tongquan"));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
     }
 
     @AfterEach
     public void teardown() {
-        if (driver != null) driver.quit();
+        if (driver != null)
+            driver.quit();
     }
 
     @Test
     @Order(1)
     @DisplayName("TC-CI-01: Check-in đúng quy trình (Phòng Trống)")
     public void TC_CI_01() {
-        String targetCode = "DPW204030526014";
+        String targetCode = "DPW1777718542024707";
         searchBooking(targetCode);
         driver.findElement(By.className("btn-checkin")).click();
         try {
@@ -121,7 +131,8 @@ public class TestCheckin {
     @DisplayName("TC-CI-10: Đổi phòng bỏ trống lý do")
     public void TC_CI_05() {
         List<WebElement> btns = driver.findElements(By.className("btn-cancel"));
-        if (btns.isEmpty()) return;
+        if (btns.isEmpty())
+            return;
         btns.get(0).click();
         WebElement popup = wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("change-room-popup")));
         assertTrue(popup.isDisplayed());
@@ -163,17 +174,21 @@ public class TestCheckin {
         Assumptions.assumeFalse(bookings.isEmpty());
         // Kiểm tra xem có nút sửa ngày không
         boolean canEdit = driver.findElements(By.className("btn-edit-date")).size() > 0;
-        if (!canEdit) System.err.println("⚠️ CẢNH BÁO: Hệ thống chưa có chức năng sửa ngày trả tại chỗ");
+        if (!canEdit)
+            System.err.println("⚠️ CẢNH BÁO: Hệ thống chưa có chức năng sửa ngày trả tại chỗ");
     }
 
     private void searchBooking(String code) {
         WebElement s = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("search")));
-        s.clear(); s.sendKeys(code); s.sendKeys(Keys.ENTER);
+        s.clear();
+        s.sendKeys(code);
+        s.sendKeys(Keys.ENTER);
         wait.until(ExpectedConditions.urlContains("search="));
     }
 
     private void checkErrorMessage() {
-        if (driver.findElements(By.id("errorPopup")).size() > 0 && driver.findElement(By.id("errorPopup")).isDisplayed()) {
+        if (driver.findElements(By.id("errorPopup")).size() > 0
+                && driver.findElement(By.id("errorPopup")).isDisplayed()) {
             fail("HỆ THỐNG BÁO LỖI: " + driver.findElement(By.id("errorMessage")).getText());
         } else {
             fail("LỖI: Hệ thống không phản hồi sau khi nhấn Nhận phòng");

@@ -24,7 +24,8 @@ public class TestCheckout {
         options.addArguments("--remote-allow-origins=*");
         // options.addArguments("--headless"); // Mở trình duyệt để xem quá trình test
         driver = new ChromeDriver(options);
-        driver.manage().window().maximize();
+        // Thay maximize() bằng setSize để tránh lỗi Chrome 147
+        driver.manage().window().setSize(new org.openqa.selenium.Dimension(1440, 900));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         
         login();

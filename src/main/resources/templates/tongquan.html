@@ -583,7 +583,11 @@
                     });
                 }
                 roomSelector.innerHTML = '<option value="">Phòng</option>';
-                availableRooms.sort().forEach(num => {
+                availableRooms.sort((a, b) => {
+                    const numA = parseInt(a.replace(/\D/g, '')) || 0;
+                    const numB = parseInt(b.replace(/\D/g, '')) || 0;
+                    return numA - numB;
+                }).forEach(num => {
                     roomSelector.innerHTML += `<option value="${num}">${num}</option>`;
                 });
                 roomSelector.style.display = roomSelector.style.display === 'none' ? 'inline-block' : 'none';

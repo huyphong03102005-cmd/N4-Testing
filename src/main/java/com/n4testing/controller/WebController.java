@@ -16,10 +16,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import com.n4testing.model.ChiTietDatPhong;
+import java.util.HashSet;
 
 @Controller
 @RequiredArgsConstructor
@@ -79,7 +82,10 @@ public class WebController {
 
     // 2. /tongquan → tongquan
     @GetMapping("/tongquan")
-    public String overview(Model model) {
+    public String overview(HttpSession session, Model model) {
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
         List<Phong> rooms = nhanPhongService.getAllPhongs();
         Map<Integer, ChiTietDatPhong> roomBookings = nhanPhongService.getActiveBookingMap();
 
@@ -103,11 +109,18 @@ public class WebController {
         long occupied = rooms.stream().filter(p -> "Bận".equals(p.getTrangThai()) || "Đang ở".equals(p.getTrangThai())).count();
         long maintenance = rooms.stream().filter(p -> "Sửa chữa".equals(p.getTrangThai()) || "Bảo trì".equals(p.getTrangThai())).count();
         
-        // "Đã đặt" là những phòng Trống/Đã đặt nhưng đã có ChiTietDatPhong (Chờ check-in hoặc Đã đặt)
+        // "Đã đặt" là những phòng chưa bận/bảo trì nhưng đã có đơn đặt (Chờ check-in)
+        // Lấy tất cả tên phòng từ các đơn đặt "Đã đặt" hoặc "Đã đặt cọc"
+        Set<String> bookedRoomNames = datPhongRepository.findByTrangThaiIn(java.util.Arrays.asList("Đã đặt", "Đã đặt cọc"))
+                .stream()
+                .map(com.n4testing.model.DatPhong::getSoPhong)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
         long reserved = rooms.stream()
-                .filter(p -> ("Trống".equals(p.getTrangThai()) || "Đã đặt".equals(p.getTrangThai())) && 
-                             roomBookings.containsKey(p.getIdPhong()) && 
-                             java.util.Arrays.asList("Đã đặt", "Đã đặt cọc").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai()))
+                .filter(p -> bookedRoomNames.contains(p.getTenPhong()) && 
+                             !"Bận".equals(p.getTrangThai()) && !"Đang ở".equals(p.getTrangThai()) && 
+                             !"Sửa chữa".equals(p.getTrangThai()) && !"Bảo trì".equals(p.getTrangThai()))
                 .count();
         
         long available = total - occupied - maintenance - reserved;
