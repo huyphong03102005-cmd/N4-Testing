@@ -26,6 +26,9 @@ public class DichVuService {
 
     @Transactional
     public DichVu createDichVu(DichVu dichVu) {
+        if (dichVu.getDonGia() != null && dichVu.getDonGia().compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Giá dịch vụ không được là số âm");
+        }
         return dichVuRepository.save(dichVu);
     }
 
@@ -33,6 +36,9 @@ public class DichVuService {
     public DichVu updateDichVu(Integer id, DichVu updated) {
         DichVu dichVu = dichVuRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dịch vụ không tồn tại"));
+        if (updated.getDonGia() != null && updated.getDonGia().compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Giá dịch vụ không được là số âm");
+        }
         dichVu.setTenDichVu(updated.getTenDichVu());
         dichVu.setDonGia(updated.getDonGia());
         return dichVuRepository.save(dichVu);
@@ -49,6 +55,9 @@ public class DichVuService {
 
     @Transactional
     public TaiSan createTaiSan(TaiSan taiSan) {
+        if (taiSan.getGiaTriBoiThuong() != null && taiSan.getGiaTriBoiThuong().compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Giá trị bồi thường không được là số âm");
+        }
         return taiSanRepository.save(taiSan);
     }
 
@@ -56,6 +65,9 @@ public class DichVuService {
     public TaiSan updateTaiSan(Integer id, TaiSan updated) {
         TaiSan taiSan = taiSanRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tài sản không tồn tại"));
+        if (updated.getGiaTriBoiThuong() != null && updated.getGiaTriBoiThuong().compareTo(BigDecimal.ZERO) < 0) {
+            throw new RuntimeException("Giá trị bồi thường không được là số âm");
+        }
         taiSan.setTenTaiSan(updated.getTenTaiSan());
         taiSan.setGiaTriBoiThuong(updated.getGiaTriBoiThuong());
         return taiSanRepository.save(taiSan);

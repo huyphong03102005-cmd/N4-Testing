@@ -778,7 +778,7 @@
                 </div>
                 <div style="margin-bottom: 25px;">
                     <label style="font-weight: bold; color: #555; display: block; margin-bottom: 8px;">Giá tiền (VNĐ):</label>
-                    <input type="number" id="crudPriceInput" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; outline: none;" placeholder="0">
+                    <input type="number" id="crudPriceInput" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; outline: none;" placeholder="0" min="0">
                 </div>
                 <div style="display: flex; justify-content: space-between; gap: 15px;">
                     <button class="popup-btn" style="flex: 1; background: #ddd; color: #333;" onclick="closeCrudPopup()">HUỶ</button>
@@ -856,6 +856,10 @@
                         }
                         if (price === '') {
                             showCustomAlert('Vui lòng nhập giá tiền!');
+                            return;
+                        }
+                        if (parseFloat(price) < 0) {
+                            showCustomAlert('Giá tiền không được là số âm!');
                             return;
                         }
                         document.getElementById('crudPopup').style.display = 'none';
