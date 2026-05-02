@@ -47,8 +47,8 @@ public class ForgotPasswordTest {
 
     @Test
     @Order(1)
-    @DisplayName("Test navigating to Forgot Password page")
-    void testNavigateToForgotPassword() {
+    @DisplayName("TC-FP-01: Test navigating to Forgot Password page")
+    void TC_FP_01() {
         driver.get(baseUrl + "/login");
 
         WebElement forgotPwLink = driver.findElement(By.className("forgot-pw"));
@@ -61,8 +61,8 @@ public class ForgotPasswordTest {
 
     @Test
     @Order(2)
-    @DisplayName("Test submitting non-existent email")
-    void testNonExistentEmail() {
+    @DisplayName("TC-FP-02: Test submitting non-existent email")
+    void TC_FP_02() {
         driver.get(baseUrl + "/forgot-password");
 
         WebElement emailInput = driver.findElement(By.id("email"));
@@ -77,8 +77,8 @@ public class ForgotPasswordTest {
 
     @Test
     @Order(3)
-    @DisplayName("Test submitting valid email and reaching OTP page")
-    void testValidEmailSubmission() {
+    @DisplayName("TC-FP-03: Test submitting valid email and reaching OTP page")
+    void TC_FP_03() {
         driver.get(baseUrl + "/forgot-password");
 
         // Use a known email in the system. From Application.java: admin@n4hotel.com
@@ -100,8 +100,8 @@ public class ForgotPasswordTest {
 
     @Test
     @Order(4)
-    @DisplayName("Test submitting incorrect OTP")
-    void testIncorrectOtp() {
+    @DisplayName("TC-FP-04: Test submitting incorrect OTP")
+    void TC_FP_04() {
         // We first need to reach the OTP page
         driver.get(baseUrl + "/forgot-password");
         driver.findElement(By.id("email")).sendKeys("test@gmail.com");
@@ -123,8 +123,8 @@ public class ForgotPasswordTest {
 
     @Test
     @Order(5)
-    @DisplayName("Test full password reset success flow")
-    void testFullPasswordResetSuccess() throws java.io.IOException, InterruptedException {
+    @DisplayName("TC-FP-05: Test full password reset success flow")
+    void TC_FP_05() throws java.io.IOException, InterruptedException {
         driver.get(baseUrl + "/forgot-password");
 
         // Bước 1: Nhập email
@@ -180,8 +180,8 @@ public class ForgotPasswordTest {
 
     @Test
     @Order(6)
-    @DisplayName("Test back to login link")
-    void testBackToLoginLink() {
+    @DisplayName("TC-FP-06: Test back to login link")
+    void TC_FP_06() {
         driver.get(baseUrl + "/forgot-password");
 
         WebElement backLink = driver.findElement(By.className("back-to-login"));

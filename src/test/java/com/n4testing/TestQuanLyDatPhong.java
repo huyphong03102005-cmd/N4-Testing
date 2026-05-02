@@ -44,7 +44,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-01: Kiểm tra hiển thị tổng quan danh sách
     @Test
-    public void testHienThiTongQuanDanhSach() {
+    public void TC_QLDP_01() {
         // Kiểm tra 3 khối thống kê hiển thị
         WebElement summaryChoCheckin = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("summary-cho-checkin-count")));
         WebElement summaryDaCheckin = driver.findElement(By.id("summary-da-checkin-count"));
@@ -71,7 +71,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-02: Kiểm tra tính toán Tổng tiền cho đơn đặt phòng nhiều đêm
     @Test
-    public void testTinhTongTienNhieuDem() {
+    public void TC_QLDP_02() {
         // Lấy thẻ giá tiền của một booking
         List<WebElement> prices = driver.findElements(By.className("price"));
         if (!prices.isEmpty()) {
@@ -85,7 +85,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-03: Kiểm tra tính Tổng tiền cho đơn đặt phòng 1 đêm
     @Test
-    public void testTinhTongTienMotDem() {
+    public void TC_QLDP_03() {
         List<WebElement> prices = driver.findElements(By.className("price"));
         if (prices.size() > 1) {
             String tongTien = prices.get(1).getText();
@@ -96,7 +96,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-04: Kiểm tra tìm kiếm theo tên khách hàng
     @Test
-    public void testTimKiemTheoTenKhachHang() {
+    public void TC_QLDP_04() {
         WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bookingSearchInput")));
         searchInput.sendKeys("nam");
         
@@ -113,7 +113,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-05: Kiểm tra tìm kiếm theo số phòng
     @Test
-    public void testTimKiemTheoSoPhong() {
+    public void TC_QLDP_05() {
         WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bookingSearchInput")));
         searchInput.sendKeys("302");
         
@@ -130,7 +130,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-06: Kiểm tra tìm kiếm theo SĐT
     @Test
-    public void testTimKiemTheoSDT() {
+    public void TC_QLDP_06() {
         WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bookingSearchInput")));
         searchInput.sendKeys("0988");
         
@@ -147,7 +147,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-07: Kiểm tra tìm kiếm theo Mã đặt phòng
     @Test
-    public void testTimKiemTheoMaDatPhong() {
+    public void TC_QLDP_07() {
         WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bookingSearchInput")));
         searchInput.sendKeys("DPW"); // Dựa theo format mã DPW... trong HTML
         
@@ -164,7 +164,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-08: Kiểm tra chức năng Tìm kiếm khi không có kết quả
     @Test
-    public void testTimKiemKhongCoKetQua() {
+    public void TC_QLDP_08() {
         WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("bookingSearchInput")));
         searchInput.sendKeys("xyz123");
         
@@ -179,7 +179,7 @@ public class TestQuanLyDatPhong {
 
     // Fail - TC-QLDP-09: Kiểm tra màu nút Hủy phòng (Trước giờ check-in)
     @Test
-    public void testMauNutHuyTruocGioCheckIn() {
+    public void TC_QLDP_09() {
         List<WebElement> disabledBtns = driver.findElements(By.cssSelector(".btn-cancel:disabled"));
         if (!disabledBtns.isEmpty()) {
             WebElement btnCancel = disabledBtns.get(0);
@@ -192,7 +192,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-10: Kiểm tra màu nút Hủy phòng (Quá 2h giờ check-in)
     @Test
-    public void testMauNutHuyQuaGioCheckIn() {
+    public void TC_QLDP_10() {
         List<WebElement> activeBtns = driver.findElements(By.cssSelector(".btn-cancel.btn-cancel-active"));
         if (!activeBtns.isEmpty()) {
             WebElement btnCancel = activeBtns.get(0);
@@ -204,7 +204,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-11: Kiểm tra chức năng Hủy phòng
     @Test
-    public void testChucNangHuyPhong() {
+    public void TC_QLDP_11() {
         // Tìm một thẻ chờ checkin có thể hủy
         List<WebElement> activeBtns = driver.findElements(By.cssSelector("#grid-cho-checkin .btn-cancel.btn-cancel-active"));
         if (!activeBtns.isEmpty()) {
@@ -226,7 +226,7 @@ public class TestQuanLyDatPhong {
 
     // TC-QLDP-12: Kiểm tra xem chi tiết đặt phòng
     @Test
-    public void testXemChiTietDatPhong() {
+    public void TC_QLDP_12() {
         List<WebElement> cards = driver.findElements(By.className("booking-card"));
         if (!cards.isEmpty()) {
             cards.get(0).click();

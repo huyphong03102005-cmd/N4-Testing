@@ -33,7 +33,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testSuccessfulLogin() {
+    public void TC_LG_01() {
         driver.get("http://localhost:8085/login");
 
         // Đợi cho đến khi ô username xuất hiện rồi mới nhập
@@ -54,7 +54,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testLoginAndNavigatePages() {
+    public void TC_LG_02() {
         driver.get("http://localhost:8085/login");
 
         // Đăng nhập
@@ -87,7 +87,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testFailedLogin() {
+    public void TC_LG_03() {
         driver.get("http://localhost:8085/login");
 
         // Nhập thông tin sai
@@ -104,7 +104,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testEmptyUsername() {
+    public void TC_LG_04() {
         driver.get("http://localhost:8085/login");
 
         // Bỏ trống username, chỉ điền password
@@ -122,7 +122,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testEmptyPassword() {
+    public void TC_LG_05() {
         driver.get("http://localhost:8085/login");
 
         // Điền username, bỏ trống password
@@ -140,7 +140,7 @@ public class TestLogin {
     }
 
     @Test
-    public void testEmptyBoth() {
+    public void TC_LG_06() {
         driver.get("http://localhost:8085/login");
 
         // Không điền cả 2 ô, click ngay nút Đăng nhập

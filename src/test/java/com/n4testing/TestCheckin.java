@@ -39,7 +39,7 @@ public class TestCheckin {
     public void setup() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
-        options.addArguments("--headless");
+        // options.addArguments("--headless"); // Commented out to show browser window
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -64,7 +64,7 @@ public class TestCheckin {
     @Test
     @Order(1)
     @DisplayName("TC-CI-01: Check-in đúng quy trình (Phòng Trống)")
-    public void testSuccessfulCheckin() {
+    public void TC_CI_01() {
         String targetCode = "DPW204030526014";
         searchBooking(targetCode);
         driver.findElement(By.className("btn-checkin")).click();
@@ -79,7 +79,7 @@ public class TestCheckin {
     @Test
     @Order(2)
     @DisplayName("TC-CI-06: Phòng chưa dọn xong/Bảo trì (Kiểm tra Popup báo lỗi)")
-    public void testMaintenanceBlock() {
+    public void TC_CI_02() {
         List<WebElement> bookings = driver.findElements(By.className("booking-item"));
         Assumptions.assumeFalse(bookings.isEmpty());
         bookings.get(0).findElement(By.className("btn-checkin")).click();
@@ -96,7 +96,7 @@ public class TestCheckin {
     @Test
     @Order(3)
     @DisplayName("TC-CI-09 & TC-CI-15: Tìm kiếm (Mã DP, SĐT, Email)")
-    public void testSearchOptions() {
+    public void TC_CI_03() {
         WebElement search = driver.findElement(By.name("search"));
         search.sendKeys("0123"); // Tìm theo SĐT
         search.sendKeys(Keys.ENTER);
@@ -107,7 +107,7 @@ public class TestCheckin {
     @Test
     @Order(4)
     @DisplayName("TC-CI-03 & TC-CI-12 & TC-CI-17: Kiểm tra thông tin hiển thị và Format mã")
-    public void testInfoVisibility() {
+    public void TC_CI_04() {
         List<WebElement> bookings = driver.findElements(By.className("booking-item"));
         Assumptions.assumeFalse(bookings.isEmpty());
         String text = bookings.get(0).getText();
@@ -119,7 +119,7 @@ public class TestCheckin {
     @Test
     @Order(5)
     @DisplayName("TC-CI-10: Đổi phòng bỏ trống lý do")
-    public void testChangeRoomEmptyReason() {
+    public void TC_CI_05() {
         List<WebElement> btns = driver.findElements(By.className("btn-cancel"));
         if (btns.isEmpty()) return;
         btns.get(0).click();
@@ -130,7 +130,7 @@ public class TestCheckin {
     @Test
     @Order(6)
     @DisplayName("TC-CI-13: Kiểm tra mục Ghi chú (Special Request)")
-    public void testSpecialRequestField() {
+    public void TC_CI_06() {
         List<WebElement> bookings = driver.findElements(By.className("booking-item"));
         Assumptions.assumeFalse(bookings.isEmpty());
         String text = bookings.get(0).getText();
@@ -142,7 +142,7 @@ public class TestCheckin {
     @Test
     @Order(7)
     @DisplayName("TC-CI-07 & TC-CI-16: Kiểm tra logic ngày và Thời gian lưu trú")
-    public void testDateLogic() {
+    public void TC_CI_07() {
         List<WebElement> bookings = driver.findElements(By.className("booking-item"));
         Assumptions.assumeFalse(bookings.isEmpty());
         assertTrue(bookings.get(0).getText().contains("-"), "Sai định dạng ngày");
@@ -151,14 +151,14 @@ public class TestCheckin {
     @Test
     @Order(8)
     @DisplayName("TC-CI-08: Kiểm tra Sơ đồ phòng")
-    public void testRoomMap() {
+    public void TC_CI_08() {
         assertTrue(driver.findElement(By.className("room-map-card")).isDisplayed());
     }
 
     @Test
     @Order(9)
     @DisplayName("TC-CI-19: Thay đổi ngày trả khi nhận phòng (Bug confirmation)")
-    public void testEditCheckoutDate() {
+    public void TC_CI_09() {
         List<WebElement> bookings = driver.findElements(By.className("booking-item"));
         Assumptions.assumeFalse(bookings.isEmpty());
         // Kiểm tra xem có nút sửa ngày không

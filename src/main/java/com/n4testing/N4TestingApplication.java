@@ -17,7 +17,7 @@ public class N4TestingApplication {
     }
 
     @Bean
-    public CommandLineRunner checkConnection(JdbcTemplate jdbcTemplate) {
+    public static CommandLineRunner checkConnection(JdbcTemplate jdbcTemplate) {
         return args -> {
             try {
                 jdbcTemplate.execute("SELECT 1");
@@ -34,7 +34,8 @@ public class N4TestingApplication {
     }
 
     @Bean
-    public CommandLineRunner dataInitializer(UserRepository userRepository, com.n4testing.repository.TaiKhoanRepository taiKhoanRepository) {
+    public static CommandLineRunner dataInitializer(UserRepository userRepository,
+            com.n4testing.repository.TaiKhoanRepository taiKhoanRepository) {
         return args -> {
             // Khởi tạo User mẫu nếu chưa có
             if (userRepository.count() == 0) {
@@ -42,7 +43,7 @@ public class N4TestingApplication {
                 userRepository.save(user1);
                 System.out.println("✅ Đã khởi tạo người dùng mẫu!");
             }
-            
+
             // Đảm bảo có tài khoản test@gmail.com để chạy test automation
             if (taiKhoanRepository.findByEmail("test@gmail.com").isEmpty()) {
                 com.n4testing.model.TaiKhoan tk = new com.n4testing.model.TaiKhoan();
