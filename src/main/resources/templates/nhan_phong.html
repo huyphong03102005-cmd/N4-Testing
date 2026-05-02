@@ -507,13 +507,62 @@
                 font-weight: 600;
                 cursor: pointer;
             }
+
+            /* --- Error Popup --- */
+            .error-popup-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.4);
+                z-index: 9999;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .error-popup-overlay.show {
+                display: flex;
+            }
+
+            .error-popup-box {
+                background-color: #ffffff;
+                border-radius: 12px;
+                padding: 35px 50px;
+                text-align: center;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+                min-width: 380px;
+            }
+
+            .error-icon i {
+                font-size: 65px;
+                color: #de5e5e;
+                margin-bottom: 20px;
+            }
+
+            .error-message {
+                font-size: 20px;
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 30px;
+            }
+
+            .btn-error-close {
+                background-color: #555;
+                color: white;
+                border: none;
+                padding: 10px 40px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
         </style>
 
         <div class="search-container">
             <i class="fa-solid fa-magnifying-glass"></i>
             <form th:action="@{/nhan-phong}" method="get" style="flex: 1; display: flex;">
                 <input type="text" name="search" th:value="${searchKeyword}"
-                    placeholder="Tìm kiếm theo mã đặt phòng, tên khách hoặc SĐT">
+                    placeholder="Tìm kiếm theo mã, tên khách, SĐT hoặc email">
                 <button type="submit" style="display: none;"></button>
             </form>
         </div>
@@ -556,10 +605,16 @@
                                         <span class="value" th:text="${booking.email}">email@...</span>
                                     </div>
                                 </div>
-                                <div class="info-field" style="margin-top: 15px;">
+                                <div class="info-field" style="margin-top: 15px; padding-left: 2px;">
                                     <span class="label">Thời gian:</span>
                                     <span class="value"
                                         th:text="${#temporals.format(booking.ngayNhan, 'dd/MM/yyyy') + ' - ' + #temporals.format(booking.ngayTra, 'dd/MM/yyyy')}">...</span>
+                                </div>
+                                <div class="info-field" style="margin-top: 8px; padding-left: 2px; padding-top: 5px">
+                                    <span class="label" style="color: #619a71;">Ghi chú:</span>
+                                    <span class="value"
+                                        th:text="${booking.ghiChu != null and !booking.ghiChu.isEmpty() ? booking.ghiChu : 'Không có ghi chú'}"
+                                        style="font-style: italic; color: #555; padding-left: 5px;">...</span>
                                 </div>
 
                                 <div class="booking-actions">
@@ -649,6 +704,17 @@
             </div>
         </div>
 
+        <!-- Popup báo lỗi -->
+        <div class="error-popup-overlay" th:classappend="${errorMessage != null ? 'show' : ''}" id="errorPopup">
+            <div class="error-popup-box">
+                <div class="error-icon">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <div class="error-message" id="errorMessage" th:text="${errorMessage}">Không thể nhận phòng</div>
+                <button class="btn-error-close" onclick="closeErrorPopup()">Đóng</button>
+            </div>
+        </div>
+
         <!-- Script -->
         <script th:inline="javascript">
             async function togglePopup(btnElement) {
@@ -669,7 +735,10 @@
                     try {
                         select.innerHTML = '<option value="" selected disabled hidden>Đang tải...</option>';
                         const resp = await fetch('/api/rooms/available');
-                        if (!resp.ok) throw new Error("Lỗi khi tải danh sách phòng");
+                        if (!resp.ok) {
+                            showError("Lỗi khi tải danh sách phòng trống!");
+                            return;
+                        }
                         const rooms = await resp.json();
 
                         select.innerHTML = '<option value="" selected disabled hidden>Chọn phòng</option>';
@@ -699,12 +768,17 @@
                 const reason = wrapper.querySelector('.popup-textarea').value;
 
                 if (!targetRoomName) {
-                    alert("Vui lòng chọn phòng muốn đổi!");
+                    showError("Vui lòng chọn phòng muốn đổi!");
+                    return;
+                }
+
+                if (!reason || reason.trim() === "") {
+                    showError("Vui lòng nhập lý do đổi phòng để theo dõi dữ liệu!");
                     return;
                 }
 
                 if (!currentRoomId) {
-                    alert("Không tìm thấy ID phòng hiện tại.");
+                    showError("Không tìm thấy ID phòng hiện tại.");
                     return;
                 }
 
@@ -724,16 +798,26 @@
                         window.location.reload();
                     } else {
                         const errorMsg = await resp.text();
-                        alert("Lỗi khi đổi phòng: " + errorMsg);
+                        showError("Lỗi khi đổi phòng: " + errorMsg);
                     }
                 } catch (err) {
                     console.error(err);
-                    alert("Có lỗi xảy ra khi kết nối máy chủ.");
+                    showError("Có lỗi xảy ra khi kết nối máy chủ.");
                 }
             }
 
             function closeSuccessPopup() {
                 document.getElementById('successPopup').classList.remove('show');
+            }
+
+            function closeErrorPopup() {
+                document.getElementById('errorPopup').classList.remove('show');
+            }
+
+            // Hàm helper để hiển thị lỗi đồng bộ
+            function showError(message) {
+                document.getElementById('errorMessage').innerText = message;
+                document.getElementById('errorPopup').classList.add('show');
             }
         </script>
     </div>

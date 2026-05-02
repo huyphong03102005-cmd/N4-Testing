@@ -40,11 +40,12 @@ public class DatPhongController {
             @RequestParam("email") String email,
             @RequestParam("tienCoc") BigDecimal tienCoc,
             @RequestParam("tongThanhToan") BigDecimal tongThanhToan,
-            @RequestParam("phuongThuc") String phuongThuc) {
+            @RequestParam("phuongThuc") String phuongThuc,
+            @RequestParam(value = "ghiChu", required = false) String ghiChu) {
         
         try {
             DatPhong dp = datPhongService.datPhong(hoTen, sdt, cccd, tenPhong, ngayNhan, ngayTra, 
-                                                  soNguoiLon, soTreEm, email, tienCoc, tongThanhToan, phuongThuc);
+                                                  soNguoiLon, soTreEm, email, tienCoc, tongThanhToan, phuongThuc, ghiChu);
             return ResponseEntity.ok(Map.of(
                 "success", true,
                 "maDatPhong", dp.getMaDatPhong(),

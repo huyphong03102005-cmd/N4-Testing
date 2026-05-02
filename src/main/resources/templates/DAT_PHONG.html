@@ -26,7 +26,11 @@
                 padding: 10px 25px;
             }
 
-            .search-bar i { color: #555; font-size: 20px; }
+            .search-bar i {
+                color: #555;
+                font-size: 20px;
+            }
+
             .search-bar input {
                 border: none;
                 background: transparent;
@@ -50,7 +54,9 @@
                 transition: background 0.2s;
             }
 
-            .btn-cancel-search:hover { background: #d4c8b8; }
+            .btn-cancel-search:hover {
+                background: #d4c8b8;
+            }
 
             .cards-section {
                 padding: 20px 40px 50px;
@@ -98,7 +104,12 @@
                 font-size: 15px;
             }
 
-            .info-label { width: 100px; color: #333; font-weight: 400; }
+            .info-label {
+                width: 100px;
+                color: #333;
+                font-weight: 400;
+            }
+
             .status-badge {
                 background: #d1e8d9;
                 color: #47A25E;
@@ -109,7 +120,12 @@
                 display: inline-block;
             }
 
-            .dates-container { display: flex; align-items: center; gap: 12px; }
+            .dates-container {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
             .date-input {
                 border: 1px solid #e0e0e0;
                 padding: 5px 10px;
@@ -122,7 +138,11 @@
                 background: #fdfdfd;
             }
 
-            .capacity-badges { display: flex; gap: 20px; }
+            .capacity-badges {
+                display: flex;
+                gap: 20px;
+            }
+
             .capacity-badge {
                 background: #d1e8d9;
                 color: #333;
@@ -135,12 +155,41 @@
                 gap: 10px;
             }
 
-            .divider { height: 1px; background: #e0e0e0; margin: 10px 0 25px; border: none; }
-            .footer-row { display: flex; align-items: center; justify-content: space-between; }
-            .price-section { display: flex; align-items: center; }
-            .price-label { width: 100px; color: #333; font-size: 15px; }
-            .price-value-container { border-bottom: 1px solid #aaa; padding-bottom: 2px; min-width: 110px; }
-            .price-value { font-size: 16px; color: #777; text-align: left; }
+            .divider {
+                height: 1px;
+                background: #e0e0e0;
+                margin: 10px 0 25px;
+                border: none;
+            }
+
+            .footer-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .price-section {
+                display: flex;
+                align-items: center;
+            }
+
+            .price-label {
+                width: 100px;
+                color: #333;
+                font-size: 15px;
+            }
+
+            .price-value-container {
+                border-bottom: 1px solid #aaa;
+                padding-bottom: 2px;
+                min-width: 110px;
+            }
+
+            .price-value {
+                font-size: 16px;
+                color: #777;
+                text-align: left;
+            }
 
             .btn-book {
                 background: #f2c7a9;
@@ -155,12 +204,17 @@
                 text-transform: uppercase;
             }
 
-            .btn-book:hover { background: #e8b693; }
+            .btn-book:hover {
+                background: #e8b693;
+            }
 
             /* ----- Modal Specific Styles ----- */
             .modal-overlay {
                 position: fixed;
-                top: 0; left: 0; right: 0; bottom: 0;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 background: rgba(0, 0, 0, 0.4);
                 display: none;
                 align-items: center;
@@ -176,36 +230,198 @@
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             }
 
-            .modal-title { text-align: center; font-size: 22px; font-weight: 700; margin-bottom: 25px; text-transform: uppercase; }
-            .modal-card { background: #fff; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
-            .form-row { display: flex; align-items: center; margin-bottom: 16px; }
-            .form-label { width: 140px; font-size: 15px; color: #333; }
-            .input-group { width: 320px; display: flex; align-items: center; border-radius: 20px; padding: 8px 15px; gap: 12px; }
-            .bg-green { background-color: #d1ead8; }
-            .bg-tan { background-color: #e3d2be; }
-            .input-group input { border: none; background: transparent; outline: none; flex: 1; min-width: 0; font-size: 14px; color: #333; }
-            .input-group i { width: 25px; text-align: center; font-size: 18px; color: #555; }
-            .qty-controls { display: flex; align-items: center; gap: 15px; margin-left: auto; margin-right: 10px; }
-            .qty-controls i { cursor: pointer; font-size: 20px; color: #111; }
-            .qty-controls span { font-size: 15px; font-weight: 600; width: 15px; text-align: center; }
-            .modal-actions { display: flex; justify-content: center; gap: 50px; }
-            .btn-modal { border: none; border-radius: 6px; padding: 12px 30px; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; min-width: 130px; }
-            .btn-cancel-modal { background-color: #dcdcdc; color: #333; }
-            .btn-ok-modal { background-color: #d6bd96; color: #333; }
-            .payment-content { background-color: #ecf1ed; padding: 40px; width: 550px; border-radius: 8px; position: relative; }
-            .btn-close-modal { position: absolute; top: 15px; right: 15px; background: #111; color: #fff; border: none; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
-            .payment-title { text-align: center; font-size: 20px; font-weight: 700; margin-bottom: 30px; color: #111; }
-            .payment-info-box { background-color: #dfceb3; border-radius: 8px; padding: 15px 25px; display: justify-content: space-between; align-items: center; margin-bottom: 30px; }
-            .btn-pay { background-color: #dfceb3; color: #111; border: none; border-radius: 6px; padding: 12px 25px; font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-
-            /* ----- Notification Modal Styles ----- */
-            #notifyModal .modal-content {
-                border-top: 5px solid #d6bd96;
-                animation: modalSlideIn 0.3s ease-out;
+            .modal-title {
+                text-align: center;
+                font-size: 22px;
+                font-weight: 700;
+                margin-bottom: 25px;
+                text-transform: uppercase;
             }
+
+            .modal-card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 25px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+                margin-bottom: 30px;
+            }
+
+            .form-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 16px;
+            }
+
+            .form-label {
+                width: 140px;
+                font-size: 15px;
+                color: #333;
+            }
+
+            .input-group {
+                width: 320px;
+                display: flex;
+                align-items: center;
+                border-radius: 20px;
+                padding: 8px 15px;
+                gap: 12px;
+            }
+
+            .bg-green {
+                background-color: #d1ead8;
+            }
+
+            .bg-tan {
+                background-color: #e3d2be;
+            }
+
+            .input-group input {
+                border: none;
+                background: transparent;
+                outline: none;
+                flex: 1;
+                min-width: 0;
+                font-size: 14px;
+                color: #333;
+            }
+
+            .input-group i {
+                width: 25px;
+                text-align: center;
+                font-size: 18px;
+                color: #555;
+            }
+
+            .qty-controls {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-left: auto;
+                margin-right: 10px;
+            }
+
+            .qty-controls i {
+                cursor: pointer;
+                font-size: 20px;
+                color: #111;
+            }
+
+            .qty-controls span {
+                font-size: 15px;
+                font-weight: 600;
+                width: 15px;
+                text-align: center;
+            }
+
+            .modal-actions {
+                display: flex;
+                justify-content: center;
+                gap: 50px;
+            }
+
+            .btn-modal {
+                border: none;
+                border-radius: 6px;
+                padding: 12px 30px;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                text-transform: uppercase;
+                min-width: 130px;
+            }
+
+            .btn-cancel-modal {
+                background-color: #dcdcdc;
+                color: #333;
+            }
+
+            .btn-ok-modal {
+                background-color: #d6bd96;
+                color: #333;
+            }
+
+            .payment-content {
+                background-color: #ecf1ed;
+                padding: 40px;
+                width: 550px;
+                border-radius: 8px;
+                position: relative;
+            }
+
+            .btn-close-modal {
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                background: #111;
+                color: #fff;
+                border: none;
+                width: 24px;
+                height: 24px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 2px;
+            }
+
+            .payment-title {
+                text-align: center;
+                font-size: 20px;
+                font-weight: 700;
+                margin-bottom: 30px;
+                color: #111;
+            }
+
+            .payment-info-box {
+                background-color: #dfceb3;
+                border-radius: 8px;
+                padding: 15px 25px;
+                display: justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+            }
+
+            .btn-pay {
+                background-color: #dfceb3;
+                color: #111;
+                border: none;
+                border-radius: 6px;
+                padding: 12px 25px;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                text-transform: uppercase;
+            }
+
+            /* ----- Notification Modal Styles (Đồng bộ hệ thống) ----- */
+            #notifyModal .modal-content {
+                background-color: #ffffff;
+                border-radius: 12px;
+                padding: 40px 50px;
+                width: 420px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+                animation: modalSlideIn 0.3s ease-out;
+                border-bottom: none;
+            }
+
+            #notifyModal.error-state .modal-content {
+                border-top-color: #de5e5e;
+            }
+
+            #notifyModal.success-state .modal-content {
+                border-top-color: #2ecc71;
+            }
+
             @keyframes modalSlideIn {
-                from { transform: translateY(-20px); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
+                from {
+                    transform: translateY(-20px);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
             }
         </style>
 
@@ -229,23 +445,26 @@
                 <div class="info-row">
                     <div class="info-label">Sức chứa:</div>
                     <div class="capacity-badges">
-                        <div class="capacity-badge"><span th:text="${room.sucChua}">2</span> <i class="fa-solid fa-users"></i></div>
+                        <div class="capacity-badge"><span th:text="${room.sucChua}">2</span> <i
+                                class="fa-solid fa-users"></i></div>
                     </div>
                 </div>
                 <hr class="divider">
                 <div class="footer-row">
                     <div class="price-section">
                         <div class="price-label">Tiền phòng:</div>
-                        <div class="price-value-container"><span class="price-value" th:text="${#numbers.formatDecimal(room.giaPhong, 0, 'COMMA', 0, 'POINT')}">800,000</span></div>
+                        <div class="price-value-container"><span class="price-value"
+                                th:text="${#numbers.formatDecimal(room.giaPhong, 0, 'COMMA', 0, 'POINT')}">800,000</span>
+                        </div>
                     </div>
-                    <button class="btn-book" 
-                        th:attr="data-room=${room.tenPhong}, 
+                    <button class="btn-book" th:attr="data-room=${room.tenPhong}, 
                                  data-price=${room.giaPhong}, 
                                  data-max-capacity=${room.sucChua}">ĐẶT PHÒNG</button>
                 </div>
             </article>
 
-            <div th:if="${#lists.isEmpty(availableRooms)}" style="text-align: center; padding: 50px; width: 100%; color: #777;">
+            <div th:if="${#lists.isEmpty(availableRooms)}"
+                style="text-align: center; padding: 50px; width: 100%; color: #777;">
                 <h3>Hiện không có phòng trống nào khả dụng.</h3>
             </div>
         </main>
@@ -255,17 +474,66 @@
             <div class="modal-content">
                 <h3 class="modal-title">THÔNG TIN ĐẶT PHÒNG</h3>
                 <div class="modal-card">
-                    <div class="form-row"><div class="form-label">Phòng:</div><div class="input-group bg-green"><i class="fa-solid fa-bed"></i><input type="text" id="mRoom" readonly></div></div>
-                    <div class="form-row"><div class="form-label">Họ tên:</div><div class="input-group bg-green"><i class="fa-solid fa-circle-user"></i><input type="text" id="mHoTen" placeholder="Họ và tên"></div></div>
-                    <div class="form-row"><div class="form-label">Điện thoại:</div><div class="input-group bg-green"><i class="fa-solid fa-phone"></i><input type="text" id="mSdt" placeholder="Số điện thoại"></div></div>
-                    <div class="form-row"><div class="form-label">Email:</div><div class="input-group bg-green"><i class="fa-solid fa-envelope"></i><input type="email" id="mEmail" placeholder="Nhập email"></div></div>
-                    <div class="form-row"><div class="form-label">CCCD:</div><div class="input-group bg-green"><i class="fa-solid fa-address-card"></i><input type="text" id="mCccd" placeholder="CCCD"></div></div>
-                    <div class="form-row"><div class="form-label">Nhận:</div><div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="date" id="mCheckin"></div></div>
-                    <div class="form-row"><div class="form-label">Trả:</div><div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="date" id="mCheckout"></div></div>
-                    <div class="form-row"><div class="form-label">Người lớn:</div><div class="input-group bg-green"><i class="fa-solid fa-user"></i><div class="qty-controls"><i class="fa-solid fa-circle-minus" onclick="changeQty('mSoNguoiLon', -1)"></i><span id="mSoNguoiLon">1</span><i class="fa-solid fa-circle-plus" onclick="changeQty('mSoNguoiLon', 1)"></i></div></div></div>
-                    <div class="form-row"><div class="form-label">Trẻ em:</div><div class="input-group bg-green"><i class="fa-solid fa-face-smile"></i><div class="qty-controls"><i class="fa-solid fa-circle-minus" onclick="changeQty('mSoTreEm', -1)"></i><span id="mSoTreEm">0</span><i class="fa-solid fa-circle-plus" onclick="changeQty('mSoTreEm', 1)"></i></div></div></div>
+                    <div class="form-row">
+                        <div class="form-label">Phòng:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-bed"></i><input type="text" id="mRoom"
+                                readonly></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Họ tên:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-circle-user"></i><input type="text"
+                                id="mHoTen" placeholder="Họ và tên"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Điện thoại:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-phone"></i><input type="text" id="mSdt"
+                                placeholder="Số điện thoại"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Email:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-envelope"></i><input type="email"
+                                id="mEmail" placeholder="Nhập email"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">CCCD:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-address-card"></i><input type="text"
+                                id="mCccd" placeholder="CCCD"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Nhận:</div>
+                        <div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="date"
+                                id="mCheckin"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Trả:</div>
+                        <div class="input-group bg-tan"><i class="fa-regular fa-calendar"></i><input type="date"
+                                id="mCheckout"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Người lớn:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-user"></i>
+                            <div class="qty-controls"><i class="fa-solid fa-circle-minus"
+                                    onclick="changeQty('mSoNguoiLon', -1)"></i><span id="mSoNguoiLon">1</span><i
+                                    class="fa-solid fa-circle-plus" onclick="changeQty('mSoNguoiLon', 1)"></i></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Trẻ em:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-face-smile"></i>
+                            <div class="qty-controls"><i class="fa-solid fa-circle-minus"
+                                    onclick="changeQty('mSoTreEm', -1)"></i><span id="mSoTreEm">0</span><i
+                                    class="fa-solid fa-circle-plus" onclick="changeQty('mSoTreEm', 1)"></i></div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Ghi chú:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-comment-dots"></i><input type="text"
+                                id="mGhiChu" placeholder="Yêu cầu đặc biệt (nếu có)"></div>
+                    </div>
                 </div>
-                <div class="modal-actions"><button class="btn-modal btn-cancel-modal" onclick="closeModal('bookingModal')">Hủy</button><button class="btn-modal btn-ok-modal" id="btnConfirmBooking">XÁC NHẬN</button></div>
+                <div class="modal-actions"><button class="btn-modal btn-cancel-modal"
+                        onclick="closeModal('bookingModal')">Hủy</button><button class="btn-modal btn-ok-modal"
+                        id="btnConfirmBooking">XÁC NHẬN</button></div>
             </div>
         </div>
 
@@ -273,7 +541,8 @@
             <div class="payment-content">
                 <button class="btn-close-modal" onclick="closeModal('paymentModal')">x</button>
                 <h3 class="payment-title">BẠN CẦN THANH TOÁN 50% ĐỂ GIỮ PHÒNG</h3>
-                <div class="payment-info-box"><span>Số tiền cọc:</span><span class="payment-info-value" id="mPaymentValue">0</span></div>
+                <div class="payment-info-box"><span>Số tiền cọc:</span><span class="payment-info-value"
+                        id="mPaymentValue">0</span></div>
                 <button class="btn-pay" id="btnGoToMethod">THANH TOÁN</button>
             </div>
         </div>
@@ -294,15 +563,51 @@
             <div class="modal-content" style="width: 550px;">
                 <h3 class="modal-title">HỒ SƠ THANH TOÁN</h3>
                 <div class="modal-card">
-                    <div class="form-row"><div class="form-label">Số tiền thanh toán:</div><div class="input-group bg-green"><i class="fa-solid fa-money-bill"></i><input type="text" id="mVisaAmount" readonly></div></div>
-                    <div class="form-row"><div class="form-label">Số thẻ:</div><div class="input-group bg-green"><i class="fa-solid fa-credit-card"></i><input type="text" placeholder="Nhập số thẻ"></div></div>
-                    <div class="form-row"><div class="form-label">Ngày hết hạn:</div><div class="input-group bg-green"><i class="fa-solid fa-calendar-days"></i><input type="date" placeholder="mm/dd/yyyy"></div></div>
-                    <div class="form-row"><div class="form-label">CVC/CVV:</div><div class="input-group bg-green"><i class="fa-solid fa-shield-halved"></i><input type="text" placeholder="Nhập số CVC/CVV"></div></div>
-                    <div class="form-row"><div class="form-label">Tên chủ thẻ:</div><div class="input-group bg-green"><i class="fa-solid fa-user"></i><input type="text" placeholder="Nhập họ tên"></div></div>
-                    <div class="form-row"><div class="form-label">Email:</div><div class="input-group bg-green"><i class="fa-solid fa-envelope"></i><input type="email" placeholder="Nhập email"></div></div>
-                    <div class="form-row"><div class="form-label">Quốc gia:</div><div class="input-group bg-green"><i class="fa-solid fa-globe"></i><input type="text" placeholder="Nhập quốc gia"></div></div>
-                    <div class="form-row"><div class="form-label">Tỉnh/Thành phố:</div><div class="input-group bg-green"><i class="fa-solid fa-city"></i><input type="text" placeholder="Nhập Tỉnh/Thành phố"></div></div>
-                    <div class="form-row"><div class="form-label">Địa chỉ:</div><div class="input-group bg-green"><i class="fa-solid fa-location-dot"></i><input type="text" placeholder="Nhập địa chỉ cụ thể"></div></div>
+                    <div class="form-row">
+                        <div class="form-label">Số tiền thanh toán:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-money-bill"></i><input type="text"
+                                id="mVisaAmount" readonly></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Số thẻ:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-credit-card"></i><input type="text"
+                                id="mVisaCardNumber" placeholder="Nhập số thẻ"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Ngày hết hạn:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-calendar-days"></i><input type="date"
+                                id="mVisaExpiry" placeholder="mm/dd/yyyy"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">CVC/CVV:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-shield-halved"></i><input type="text"
+                                id="mVisaCvc" placeholder="Nhập số CVC/CVV"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Tên chủ thẻ:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-user"></i><input type="text"
+                                id="mVisaName" placeholder="Nhập họ tên"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Email:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-envelope"></i><input type="email"
+                                id="mVisaEmail" placeholder="Nhập email"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Quốc gia:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-globe"></i><input type="text"
+                                id="mVisaCountry" placeholder="Nhập quốc gia"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Tỉnh/Thành phố:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-city"></i><input type="text"
+                                id="mVisaCity" placeholder="Nhập Tỉnh/Thành phố"></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-label">Địa chỉ:</div>
+                        <div class="input-group bg-green"><i class="fa-solid fa-location-dot"></i><input type="text"
+                                id="mVisaAddress" placeholder="Nhập địa chỉ cụ thể"></div>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-modal btn-cancel-modal" onclick="closeModal('visaModal')">HỦY</button>
@@ -316,7 +621,8 @@
                 <button class="btn-close-modal" onclick="closeModal('qrModal')">x</button>
                 <h3 class="payment-title">QUÉT MÃ ĐỂ THANH TOÁN</h3>
                 <img src="./Picture/QR_CODE.png" style="width: 250px; margin-bottom: 20px; border-radius: 10px;">
-                <div class="modal-actions"><button class="btn-modal btn-ok-modal" id="btnConfirmPay">XÁC NHẬN</button></div>
+                <div class="modal-actions"><button class="btn-modal btn-ok-modal" id="btnConfirmPay">XÁC NHẬN</button>
+                </div>
             </div>
         </div>
 
@@ -335,9 +641,13 @@
                 <div id="notifyIcon" style="margin-bottom: 20px;">
                     <i class="fa-solid fa-circle-exclamation" style="font-size: 60px; color: #d6bd96;"></i>
                 </div>
-                <h3 id="notifyTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; color: #333;">THÔNG BÁO</h3>
-                <p id="notifyMessage" style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 30px;">Nội dung thông báo ở đây.</p>
-                <button class="btn-modal btn-ok-modal" style="width: 100%;" onclick="closeModal('notifyModal')">ĐÓNG</button>
+                <h3 id="notifyTitle"
+                    style="font-size: 20px; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; color: #333;">
+                    THÔNG BÁO</h3>
+                <p id="notifyMessage" style="font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 30px;">Nội
+                    dung thông báo ở đây.</p>
+                <button class="btn-modal btn-ok-modal" style="width: 100%;"
+                    onclick="closeModal('notifyModal')">ĐÓNG</button>
             </div>
         </div>
 
@@ -355,19 +665,25 @@
                 const icon = document.getElementById('notifyIcon');
                 const title = document.getElementById('notifyTitle');
                 const messageEl = document.getElementById('notifyMessage');
-                
+
+                const modal = document.getElementById('notifyModal');
+
                 if (isError) {
-                    icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="font-size: 60px; color: #e74c3c;"></i>';
+                    icon.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="font-size: 65px; color: #de5e5e;"></i>';
                     title.innerText = "LỖI";
-                    title.style.color = "#e74c3c";
+                    title.style.color = "#de5e5e";
+                    modal.classList.add('error-state');
+                    modal.classList.remove('success-state');
                 } else {
-                    icon.innerHTML = '<i class="fa-solid fa-circle-check" style="font-size: 60px; color: #2ecc71;"></i>';
+                    icon.innerHTML = '<i class="fa-solid fa-circle-check" style="font-size: 65px; color: #2ecc71;"></i>';
                     title.innerText = "THÀNH CÔNG";
                     title.style.color = "#2ecc71";
+                    modal.classList.add('success-state');
+                    modal.classList.remove('error-state');
                 }
-                
+
                 messageEl.innerText = message;
-                document.getElementById('notifyModal').style.display = 'flex';
+                modal.style.display = 'flex';
             }
 
             function changeQty(id, delta) {
@@ -375,7 +691,7 @@
                 let val = parseInt(span.innerText);
                 let min = (id === 'mSoNguoiLon') ? 1 : 0;
                 let max = parseInt(currentData.maxCapacity) || 10;
-                
+
                 // Calculate current total
                 let adults = parseInt(document.getElementById('mSoNguoiLon').innerText);
                 let children = parseInt(document.getElementById('mSoTreEm').innerText);
@@ -400,38 +716,54 @@
                 btn.onclick = () => {
                     currentData = btn.dataset;
                     document.getElementById('mRoom').value = currentData.room;
-                    
+
                     // Reset fields
                     const today = new Date().toISOString().split('T')[0];
                     const tomorrow = new Date();
                     tomorrow.setDate(tomorrow.getDate() + 1);
                     const tomorrowStr = tomorrow.toISOString().split('T')[0];
-                    
+
                     document.getElementById('mCheckin').value = today;
                     document.getElementById('mCheckout').value = tomorrowStr;
                     document.getElementById('mSoNguoiLon').innerText = "1";
                     document.getElementById('mSoTreEm').innerText = "0";
-                    
+
                     document.getElementById('bookingModal').style.display = 'flex';
                 };
             });
 
             document.getElementById('btnConfirmBooking').onclick = () => {
+                const hoTen = document.getElementById('mHoTen').value.trim();
+                const sdt = document.getElementById('mSdt').value.trim();
+                const email = document.getElementById('mEmail').value.trim();
+                const cccd = document.getElementById('mCccd').value.trim();
                 const checkin = document.getElementById('mCheckin').value;
                 const checkout = document.getElementById('mCheckout').value;
                 const adults = parseInt(document.getElementById('mSoNguoiLon').innerText);
                 const children = parseInt(document.getElementById('mSoTreEm').innerText);
                 const max = parseInt(currentData.maxCapacity);
 
+                if (!hoTen) { showNotify("Vui lòng nhập Họ tên khách hàng!"); return; }
+                if (!sdt) { showNotify("Vui lòng nhập Số điện thoại!"); return; }
+                if (!email) { showNotify("Vui lòng nhập Email!"); return; }
+                if (!cccd) { showNotify("Vui lòng nhập số CCCD!"); return; }
+
+                // Email format validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showNotify("Định dạng Email không hợp lệ!");
+                    return;
+                }
+
                 if (!checkin || !checkout) {
                     showNotify("Vui lòng chọn ngày nhận và ngày trả phòng!");
                     return;
                 }
-                
+
                 const dIn = new Date(checkin);
                 const dOut = new Date(checkout);
                 const dNow = new Date();
-                dNow.setHours(0,0,0,0);
+                dNow.setHours(0, 0, 0, 0);
 
                 if (dIn < dNow) {
                     showNotify("Ngày nhận không được ở quá khứ!");
@@ -478,14 +810,15 @@
                 data.append('sdt', document.getElementById('mSdt').value);
                 data.append('email', document.getElementById('mEmail').value);
                 data.append('cccd', document.getElementById('mCccd').value);
-                
+                data.append('ghiChu', document.getElementById('mGhiChu').value);
+
                 // Append default times to dates for LocalDateTime compatibility
                 data.append('ngayNhan', document.getElementById('mCheckin').value + 'T14:00:00');
                 data.append('ngayTra', document.getElementById('mCheckout').value + 'T12:00:00');
-                
+
                 data.append('soNguoiLon', document.getElementById('mSoNguoiLon').innerText);
                 data.append('soTreEm', document.getElementById('mSoTreEm').innerText);
-                
+
                 const total = parseInt(currentData.price);
                 data.append('tienCoc', total / 2);
                 data.append('tongThanhToan', total);
@@ -509,6 +842,18 @@
             }
 
             function confirmVisa() {
+                const cardNum = document.getElementById('mVisaCardNumber').value.trim();
+                const expiry = document.getElementById('mVisaExpiry').value;
+                const cvc = document.getElementById('mVisaCvc').value.trim();
+                const name = document.getElementById('mVisaName').value.trim();
+                const email = document.getElementById('mVisaEmail').value.trim();
+
+                if (!cardNum) { showNotify("Vui lòng nhập Số thẻ!"); return; }
+                if (!expiry) { showNotify("Vui lòng chọn Ngày hết hạn thẻ!"); return; }
+                if (!cvc) { showNotify("Vui lòng nhập mã CVC/CVV!"); return; }
+                if (!name) { showNotify("Vui lòng nhập Tên chủ thẻ!"); return; }
+                if (!email) { showNotify("Vui lòng nhập Email thanh toán!"); return; }
+
                 closeModal('visaModal');
                 confirmAndPay('VISA');
             }
@@ -519,10 +864,10 @@
             };
 
             function showSuccess(code) {
-                document.getElementById('mBookingCode').innerText = code || ('DPW' + Math.floor(Math.random()*10000000));
+                document.getElementById('mBookingCode').innerText = code || ('DPW' + Math.floor(Math.random() * 10000000));
                 document.getElementById('successModal').style.display = 'flex';
             }
-            
+
             // Basic search
             document.getElementById('roomSearch').oninput = (e) => {
                 let term = e.target.value.toLowerCase();

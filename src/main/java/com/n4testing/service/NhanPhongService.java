@@ -134,8 +134,15 @@ public class NhanPhongService {
         // [BỔ SUNG] Kiểm tra tất cả phòng có sẵn sàng không
         List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
         for (ChiTietDatPhong ct : chiTiets) {
-            if (ct.getPhong() != null && !"Trống".equals(ct.getPhong().getTrangThai())) {
-                throw new RuntimeException("Phòng " + ct.getPhong().getTenPhong() + " hiện không sẵn sàng!");
+            Phong phong = ct.getPhong();
+            if (phong != null && !"Trống".equals(phong.getTrangThai())) {
+                String reason = "hiện không sẵn sàng";
+                if ("Bận".equals(phong.getTrangThai())) {
+                    reason = "đang có khách ở";
+                } else if ("Sửa chữa".equals(phong.getTrangThai()) || "Bảo trì".equals(phong.getTrangThai())) {
+                    reason = "đang trong quá trình bảo trì/sửa chữa";
+                }
+                throw new RuntimeException("Phòng " + phong.getTenPhong() + " " + reason + ". Vui lòng kiểm tra lại hoặc đổi phòng!");
             }
         }
 
@@ -176,7 +183,11 @@ public class NhanPhongService {
      * Đổi phòng cho một booking đang hoạt động
      */
     @Transactional
-    public void changeRoom(Integer currentRoomId, String targetRoomName) {
+    public void changeRoom(Integer currentRoomId, String targetRoomName, String reason) {
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new RuntimeException("Lý do đổi phòng là bắt buộc để thực hiện nghiệp vụ này!");
+        }
+
         // 1. Tìm bản ghi đặt phòng hiện tại của phòng này
         Map<Integer, ChiTietDatPhong> activeMap = getActiveBookingMap();
         ChiTietDatPhong ct = activeMap.get(currentRoomId);
@@ -206,10 +217,19 @@ public class NhanPhongService {
         ct.setPhong(targetRoom);
         chiTietDatPhongRepository.save(ct);
 
-        // 5. Cập nhật field so_phong trong DatPhong để đồng bộ (nếu có)
+        // 5. Cập nhật field so_phong và ghi chú trong DatPhong để đồng bộ
         DatPhong dp = ct.getDatPhong();
         if (dp != null) {
             dp.setSoPhong(targetRoomName);
+            
+            // Lưu lại vết đổi phòng vào ghi chú
+            String newNote = "[Đổi phòng " + currentRoom.getTenPhong() + " -> " + targetRoomName + "] Lý do: " + reason;
+            if (dp.getGhiChu() == null || dp.getGhiChu().isEmpty()) {
+                dp.setGhiChu(newNote);
+            } else {
+                dp.setGhiChu(dp.getGhiChu() + " | " + newNote);
+            }
+            
             datPhongRepository.save(dp);
         }
 

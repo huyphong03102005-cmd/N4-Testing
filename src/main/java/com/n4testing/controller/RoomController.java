@@ -29,8 +29,13 @@ public class RoomController {
         try {
             Integer currentRoomId = (Integer) payload.get("currentRoomId");
             String targetRoomName = (String) payload.get("targetRoomName");
+            String reason = (String) payload.get("reason");
+
+            if (reason == null || reason.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Lý do đổi phòng là bắt buộc!");
+            }
             
-            nhanPhongService.changeRoom(currentRoomId, targetRoomName);
+            nhanPhongService.changeRoom(currentRoomId, targetRoomName, reason);
             notificationService.broadcastUpdate();
             
             return ResponseEntity.ok(Map.of("message", "Đổi phòng thành công!"));

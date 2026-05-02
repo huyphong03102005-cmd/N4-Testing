@@ -41,7 +41,7 @@ public class DatPhongService {
     public DatPhong datPhong(String hoTen, String sdt, String cccd, String tenPhong, 
                              LocalDateTime ngayNhan, LocalDateTime ngayTra, 
                              Integer soNguoiLon, Integer soTreEm, String email,
-                             BigDecimal tienCoc, BigDecimal tongThanhToan, String phuongThuc) {
+                             BigDecimal tienCoc, BigDecimal tongThanhToan, String phuongThuc, String ghiChu) {
         
         // 0. Validation logic
         if (soNguoiLon == null || soNguoiLon < 1) {
@@ -111,6 +111,7 @@ public class DatPhongService {
         datPhong.setTienCoc(tienCoc);
         datPhong.setTongThanhToan(tongThanhToan);
         datPhong.setPhuongThucThanhToan(phuongThuc);
+        datPhong.setGhiChu(ghiChu);
         datPhong.setTrangThai("Đã đặt");
         
         datPhong = datPhongRepository.save(datPhong);

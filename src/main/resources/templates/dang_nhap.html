@@ -168,6 +168,11 @@
     <div class="right-panel">
         <div class="login-box">
             <h1 class="login-title">Đăng nhập</h1>
+            
+            <!-- Thông báo thành công khi đổi mật khẩu -->
+            <div th:if="${param.success}" class="success-msg" style="color: #4a7c59; background-color: #eef5ee; padding: 10px; border-radius: 6px; margin-bottom: 15px; text-align: center; font-weight: 600;">
+                <i class="fas fa-check-circle"></i> Đặt lại mật khẩu thành công!
+            </div>
 
             <form th:action="@{/login}" method="post">
                 <div class="form-group">

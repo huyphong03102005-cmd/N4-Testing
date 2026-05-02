@@ -87,9 +87,13 @@ public class SummaryController {
 
     @PostMapping("/change-room")
     public ResponseEntity<?> changeRoom(@RequestParam Integer currentRoomId,
-                                        @RequestParam String targetRoomName) {
+                                        @RequestParam String targetRoomName,
+                                        @RequestParam String reason) {
         try {
-            nhanPhongService.changeRoom(currentRoomId, targetRoomName);
+            if (reason == null || reason.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Lý do đổi phòng là bắt buộc!"));
+            }
+            nhanPhongService.changeRoom(currentRoomId, targetRoomName, reason);
             // Phát tín hiệu CHỈ SAU KHI transaction đã hoàn tất và thành công
             notificationService.broadcastUpdate();
             return ResponseEntity.ok(Map.of("message", "Đổi phòng thành công"));
