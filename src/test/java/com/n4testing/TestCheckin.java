@@ -16,8 +16,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ExtendWith(CheckinAutomationTest.TestResultLogger.class)
-public class CheckinAutomationTest {
+@ExtendWith(TestCheckin.TestResultLogger.class)
+public class TestCheckin {
     private WebDriver driver;
     private WebDriverWait wait;
     private final String BASE_URL = "http://localhost:8085";
