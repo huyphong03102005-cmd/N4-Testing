@@ -70,4 +70,13 @@ public class TraPhongController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/record-checkout/{idLuutru}")
+    public ResponseEntity<?> recordCheckout(@PathVariable Integer idLuutru) {
+        try {
+            return ResponseEntity.ok(traPhongService.ghiNhanCheckOutThucTe(idLuutru));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

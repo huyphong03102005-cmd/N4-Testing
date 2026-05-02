@@ -98,6 +98,8 @@ public class TraPhongService {
         map.put("thoiGianCheckinThucTe", s.getThoiGianCheckinThucTe());
         map.put("thoiGianCheckoutThucTe", s.getThoiGianCheckoutThucTe());
         map.put("soNguoiThucTe", s.getSoNguoiThucTe());
+        map.put("lateFee", s.getLateFee());
+        map.put("lateHours", s.getLateHours());
         map.put("suDungDichVuList", s.getSuDungDichVuList());
         map.put("thietHaiList", s.getThietHaiList());
         map.put("calculatedBasePrice", calculateTienPhong(s));
@@ -128,7 +130,10 @@ public class TraPhongService {
                 .map(th -> th.getSoTienBoiThuong() != null ? th.getSoTienBoiThuong() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return tienPhong.add(tienDichVu).add(tienBoiThuong).setScale(0, java.math.RoundingMode.CEILING);
+        // 4. Phí trả phòng trễ
+        BigDecimal phuThuTre = luuTru.getLateFee() != null ? luuTru.getLateFee() : BigDecimal.ZERO;
+
+        return tienPhong.add(tienDichVu).add(tienBoiThuong).add(phuThuTre).setScale(0, java.math.RoundingMode.CEILING);
     }
 
     /**
@@ -184,5 +189,87 @@ public class TraPhongService {
 
         notificationService.broadcastUpdate();
         return hoaDon;
+    }
+
+    /**
+     * Ghi nhận thời gian checkout thực tế và tính phí trễ
+     */
+    @Transactional
+    public LuuTru ghiNhanCheckOutThucTe(Integer idLuutru) {
+        LuuTru luuTru = luuTruRepository.findById(idLuutru)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin lưu trú"));
+        
+        DatPhong datPhong = luuTru.getDatPhong();
+        if (datPhong == null) throw new RuntimeException("Không tìm thấy thông tin đặt phòng");
+
+        LocalDateTime actualCheckout = LocalDateTime.now();
+        // Normalize expected checkout to 12:00 PM of the check-out day
+        LocalDateTime expectedCheckout = datPhong.getNgayTra().withHour(12).withMinute(0).withSecond(0).withNano(0);
+
+        double lateHours = 0;
+        BigDecimal lateFee = BigDecimal.ZERO;
+
+        if (actualCheckout.isAfter(expectedCheckout)) {
+            Duration duration = Duration.between(expectedCheckout, actualCheckout);
+            lateHours = duration.toMinutes() / 60.0;
+            
+            // Logic tính phí:
+            // 1. <= 4h: 100,000 / h
+            // 2. 4h - 6h: 50% giá phòng
+            // 3. > 6h: 100% giá phòng
+            
+            BigDecimal oneNightPrice = calculateBasePricePerNight(luuTru);
+
+            if (lateHours <= 4) {
+                lateFee = new BigDecimal(Math.ceil(lateHours)).multiply(new BigDecimal(100000));
+            } else if (lateHours <= 6) {
+                lateFee = oneNightPrice.multiply(new BigDecimal("0.5"));
+            } else {
+                lateFee = oneNightPrice;
+            }
+        }
+
+        luuTru.setThoiGianCheckoutThucTe(actualCheckout);
+        luuTru.setLateHours(lateHours);
+        luuTru.setLateFee(lateFee.setScale(0, java.math.RoundingMode.CEILING));
+        luuTru = luuTruRepository.save(luuTru);
+
+        // Cập nhật trạng thái Booking
+        datPhong.setTrangThai("Late checkout");
+        datPhongRepository.save(datPhong);
+
+        // Cập nhật trạng thái các phòng sang 'Bảo trì'
+        List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
+        for (ChiTietDatPhong ct : chiTiets) {
+            Phong phong = ct.getPhong();
+            if (phong != null) {
+                phong.setTrangThai("Bảo trì");
+                phongRepository.save(phong);
+            }
+        }
+
+        notificationService.broadcastUpdate();
+        return luuTru;
+    }
+
+    private BigDecimal calculateBasePricePerNight(LuuTru luuTru) {
+        DatPhong datPhong = luuTru.getDatPhong();
+        BigDecimal baseRoomPrice = BigDecimal.ZERO;
+
+        List<ChiTietDatPhong> chiTiets = chiTietDatPhongRepository.findByDatPhong(datPhong);
+        if (chiTiets != null && !chiTiets.isEmpty()) {
+            for (ChiTietDatPhong ct : chiTiets) {
+                if (ct.getPhong() != null && ct.getPhong().getGiaPhong() != null) {
+                    BigDecimal qty = new BigDecimal(ct.getSoLuongPhong() != null ? ct.getSoLuongPhong() : 1);
+                    baseRoomPrice = baseRoomPrice.add(ct.getPhong().getGiaPhong().multiply(qty));
+                }
+            }
+        }
+
+        if (baseRoomPrice.compareTo(BigDecimal.ZERO) == 0 && datPhong.getTongThanhToan() != null) {
+            baseRoomPrice = datPhong.getTongThanhToan();
+        }
+
+        return baseRoomPrice;
     }
 }

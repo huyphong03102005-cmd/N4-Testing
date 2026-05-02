@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,6 +33,12 @@ public class LuuTru {
 
     @Column(name = "so_nguoi_thuc_te")
     private Integer soNguoiThucTe;
+    
+    @Column(name = "late_fee")
+    private BigDecimal lateFee = BigDecimal.ZERO;
+
+    @Column(name = "late_hours")
+    private Double lateHours = 0.0;
 
     @OneToMany(mappedBy = "luuTru", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("luuTru")
