@@ -94,9 +94,7 @@ public class NhanPhongService {
      * Lấy danh sách phiếu đặt phòng đang ở trạng thái 'Chờ check-in'
      */
     public List<DatPhong> getDanhSachChoNhanPhong() {
-        List<DatPhong> list = datPhongRepository.findByTrangThai("Chờ check-in");
-        list.addAll(datPhongRepository.findByTrangThai("Đã đặt cọc"));
-        return list;
+        return datPhongRepository.findByTrangThaiIn(java.util.Arrays.asList("Đã đặt", "Đã đặt cọc"));
     }
 
     /**
@@ -106,9 +104,7 @@ public class NhanPhongService {
         if (keyword == null || keyword.trim().isEmpty()) {
             return getDanhSachChoNhanPhong();
         }
-        List<DatPhong> list = datPhongRepository.searchBookings(keyword, "Chờ check-in");
-        list.addAll(datPhongRepository.searchBookings(keyword, "Đã đặt cọc"));
-        return list;
+        return datPhongRepository.searchBookings(keyword, java.util.Arrays.asList("Đã đặt", "Đã đặt cọc"));
     }
 
     /**
@@ -142,7 +138,8 @@ public class NhanPhongService {
                 } else if ("Sửa chữa".equals(phong.getTrangThai()) || "Bảo trì".equals(phong.getTrangThai())) {
                     reason = "đang trong quá trình bảo trì/sửa chữa";
                 }
-                throw new RuntimeException("Phòng " + phong.getTenPhong() + " " + reason + ". Vui lòng kiểm tra lại hoặc đổi phòng!");
+                throw new RuntimeException(
+                        "Phòng " + phong.getTenPhong() + " " + reason + ". Vui lòng kiểm tra lại hoặc đổi phòng!");
             }
         }
 
@@ -221,7 +218,7 @@ public class NhanPhongService {
         DatPhong dp = ct.getDatPhong();
         if (dp != null) {
             dp.setSoPhong(targetRoomName);
-            
+
             // Lưu lại vết đổi phòng vào ghi chú
             String newNote = "[Đổi phòng " + currentRoom.getTenPhong() + " -> " + targetRoomName + "] Lý do: " + reason;
             if (dp.getGhiChu() == null || dp.getGhiChu().isEmpty()) {
@@ -229,7 +226,7 @@ public class NhanPhongService {
             } else {
                 dp.setGhiChu(dp.getGhiChu() + " | " + newNote);
             }
-            
+
             datPhongRepository.save(dp);
         }
 

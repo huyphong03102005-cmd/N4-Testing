@@ -160,7 +160,7 @@
             </form>
 
             <div class="resend-otp">
-                Chưa nhận được mã? <a href="#">Gửi lại (60s)</a>
+                Chưa nhận được mã? <a href="javascript:void(0)" id="resend-link" style="pointer-events: none; opacity: 0.6;">Gửi lại (60s)</a>
             </div>
         </div>
     </div>
@@ -169,7 +169,9 @@
         const inputs = document.querySelectorAll('.otp-input');
         const otpValue = document.getElementById('otp-value');
         const form = document.getElementById('otp-form');
+        const resendLink = document.getElementById('resend-link');
 
+        // OTP Input handling
         inputs.forEach((input, index) => {
             input.addEventListener('input', (e) => {
                 if (e.target.value.length > 1) {
@@ -192,6 +194,21 @@
             inputs.forEach(input => value += input.value);
             otpValue.value = value;
         });
+
+        // Countdown logic
+        let timeLeft = 60;
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                resendLink.textContent = "Gửi lại ngay";
+                resendLink.style.pointerEvents = "auto";
+                resendLink.style.opacity = "1";
+                resendLink.href = "/forgot-password?email=" + encodeURIComponent(new URLSearchParams(window.location.search).get('email') || '');
+            } else {
+                resendLink.textContent = `Gửi lại (${timeLeft}s)`;
+            }
+        }, 1000);
     </script>
 </body>
 </html>

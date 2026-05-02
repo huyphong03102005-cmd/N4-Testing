@@ -68,7 +68,7 @@ public class SummaryController {
         long reserved = rooms.stream()
                 .filter(p -> ("Trống".equals(p.getTrangThai()) || "Đã đặt".equals(p.getTrangThai())) && 
                              roomBookings.containsKey(p.getIdPhong()) && 
-                             (Arrays.asList("Chờ check-in", "Đã đặt").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai())))
+                             (Arrays.asList("Đã đặt", "Đã đặt cọc").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai())))
                 .count();
         long available = total - occupied - maintenance - reserved;
 

@@ -12,6 +12,6 @@ import java.util.List;
 public interface ChiTietDatPhongRepository extends JpaRepository<ChiTietDatPhong, Integer> {
     List<ChiTietDatPhong> findByDatPhong(DatPhong datPhong);
     
-    @Query("SELECT ct FROM ChiTietDatPhong ct JOIN FETCH ct.datPhong d JOIN FETCH ct.phong p WHERE d.trangThai IN ('Chờ check-in', 'Đang ở', 'Đã đặt')")
+    @Query("SELECT ct FROM ChiTietDatPhong ct JOIN FETCH ct.datPhong d JOIN FETCH ct.phong p WHERE d.trangThai IN ('Đang ở', 'Đã đặt', 'Đã đặt cọc')")
     List<ChiTietDatPhong> findActiveDetails();
 }

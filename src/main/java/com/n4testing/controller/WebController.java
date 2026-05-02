@@ -42,11 +42,21 @@ public class WebController {
 
     // Xử lý đăng nhập từ Database
     @PostMapping("/login")
-    public String handleLogin(@RequestParam("username") String username,
-                              @RequestParam("password") String password,
+    public String handleLogin(@RequestParam(value = "username", required = false) String username,
+                              @RequestParam(value = "password", required = false) String password,
                               HttpSession session,
                               Model model,
                               RedirectAttributes redirectAttributes) {
+        
+        if (username == null || username.trim().isEmpty()) {
+            model.addAttribute("error", "Tên đăng nhập không được để trống!");
+            return "dang_nhap";
+        }
+        
+        if (password == null || password.trim().isEmpty()) {
+            model.addAttribute("error", "Mật khẩu không được để trống!");
+            return "dang_nhap";
+        }
         
         Optional<TaiKhoan> account = taiKhoanRepository.findByTenDangNhap(username);
         
@@ -97,7 +107,7 @@ public class WebController {
         long reserved = rooms.stream()
                 .filter(p -> ("Trống".equals(p.getTrangThai()) || "Đã đặt".equals(p.getTrangThai())) && 
                              roomBookings.containsKey(p.getIdPhong()) && 
-                             java.util.Arrays.asList("Chờ check-in", "Đã đặt").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai()))
+                             java.util.Arrays.asList("Đã đặt", "Đã đặt cọc").contains(roomBookings.get(p.getIdPhong()).getDatPhong().getTrangThai()))
                 .count();
         
         long available = total - occupied - maintenance - reserved;
@@ -139,7 +149,7 @@ public class WebController {
         List<com.n4testing.model.DatPhong> allBookings = datPhongRepository.findAll();
         
         List<com.n4testing.model.DatPhong> choCheckin = allBookings.stream()
-                .filter(b -> "Đã đặt".equals(b.getTrangThai()) || "Chờ check-in".equals(b.getTrangThai()))
+                .filter(b -> "Đã đặt".equals(b.getTrangThai()) || "Đã đặt cọc".equals(b.getTrangThai()))
                 .collect(Collectors.toList());
         
         List<com.n4testing.model.DatPhong> daCheckin = allBookings.stream()

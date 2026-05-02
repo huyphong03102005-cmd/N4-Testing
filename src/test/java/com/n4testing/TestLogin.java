@@ -113,12 +113,13 @@ public class TestLogin {
         // Click nút Đăng nhập
         driver.findElement(By.className("btn-login")).click();
 
-        // Lấy thông báo lỗi mặc định của HTML5 ("Vui lòng điền vào trường này")
-        WebElement usernameField = driver.findElement(By.id("username"));
-        String validationMsg = usernameField.getAttribute("validationMessage");
+        // Đợi thông báo lỗi xuất hiện trên trang
+        WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(text(), 'Tên đăng nhập không được để trống')]")
+        ));
 
-        Assertions.assertFalse(validationMsg.isEmpty(), "Lỗi: Không có cảnh báo yêu cầu nhập username!");
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Form không được submit khi thiếu username");
+        Assertions.assertTrue(errorMsg.isDisplayed(), "Lỗi: Không thấy thông báo lỗi khi để trống username!");
+        Assertions.assertEquals("Tên đăng nhập không được để trống!", errorMsg.getText());
     }
 
     @Test
@@ -131,12 +132,13 @@ public class TestLogin {
         // Click nút Đăng nhập
         driver.findElement(By.className("btn-login")).click();
 
-        // Lấy thông báo lỗi của HTML5
-        WebElement passwordField = driver.findElement(By.id("password"));
-        String validationMsg = passwordField.getAttribute("validationMessage");
+        // Đợi thông báo lỗi xuất hiện trên trang
+        WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(text(), 'Mật khẩu không được để trống')]")
+        ));
 
-        Assertions.assertFalse(validationMsg.isEmpty(), "Lỗi: Không có cảnh báo yêu cầu nhập password!");
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Form không được submit khi thiếu password");
+        Assertions.assertTrue(errorMsg.isDisplayed(), "Lỗi: Không thấy thông báo lỗi khi để trống password!");
+        Assertions.assertEquals("Mật khẩu không được để trống!", errorMsg.getText());
     }
 
     @Test
@@ -146,12 +148,13 @@ public class TestLogin {
         // Không điền cả 2 ô, click ngay nút Đăng nhập
         wait.until(ExpectedConditions.elementToBeClickable(By.className("btn-login"))).click();
 
-        // Trình duyệt sẽ ưu tiên báo lỗi ở ô đầu tiên bị trống (username)
-        WebElement usernameField = driver.findElement(By.id("username"));
-        String validationMsg = usernameField.getAttribute("validationMessage");
+        // Đợi thông báo lỗi xuất hiện trên trang
+        WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[contains(text(), 'Tên đăng nhập không được để trống')]")
+        ));
 
-        Assertions.assertFalse(validationMsg.isEmpty(), "Lỗi: Không có cảnh báo khi để trống cả 2 ô!");
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Form không được submit khi thiếu thông tin");
+        Assertions.assertTrue(errorMsg.isDisplayed(), "Lỗi: Không thấy thông báo lỗi khi để trống cả 2 ô!");
+        Assertions.assertEquals("Tên đăng nhập không được để trống!", errorMsg.getText());
     }
 
     @AfterEach
